@@ -1,10 +1,10 @@
 Project Proposal 
 =============
 
-## Company Name: 
+#### Company Name: 
 
-## Team Members: Phillip Sime, Aaron Jensen, Michael Hoyt, Andrew Reis
+###### Team Members: Phillip Sime, Aaron Jensen, Michael Hoyt, Andrew Reis
 
-## Project Description:
+#### Project Description:
 
-## Software Process / Methodology:
+#### Software Process / Methodology:
