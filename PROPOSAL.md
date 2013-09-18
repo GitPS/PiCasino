@@ -1,7 +1,7 @@
 Project Proposal 
 =============
 
-#### Company Name: [NAME]
+#### Company Name: PiIndustries LLC.
 
 ###### Team Members: Phillip Sime, Aaron Jensen, Michael Hoyt, Andrew Reis
 
