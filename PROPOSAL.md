@@ -18,4 +18,4 @@ Our goal for this project is to create an expandable application that will allow
 
 #### Software Process / Methodology:
 
-Our project will be using an Agile process and we will be utilizing the Scrum methodology.
+Our project will be using an Agile process and we will be utilizing the Scrum methodology.  We will also handle version control and formal communcation via GitHub.
