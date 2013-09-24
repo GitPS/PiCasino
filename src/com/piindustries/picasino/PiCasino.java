@@ -10,7 +10,7 @@ public class PiCasino {
     public static void main(String[] args){
         System.out.println("This is a test line to let you compile and see that it is working!");
         System.out.println( "\nLets have our scrum meetings via println()'s." );
-        System.out.printf("That sounds %s to me!", "good");
+        System.out.printf("That sound %s to me!", "good");
     }
 
 }
