@@ -9,13 +9,21 @@ package com.piindustries.picasino;
  */
 
 public class ServerListener{
-    static int port = 63400;
+    static int port;
     java.net.ServerSocket ss = null;
-    public ServerListener(){
+    public ServerListener(int portNum){
+        port = portNum;
         try{
-            ss = new java.net.ServerSocket(63400);
+            ss = new java.net.ServerSocket(port);
         }catch(java.io.IOException io){
             System.err.println("Could not listen on port: " + port);
         }
+        if(ss.isBound()){
+               System.out.println("Server listening on port: " + port);
+        }
+    }
+
+    public boolean isListening(){
+        return ss.isBound();
     }
 }
