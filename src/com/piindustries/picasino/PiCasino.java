@@ -8,12 +8,7 @@ package com.piindustries.picasino;
 public class PiCasino {
 
     public static void main(String[] args){
-        PiCasino pc = new PiCasino();
+        // TODO
     }
 
-
-    public PiCasino(){
-        ServerListener sl = new ServerListener(63400);
-        System.out.println(sl.isListening());
-    }
 }
