@@ -7,12 +7,12 @@ package com.piindustries.picasino;
 
 public class PiCasino {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         PiCasino pc = new PiCasino();
     }
 
 
-    public PiCasino(){
+    public PiCasino() {
         ServerListener sl = new ServerListener(63400);
         System.out.println(sl.isListening());
     }
