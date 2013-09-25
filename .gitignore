@@ -81,6 +81,6 @@ Icon
 *.class
 
 # Package Files #
-*.jar
+#*.jar  #Uncommented to allow sync of sqlite.jar
 *.war
 *.ear
