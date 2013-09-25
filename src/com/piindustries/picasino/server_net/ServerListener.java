@@ -1,4 +1,8 @@
-package com.piindustries.picasino;
+package com.piindustries.picasino.server_net;
+
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.ServerSocket;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,5 +29,14 @@ public class ServerListener{
 
     public boolean isListening(){
         return ss.isBound();
+    }
+
+    public void accept(){
+        try{
+            ss.accept();
+            System.out.println("Listening on port: " + ss.getLocalPort());
+        }catch(IOException e){
+            System.out.println("Could not listen on port:" + ss.getLocalPort());
+        }
     }
 }
