@@ -32,14 +32,14 @@
 package com.piindustries.picasino.api;
 
 /**
- * A throwable exception.  An InvalidActionException should be thrown
+ * A throwable exception.  An InvalidGameEventException should be thrown
  * if a GameState invokes an action that cannot be invoked in its current
  * state.
  *
  * @author A. Jensen
  * @version 1.0
  */
-public class InvalidActionException extends IllegalArgumentException {
+public class InvalidGameEventException extends IllegalArgumentException {
 
     /**
      * Calls java.lang.Exception's default constructor passing `msg`.
@@ -47,7 +47,7 @@ public class InvalidActionException extends IllegalArgumentException {
      * @param msg an error message
      * @see java.lang.Exception
      */
-    public InvalidActionException(String msg){
+    public InvalidGameEventException(String msg){
         super(msg);
     }
 
@@ -56,7 +56,7 @@ public class InvalidActionException extends IllegalArgumentException {
      *
      * @see java.lang.Exception
      */
-    public InvalidActionException(){
+    public InvalidGameEventException(){
         super();
     }
 }

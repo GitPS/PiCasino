@@ -36,8 +36,8 @@ import java.io.Serializable;
 /**
  * An GameEvent is a simple, serializable class. The bulk of the networking
  * communications between a PiCasino Server and a PiCasino Client will
- * take place by transmitting actions.  The smaller and simpler an
- * action can be, the faster the communication between the Server and
+ * take place by transmitting GameEvents.  The smaller and simpler an
+ * GameEvents can be, the faster the communication between the Server and
  * the Client can be.
  *
  * @author A. Jensen
