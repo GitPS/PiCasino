@@ -7,7 +7,7 @@
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.api.InvalidActionException
+ * Class: com.piindustries.picasino.api.InvalidGameEventException
  * Version: 1.0
  * Date: October 29, 2013
  *
@@ -33,7 +33,7 @@ package com.piindustries.picasino.api;
 
 /**
  * A throwable exception.  An InvalidGameEventException should be thrown
- * if a GameState invokes an action that cannot be invoked in its current
+ * if a GameState invokes an GameEvent that cannot be invoked in its current
  * state.
  *
  * @author A. Jensen
