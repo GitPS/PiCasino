@@ -53,8 +53,8 @@ public interface GameState {
      *
      * @param toInvoke the GameEvent for `this` to invoke.
      *
-     * @throws InvalidActionException if `toInvoke` cannot be handled by
+     * @throws InvalidGameEventException if `toInvoke` cannot be handled by
      * `this` in its current state.
      */
-    public void invoke(GameEvent toInvoke) throws InvalidActionException;
+    public void invoke(GameEvent toInvoke) throws InvalidGameEventException;
 }
