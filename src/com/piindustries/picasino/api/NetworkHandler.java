@@ -32,8 +32,8 @@
 package com.piindustries.picasino.api;
 
 /**
- * Sends and receives Actions.  It can handle upper-level
- * actions or relay them to the appropriate GameState as
+ * Sends and receives GameEvents.  It can handle upper-level
+ * GameEvents or relay them to the appropriate GameState as
  * needed.
  *
  * Server-side NetworkHandlers and Client-side
@@ -48,14 +48,14 @@ public interface NetworkHandler {
     /**
      * Transmit and handle an GameEvent.
      *
-     * @param toSend
+     * @param toSend the GameEvent to transmit.
      */
     public void send(GameEvent toSend);
 
     /**
      * Receive and handle an GameEvent.
      *
-     * @param toReceive
+     * @param toReceive the GameEvent to receive/handle
      */
     public void receive(GameEvent toReceive);
 }
