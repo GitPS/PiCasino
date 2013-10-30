@@ -41,21 +41,20 @@ package com.piindustries.picasino.api;
  * cards of all of the players, where a client GameState will only hold the
  * cards of that player.
  *
- * When a GameState invokes an Action it progresses to its the next state.
+ * When a GameState invokes an GameEvent it progresses to its the next state.
  *
  * @author A. Jensen
  * @version 1.0
  */
 public interface GameState {
 
-    //FIXME consider rename
     /**
-     * Progresses `this` to its next logical state according to the Action.
+     * Progresses `this` to its next logical state according to the GameEvent.
      *
-     * @param toInvoke the action for `this` to invoke.
+     * @param toInvoke the GameEvent for `this` to invoke.
      *
      * @throws InvalidActionException if `toInvoke` cannot be handled by
      * `this` in its current state.
      */
-    public void invoke(Action toInvoke) throws InvalidActionException;
+    public void invoke(GameEvent toInvoke) throws InvalidActionException;
 }

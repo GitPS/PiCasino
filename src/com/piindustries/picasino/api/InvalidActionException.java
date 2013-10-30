@@ -39,7 +39,7 @@ package com.piindustries.picasino.api;
  * @author A. Jensen
  * @version 1.0
  */
-public class InvalidActionException extends Exception {
+public class InvalidActionException extends IllegalArgumentException {
 
     /**
      * Calls java.lang.Exception's default constructor passing `msg`.

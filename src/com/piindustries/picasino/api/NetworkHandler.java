@@ -46,16 +46,16 @@ package com.piindustries.picasino.api;
 public interface NetworkHandler {
 
     /**
-     * Transmit and handle an Action.
+     * Transmit and handle an GameEvent.
      *
      * @param toSend
      */
-    public void send(Action toSend);
+    public void send(GameEvent toSend);
 
     /**
-     * Receive and handle an Action.
+     * Receive and handle an GameEvent.
      *
      * @param toReceive
      */
-    public void receive(Action toReceive);
+    public void receive(GameEvent toReceive);
 }

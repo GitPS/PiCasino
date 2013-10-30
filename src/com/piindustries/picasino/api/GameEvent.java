@@ -7,7 +7,7 @@
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.api.Action
+ * Class: com.piindustries.picasino.api.GameEvent
  * Version: 1.0
  * Date: October 29, 2013
  *
@@ -34,7 +34,7 @@ package com.piindustries.picasino.api;
 import java.io.Serializable;
 
 /**
- * An action is a simple, serializable class. The bulk of the networking
+ * An GameEvent is a simple, serializable class. The bulk of the networking
  * communications between a PiCasino Server and a PiCasino Client will
  * take place by transmitting actions.  The smaller and simpler an
  * action can be, the faster the communication between the Server and
@@ -43,6 +43,6 @@ import java.io.Serializable;
  * @author A. Jensen
  * @version 1.0
  */
-public interface Action extends Serializable {
+public interface GameEvent extends Serializable {
 
 }
