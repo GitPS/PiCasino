@@ -34,7 +34,7 @@ package com.piindustries.picasino.blackjack;
 import com.piindustries.picasino.api.GameEvent;
 
 /**
- * A basic BJGameEvent.  Unlike a BJServerGameEvent
+ * A basic BJGameEvent.  Unlike a BJDirectedGameEvent
  * a BJGameEvent does not contain toUser information.
  *
  * @see com.piindustries.picasino.api.GameEvent
