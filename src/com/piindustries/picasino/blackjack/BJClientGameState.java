@@ -55,14 +55,16 @@ public class BJClientGameState implements GameState {
     // Can be directly access by inheriting implementations because it is final and immutable.
     protected static final String[] INITIALIZATION_EVENTS = new String[]{"AddPlayer", "RemovePlayer", "AdvancePhase"};
     protected static final String[] BETTING_EVENTS = new String[]{"Bet", "Pass", "AdvancePhase"};
-    protected static final String[] PLAYING_EVENTS = new String[]{"RequestCard", "SendCard", "Pass", "DoubleDown", "Split", "AdvancePhase"};
+    protected static final String[] PLAYING_EVENTS = new String[]{"RequestCard", "SendCard", "Stay", "DoubleDown", "Split"};
     protected static final String[] CONCLUSION_EVENTS = new String[]{"AdvancePhase"};
     private BJPhases phase;
     private LinkedList<Hand> hands;
+    private LinkedList<Hand> passedList;
     private NetworkHandler networkHandler;
     private LinkedList<String> eventLog;
     private int logSize;
     private int logCounter;
+    private LinkedList<Hand> betList;
 
     /**
      * Default Constructor.
@@ -72,6 +74,16 @@ public class BJClientGameState implements GameState {
         this.setPhase(BJPhases.INITIALIZATION);
         this.setLogSize(-1);
         this.setLogCounter(0);
+    }
+
+    private LinkedList<Hand> getPassedList() {
+        if(this.passedList == null)
+            this.passedList = new LinkedList<Hand>();
+        return passedList;
+    }
+
+    private void setPassedList(LinkedList<Hand> passedList) {
+        this.passedList = passedList;
     }
 
     /**
@@ -101,24 +113,20 @@ public class BJClientGameState implements GameState {
                     bet((Integer) BJEvent.getValue());
                 else if (BJEvent.getName().equals("Pass"))
                     pass();
-                else if (BJEvent.getName().equals("AdvancePhase"))
-                    advancePhase();
                 else
                     throw new Error("Failed to implement a supported Action");
                 break;
             case PLAYING:
                 if (BJEvent.getName().equals("RequestCard"))
-                    break; // If this isn't caught here, it will lead to an Error later.
+                    requestCard();
                 else if (BJEvent.getName().equals("SendCard"))
                     sendCard((Integer) BJEvent.getValue());
-                else if (BJEvent.getName().equals("Pass"))
-                    pass();
+                else if (BJEvent.getName().equals("Stay"))
+                    stay();
                 else if (BJEvent.getName().equals("DoubleDown"))
                     doubleDown();
                 else if (BJEvent.getName().equals("Split"))
                     split();
-                else if (BJEvent.getName().equals("AdvancePhase"))
-                    advancePhase();
                 else
                     throw new Error("Failed to implement a supported Action");
                 break;
@@ -140,8 +148,21 @@ public class BJClientGameState implements GameState {
      * @param username the username of the new player to add.
      */
     private void addPlayer(String username) {
+        for(Hand h : this.getHands() ){
+            if( h.getUsername().equals(username) ){
+                this.appendLog(username + " could not be added to game because a player by that name already exists.");
+                return;
+            }
+        }
         this.hands.add(new Hand(username, new LinkedList<Integer>()));
-        this.appendLog("Player " + username + " added to game.");
+        this.appendLog(username + " has been added to game.");
+    }
+
+    /**
+     * To be called when a player has requested a card
+     */
+    private void requestCard(){
+        this.appendLog(this.getCurrentPlayer() + " has requested a card." );
     }
 
     /**
@@ -150,10 +171,16 @@ public class BJClientGameState implements GameState {
      * @param username the username of the player to remove
      */
     private void removePlayer(String username) {
+        boolean removed = false;
         for (Hand h : this.getHands())
-            if (h.getUsername().equals(username))
+            if (h.getUsername().equals(username)){
+                removed = true;
                 this.getHands().remove(h);
-        this.appendLog("Player " + username + " removed from game.");
+            }
+        if( removed )
+            this.appendLog( username + " has been removed from the game.");
+        else
+            this.appendLog( "Attempted to removed "+username+" from game but no player with that username exists.");
     }
 
     /**
@@ -163,14 +190,20 @@ public class BJClientGameState implements GameState {
         String initialPhase = this.getPhase().name();
         switch (this.getPhase()) {
             case INITIALIZATION:
+                if(this.getHands().isEmpty()){
+                    this.appendLog("Not enough players to advance phase. Player count: "+this.getHands().size());
+                    return;
+                }
                 for (Hand h : this.getHands())
                     h.setCards(new LinkedList<Integer>());
                 this.phase = BJPhases.BETTING;
                 break;
             case BETTING:
+                this.betList = null;
                 this.phase = BJPhases.PLAYING;
                 break;
             case PLAYING:
+                betList = null;
                 this.phase = BJPhases.CONCLUSION;
                 break;
             case CONCLUSION:
@@ -180,6 +213,8 @@ public class BJClientGameState implements GameState {
                 throw new Error("Logical flaw.  Cannot Recover");
         }
         this.appendLog("Phase advanced from " + initialPhase + " to " + this.getPhase().name() + '.');
+        if(this.getPhase().equals(BJPhases.BETTING))
+            this.appendLog("It is now "+this.getCurrentPlayer()+"'s turn to act.");
     }
 
     /**
@@ -210,39 +245,72 @@ public class BJClientGameState implements GameState {
      * @param value the value of the bet made.
      */
     private void bet(int value) {
-        this.getHands().getFirst().setBet(value);
-        this.appendLog(this.getHands().getFirst().getUsername() + " bet " + value + '.');
+        if( this.betList == null )
+            betList = new LinkedList<Hand>();
+        this.betList.add( this.getCurrentHand() );
+        this.getCurrentHand().setBet(value);
+        Hand tmp = this.getCurrentHand();
+        this.getHands().removeFirst();
+        this.getHands().addLast(tmp);
+        if( betList.contains( this.getCurrentHand() ) ){
+            this.appendLog(tmp.getUsername() + " bet " + value + ".\nBetting this round has concluded.");
+            this.advancePhase();
+        } else {
+            this.appendLog(tmp.getUsername() + " bet " + value + ". It is now " + this.getCurrentPlayer() + "'s turn to act.");
+        }
     }
 
     /**
      * Advances the focus to the next player to act.
-     * <p/>
-     * Signifies that a player is done betting or playing on
-     * their hand.
+     *
+     * Signifies that a player is sitting out of a hand.
      */
     private void pass() {
-        Hand tmp = this.getHands().getFirst();
+        this.getPassedList().add( this.getCurrentHand() );
+        this.getHands().removeFirst();
+        if( this.getHands().isEmpty() ){
+            this.appendLog("User choices to sit out. There are not enough players to continue");
+            this.setPhase(BJPhases.INITIALIZATION);
+        } else
+            this.appendLog(this.getCurrentPlayer() + " choices to sit out this hand.");
+    }
+
+    /**
+     * Advances the focus to the next player to act.
+     *
+     * Signifies that a player is done playing on a hand.
+     */
+    private void stay() {
+        if( this.betList == null )
+            this.betList = new LinkedList<Hand>();
+        Hand tmp = this.getCurrentHand();
+        this.betList.add(tmp);
         this.getHands().removeFirst();
         this.getHands().addLast(tmp);
-        this.appendLog(this.getHands().getFirst().getUsername() + " passes.");
+        if(this.betList.contains(this.getCurrentHand())){
+           this.appendLog( tmp.getUsername() + " stays. This concludes the playing phase for this round." );
+           advancePhase();
+        } else {
+            this.appendLog(tmp.getUsername() + " stays.  It is now "+this.getCurrentPlayer()+"'s turn to act.");
+        }
     }
 
     /**
      * Called when a client receives a card from the server.
      */
     private void sendCard(int cardId) {
-        this.getHands().getFirst().getCards().addLast(cardId);
-        if (cardId / 13 > 12)
-            this.appendLog(this.getHands().getFirst().getUsername() + " was dealt an unknown card.");
+        this.getCurrentHand().getCards().addLast(cardId);
+        if (cardId % 13 > 12)
+            this.appendLog(this.getCurrentPlayer() + " was dealt an unknown card.");
         else
-            this.appendLog(this.getHands().getFirst().getUsername() + " was dealt a " + cardId / 13 + " of " + evaluateCardSuit(cardId) + '.');
+            this.appendLog(this.getCurrentPlayer() + " was dealt a " + cardId % 13 + " of " + evaluateCardSuit(cardId) + "s.");
     }
 
     /**
      * @return Evaluates and returns the named suit of a card
      */
     private String evaluateCardSuit(int cardId) {
-        switch (cardId % 13) {
+        switch (cardId / 13) {
             case 0:
                 return "Spade";
             case 1:
@@ -261,24 +329,24 @@ public class BJClientGameState implements GameState {
      */
     private void doubleDown() {
         // Separated from .bet() and .pass for logging purposes.
-        this.getHands().getFirst().setBet(this.getHands().getFirst().getBet() * 2);
-        Hand tmp = this.getHands().getFirst();
+        this.getCurrentHand().setBet(this.getCurrentHand().getBet() * 2);
+        Hand tmp = this.getCurrentHand();
         this.getHands().removeFirst();
         this.getHands().addLast(tmp);
-        this.appendLog(this.getHands().getFirst().getUsername() + " doubles down.");
+        this.appendLog(tmp.getUsername() + " doubles down.");
     }
 
     /**
      * Called when a player splits
      */
     private void split() {
-        Hand toSplit = this.getHands().getFirst();
+        Hand toSplit = this.getCurrentHand();
         LinkedList<Integer> cards = new LinkedList<Integer>();
         cards.add(toSplit.getCards().getFirst());
         this.getHands().removeFirst();
         this.getHands().addFirst(new Hand(toSplit.getUsername(), cards));
         this.getHands().addFirst(new Hand(toSplit.getUsername(), cards));
-        this.appendLog(this.getHands().getFirst().getUsername() + " split their hand.");
+        this.appendLog(this.getCurrentPlayer() + " split their hand.");
     }
 
     /**
@@ -336,6 +404,62 @@ public class BJClientGameState implements GameState {
         logCounter++;
     }
 
+    //TODO comment
+    /**
+     *
+     * @return
+     */
+    public LinkedList<String> getValidEvents(){
+        LinkedList<String> result = new LinkedList<String>();
+        switch( this.getPhase() ){
+            case INITIALIZATION:
+               for(String s: BJClientGameState.INITIALIZATION_EVENTS)
+                   result.add(s);
+                break;
+            case BETTING:
+                for(String s : BJClientGameState.BETTING_EVENTS )
+                    if( !s.equals("AdvancePhase"))
+                        result.add(s);
+                break;
+            case PLAYING:
+                for(String s: BJClientGameState.PLAYING_EVENTS){
+                    if( s.equals("Split")  ){
+                        if( this.getCurrentHand().getCards().size() == 2 && ( this.getCurrentHand().getCards().get(0) % 13 == ( this.getCurrentHand().getCards().get(1) % 13 ) ) ){
+                            result.add(s);
+                        }
+                    } else if( s.equals("DoubleDown") ){
+                        if( this.getCurrentHand().getCards().size() == 2 ){
+                            result.add(s);
+                        }
+                    } else /* if( !s.equals("AdvancePhase")  && !s.equals("Split") && !s.equals("DoubleDown")  ) */{
+                        result.add(s);
+                    }
+                }
+                break;
+            case CONCLUSION:
+                for(String s: BJClientGameState.CONCLUSION_EVENTS)
+                    result.add(s);
+                break;
+            default:
+                throw new Error("Error in logic.  Cannot recover");
+        }
+        return result;
+    }
+
+    /**
+     * @return the player who is next to act.
+     */
+    public String getCurrentPlayer(){
+       return this.getCurrentHand().getUsername(); 
+    }
+
+    /**
+     * @return the hand that is next to act.
+     */
+    protected Hand getCurrentHand(){
+        return this.getHands().getFirst();
+    }
+
     /**
      * @return Lazily returns this.eventLog
      */
@@ -368,10 +492,17 @@ public class BJClientGameState implements GameState {
         int count = this.getLogCount() - 1;
         StringBuilder sb = new StringBuilder();
         for (String s : this.getEventLog()){
-            sb.append(count + ":\t" + s);
+            sb.append(count + ":\t" + s + '\n');
             count--;
         }
         return sb.toString();
+    }
+
+    /**
+     * @return the most recent log.
+     */
+    public String getMostRecentLog() {
+        return this.getEventLog().getFirst();
     }
 
     /**
