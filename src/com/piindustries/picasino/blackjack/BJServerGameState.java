@@ -81,14 +81,14 @@ public class BJServerGameState implements GameState {
                     for( BJClientGameState.Hand h : gameState.getHands() ){
                         if(first) {
                             Integer cardVal = getRandomCard();
-                            BJServerGameEvent result = new BJServerGameEvent();
+                            BJDirectedGameEvent result = new BJDirectedGameEvent();
                             result.setName("SendCard");
                             result.setValue(cardVal);
                             result.setToUser( h.getUsername() );
                             gameState.getNetworkHandler().send( result );   // TODO not sure if type eraser will remove necessary data here.
                             first = false;
                         } else {
-                            BJServerGameEvent result = new BJServerGameEvent();
+                            BJDirectedGameEvent result = new BJDirectedGameEvent();
                             result.setName("SendCard");
                             result.setValue( 52 );  // Send a hidden card.
                             result.setToUser( h.getUsername() );
