@@ -37,7 +37,6 @@ import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -56,6 +55,7 @@ public class BJClientGameState implements GameState {
     private LinkedList<Hand> hands;
     private NetworkHandler networkHandler;
     private LinkedList<String> eventLog;
+    private int logSize;
 
     // The following are collections of the names of which BJGameEvents this can handle in each of its phases.
     // Can be directly access by inheriting implementations because it is final and immutable.
@@ -80,7 +80,7 @@ public class BJClientGameState implements GameState {
     public BJClientGameState(){
         this.setHands(new LinkedList<Hand>());
         this.setPhase(BJPhases.INITIALIZATION);
-        this.eventLog = new LinkedList<String>();
+        this.setLogSize( -1 );
     }
 
     /**
@@ -95,7 +95,7 @@ public class BJClientGameState implements GameState {
         if( !this.isValidEvent(event))
             throw new InvalidGameEventException();
         BJGameEvent BJEvent = (BJGameEvent)event;
-        switch( this.phase ){
+        switch( this.getPhase() ){
             case INITIALIZATION:
                 if(BJEvent.getName().equals("AddPlayer"))
                     addPlayer( (String)BJEvent.getValue() );
@@ -160,9 +160,9 @@ public class BJClientGameState implements GameState {
      * @param username the username of the player to remove
      */
     private void removePlayer( String username ){
-        for(Hand h : this.hands)
+        for(Hand h : this.getHands())
             if( h.getUsername().equals(username))
-                this.hands.remove(h);
+                this.getHands().remove(h);
         this.appendLog("Player " +username+ " removed from game.");
     }
 
@@ -170,9 +170,11 @@ public class BJClientGameState implements GameState {
      * Advances the state of this to the next logical state.
      */
     private void advancePhase(){
-        String initialPhase = this.phase.name();
-        switch (this.phase){
+        String initialPhase = this.getPhase().name();
+        switch (this.getPhase()){
             case INITIALIZATION:
+                for(Hand h: this.getHands())
+                    h.setCards(new LinkedList<Integer>());
                 this.phase = BJPhases.BETTING;
                 break;
             case BETTING:
@@ -187,7 +189,22 @@ public class BJClientGameState implements GameState {
             default:
                 throw new Error("Logical flaw.  Cannot Recover");
         }
-        this.appendLog("Phase advanced from " + initialPhase +" to "+this.phase.name()+'.' );
+        this.appendLog("Phase advanced from " + initialPhase +" to "+this.getPhase().name()+'.' );
+    }
+
+    /**
+     * @return the max size (in events) of the log file.
+     */
+    public int getLogSize() {
+        return logSize;
+    }
+
+    /**
+     * @param logSize the number of events to store in this log. A negative
+     *                denotes an unbounded size.
+     */
+    public void setLogSize(int logSize) {
+        this.logSize = logSize;
     }
 
     /**
@@ -196,8 +213,8 @@ public class BJClientGameState implements GameState {
      * @param value the value of the bet made.
      */
     private void bet( int value ){
-        this.hands.getFirst().setBet(value);
-        this.appendLog(this.hands.getFirst().getUsername() +" bet "+value+'.');
+        this.getHands().getFirst().setBet(value);
+        this.appendLog(this.getHands().getFirst().getUsername() +" bet "+value+'.');
     }
 
     /**
@@ -207,21 +224,21 @@ public class BJClientGameState implements GameState {
      * their hand.
      */
     private void pass(){
-        Hand tmp = this.hands.getFirst();
-        this.hands.removeFirst();
-        this.hands.addLast(tmp);
-        this.appendLog(this.hands.getFirst().getUsername() +" passes.");
+        Hand tmp = this.getHands().getFirst();
+        this.getHands().removeFirst();
+        this.getHands().addLast(tmp);
+        this.appendLog(this.getHands().getFirst().getUsername() +" passes.");
     }
 
     /**
      * Called when a client receives a card from the server.
      */
     private void sendCard(int cardId){
-        this.hands.getFirst().getCards().addLast(cardId);
+        this.getHands().getFirst().getCards().addLast(cardId);
         if(cardId/13 > 12)
-            this.appendLog( this.hands.getFirst().getUsername()+" was dealt an unknown card." );
+            this.appendLog( this.getHands().getFirst().getUsername()+" was dealt an unknown card." );
         else
-            this.appendLog(this.hands.getFirst().getUsername() +" was dealt a "+cardId/13+" of "+evaluateCardSuit(cardId)+'.');
+            this.appendLog(this.getHands().getFirst().getUsername() +" was dealt a "+cardId/13+" of "+evaluateCardSuit(cardId)+'.');
     }
 
     /**
@@ -231,16 +248,12 @@ public class BJClientGameState implements GameState {
         switch( cardId % 13 ){
             case 0:
                 return "Spade";
-                break;
             case 1:
                 return "Heart";
-                break;
             case 2:
                 return "Club";
-                break;
             case 3:
                 return "Diamond";
-                break;
             default:
                 throw new Error("Logical Error. Cannot recover");
         }
@@ -251,24 +264,24 @@ public class BJClientGameState implements GameState {
      */
     private void doubleDown(){
         // Separated from .bet() and .pass for logging purposes.
-        this.hands.getFirst().setBet(this.hands.getFirst().getBet() * 2);
-        Hand tmp = this.hands.getFirst();
-        this.hands.removeFirst();
-        this.hands.addLast(tmp);
-        this.appendLog(this.hands.getFirst().getUsername() +" doubles down.");
+        this.getHands().getFirst().setBet(this.getHands().getFirst().getBet() * 2);
+        Hand tmp = this.getHands().getFirst();
+        this.getHands().removeFirst();
+        this.getHands().addLast(tmp);
+        this.appendLog(this.getHands().getFirst().getUsername() + " doubles down.");
     }
 
     /**
      * Called when a player splits
      */
     private void split(){
-        Hand toSplit = this.hands.getFirst();
+        Hand toSplit = this.getHands().getFirst();
         LinkedList<Integer> cards = new LinkedList<Integer>();
         cards.add( toSplit.getCards().getFirst() );
-        this.hands.removeFirst();
-        this.hands.addFirst( new Hand( toSplit.getUsername(), cards ) );
-        this.hands.addFirst( new Hand( toSplit.getUsername(), cards ) );
-        this.appendLog(this.hands.getFirst().getUsername() +" split their hand.");
+        this.getHands().removeFirst();
+        this.getHands().addFirst(new Hand(toSplit.getUsername(), cards));
+        this.getHands().addFirst(new Hand(toSplit.getUsername(), cards));
+        this.appendLog(this.getHands().getFirst().getUsername() +" split their hand.");
     }
 
     /**
@@ -285,7 +298,7 @@ public class BJClientGameState implements GameState {
             return false;
         BJGameEvent event = (BJGameEvent)e;
         String name = event.getName();
-        switch(this.phase){
+        switch(this.getPhase()){
             case INITIALIZATION:
                 for(String s : BJClientGameState.INITIALIZATION_EVENTS)
                     if( s.equals(name) )
@@ -318,7 +331,21 @@ public class BJClientGameState implements GameState {
      * @param toAppend the String to append to this.
      */
     private void appendLog(String toAppend){
-        this.eventLog.addFirst( eventLog.size() + ":\t" +toAppend);
+        if( this.getLogSize() < 0 || this.getEventLog().size() < this.getLogSize() ){
+            this.getEventLog().addFirst(getEventLog().size() + ":\t" + toAppend);
+        } else if( this.getLogSize() != 0 ){
+            this.getEventLog().removeLast();
+            this.getEventLog().addFirst( getEventLog().size() + ":\t" +toAppend);
+        }
+    }
+
+    /**
+     * @return Lazily returns this.eventLog
+     */
+    private LinkedList<String> getEventLog(){
+        if( this.eventLog == null )
+            this.eventLog = new LinkedList<String>();
+        return this.eventLog;
     }
 
     /**
@@ -326,6 +353,16 @@ public class BJClientGameState implements GameState {
      */
     public NetworkHandler getNetworkHandler() {
         return networkHandler;
+    }
+
+    /**
+     * @return a log of everything that has occurred in this game.
+     */
+    public String getLog(){
+        StringBuilder sb = new StringBuilder();
+        for(String s: this.getEventLog())
+            sb.append(s);
+        return sb.toString();
     }
 
     /**
@@ -386,8 +423,8 @@ public class BJClientGameState implements GameState {
          *
          */
         public Hand(String username, LinkedList<Integer> cards) {
-            this.username = username;
-            this.cards = cards;
+            this.setUsername( username );
+            this.setCards(cards);
         }
 
         /**
