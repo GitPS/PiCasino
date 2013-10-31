@@ -31,6 +31,8 @@
 
 package com.piindustries.picasino.api;
 
+import java.io.Serializable;
+
 /**
  * An object that contains all the information required to exactly know the
  * state of a game.  The information between game state across a game may
@@ -46,7 +48,7 @@ package com.piindustries.picasino.api;
  * @author A. Jensen
  * @version 1.0
  */
-public interface GameState {
+public interface GameState extends Serializable {
 
     /**
      * Progresses `this` to its next logical state according to the GameEvent.
