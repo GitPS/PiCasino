@@ -37,6 +37,7 @@ import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -54,6 +55,7 @@ public class BJClientGameState implements GameState {
     private BJPhases phase;
     private LinkedList<Hand> hands;
     private NetworkHandler networkHandler;
+    private ArrayList<String> eventLog;
 
     // The following are collections of the names of which BJGameEvents this can handle in each of its phases.
     // Can be directly access by inheriting implementations because it is final and immutable.
@@ -72,16 +74,17 @@ public class BJClientGameState implements GameState {
         CONCLUSION
     }
 
-
+    /**
+     * Default Constructor.
+     */
     public BJClientGameState(){
-        this.hands = new LinkedList<Hand>();
-        this.phase = BJPhases.INITIALIZATION;
+        this.setHands(new LinkedList<Hand>());
+        this.setPhase(BJPhases.INITIALIZATION);
+        this.eventLog = new ArrayList<String>();
     }
 
     /**
      * Invokes a GameEvent on this GameState.
-     *
-     *
      *
      * @param event
      *
@@ -99,72 +102,141 @@ public class BJClientGameState implements GameState {
         // Determine which phase this is in.
         switch( this.phase ){
             case INITIALIZATION:
-
-                // Handle Initialization Requests or throw error
-                if(BJEvent.getName().equals("AddPlayer")) {
-                    this.hands.add(new Hand((String)BJEvent.getValue(),new LinkedList<Integer>()));
-                } else if (BJEvent.getName().equals("RemovePlayer")) {
-                    for(Hand h : this.hands)
-                        if( h.getUsername().equals( (String)BJEvent.getValue() ))
-                            this.hands.remove(h);
-                } else if (BJEvent.getName().equals("AdvancePhase")) {
-                    this.phase = BJPhases.BETTING;
-                }  else {
+                if(BJEvent.getName().equals("AddPlayer"))
+                    addPlayer( (String)BJEvent.getValue() );
+                else if (BJEvent.getName().equals("RemovePlayer"))
+                    removePlayer((String)BJEvent.getValue());
+                else if (BJEvent.getName().equals("AdvancePhase"))
+                    advancePhase();
+                else
                     throw new Error("Failed to implement a supported Action");
-                }
                 break;
-
             case BETTING:
                 if(BJEvent.getName().equals("Bet"))
-                    this.hands.getFirst().setBet( (Integer)BJEvent.getValue() );
-                else if(BJEvent.getName().equals("Pass")){
-                    Hand tmp = this.hands.getFirst();
-                    this.hands.removeFirst();
-                    this.hands.addLast(tmp);
-                } else if (BJEvent.getName().equals("AdvancePhase")) {
-                    this.phase = BJPhases.PLAYING;
-                } else {
+                    bet((Integer)BJEvent.getValue());
+                else if(BJEvent.getName().equals("Pass"))
+                    pass();
+                else if (BJEvent.getName().equals("AdvancePhase"))
+                    advancePhase();
+                else
                     throw new Error("Failed to implement a supported Action");
-                }
                 break;
             case PLAYING:
-                if(BJEvent.getName().equals("RequestCard")){
-                    // If this isn't caught here, it will lead to an Error later.
-                    break;
-                } else if(BJEvent.getName().equals("SendCard")){
-                    this.hands.getFirst().cards.addLast((Integer)BJEvent.getValue());
-                } else if(BJEvent.getName().equals("Pass")){
-                    Hand tmp = this.hands.getFirst();
-                    this.hands.removeFirst();
-                    this.hands.addLast(tmp);
-                } else if(BJEvent.getName().equals("DoubleDown")){
-                    this.hands.getFirst().bet = this.hands.getFirst().bet * 2;
-                    Hand tmp = this.hands.getFirst();
-                    this.hands.removeFirst();
-                    this.hands.addLast(tmp);
-                } else if(BJEvent.getName().equals("Split")){
-                    Hand toSplit = this.hands.getFirst();
-                    LinkedList<Integer> cards = new LinkedList<Integer>();
-                    cards.add( toSplit.getCards().getFirst() );
-                    this.hands.removeFirst();
-                    this.hands.addFirst( new Hand( toSplit.getUsername(), cards ) );
-                    this.hands.addFirst( new Hand( toSplit.getUsername(), cards ) );
-                } else if (BJEvent.getName().equals("AdvancePhase")) {
-                    this.phase = BJPhases.CONCLUSION;
-                } else {
+                if(BJEvent.getName().equals("RequestCard"))
+                    break; // If this isn't caught here, it will lead to an Error later.
+                else if(BJEvent.getName().equals("SendCard"))
+                    sendCard((Integer)BJEvent.getValue());
+                else if(BJEvent.getName().equals("Pass"))
+                    pass();
+                else if(BJEvent.getName().equals("DoubleDown"))
+                    doubleDown();
+                else if(BJEvent.getName().equals("Split"))
+                    split();
+                else if (BJEvent.getName().equals("AdvancePhase"))
+                    advancePhase();
+                else
                     throw new Error("Failed to implement a supported Action");
-                }
                 break;
             case CONCLUSION:
-                if(BJEvent.getName().equals("AdvancePhase")){
-                    this.phase = BJPhases.INITIALIZATION;
-                } else {
+                if(BJEvent.getName().equals("AdvancePhase"))
+                    advancePhase();
+                else
                     throw new Error("Failed to implement a supported Action");
-                }
                 break;
             default:
-                throw new Error("Unreachable code reached");
+                throw new Error("Logical Error, Cannot Recover");
         }
+    }
+
+    /**
+     * Adds a new player to this GameState and the end of the
+     * action list.
+     *
+     * @param username the username of the new player to add.
+     */
+    private void addPlayer(String username){
+        this.hands.add(new Hand(username, new LinkedList<Integer>()));
+    }
+
+    /**
+     * Removes a player from this GameState
+     *
+     * @param username the username of the player to remove
+     */
+    private void removePlayer( String username ){
+        for(Hand h : this.hands)
+            if( h.getUsername().equals(username))
+                this.hands.remove(h);
+    }
+
+    /**
+     * Advances the state of this to the next logical state.
+     */
+    private void advancePhase(){
+        switch (this.phase){
+            case INITIALIZATION:
+                this.phase = BJPhases.BETTING;
+                break;
+            case BETTING:
+                this.phase = BJPhases.PLAYING;
+                break;
+            case PLAYING:
+                this.phase = BJPhases.CONCLUSION;
+                break;
+            case CONCLUSION:
+                this.phase = BJPhases.INITIALIZATION;
+                break;
+            default:
+                throw new Error("Logical flaw.  Cannot Recover");
+        }
+    }
+
+    /**
+     * Sets the bet of the person who's turn it is to `value`
+     *
+     * @param value the value of the bet made.
+     */
+    private void bet( int value ){
+        this.hands.getFirst().setBet(value);
+    }
+
+    /**
+     * Advances the focus to the next player to act.
+     *
+     * Signifies that a player is done betting or playing on
+     * their hand.
+     */
+    private void pass(){
+        Hand tmp = this.hands.getFirst();
+        this.hands.removeFirst();
+        this.hands.addLast(tmp);
+    }
+
+    /**
+     * Called when a client receives a card from the server.
+     */
+    private void sendCard(int cardId){
+        this.hands.getFirst().getCards().addLast(cardId);
+    }
+
+    /**
+     * Called when a player Doubles Down.
+     */
+    private void doubleDown(){
+        bet( this.hands.getFirst().getBet() * 2 );
+        pass();
+    }
+
+    /**
+     * Called when a player splits
+     */
+    private void split(){
+        Hand toSplit = this.hands.getFirst();
+        LinkedList<Integer> cards = new LinkedList<Integer>();
+        cards.add( toSplit.getCards().getFirst() );
+        this.hands.removeFirst();
+        this.hands.addFirst( new Hand( toSplit.getUsername(), cards ) );
+        this.hands.addFirst( new Hand( toSplit.getUsername(), cards ) );
     }
 
     /**
