@@ -50,11 +50,11 @@ public class BJServerNetworkHandler implements NetworkHandler {
      */
     public void send(GameEvent toSend){
 
-        if( toSend instanceof BJServerGameEvent ){
+        if( toSend instanceof BJDirectedGameEvent){
             // TODO HANDLE AS A SERVER GAME EVENT
             // Server events need to be sent to specific players denoted by toSend.getToUser()
 
-            BJServerGameEvent event = (BJServerGameEvent)toSend;
+            BJDirectedGameEvent event = (BJDirectedGameEvent)toSend;
 
 
         } else if (toSend instanceof BJGameEvent ) {
