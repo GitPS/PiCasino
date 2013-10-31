@@ -62,6 +62,7 @@ public class BJClientGameState implements GameState {
     private NetworkHandler networkHandler;
     private LinkedList<String> eventLog;
     private int logSize;
+    private int logCounter;
 
     /**
      * Default Constructor.
@@ -70,6 +71,7 @@ public class BJClientGameState implements GameState {
         this.setHands(new LinkedList<Hand>());
         this.setPhase(BJPhases.INITIALIZATION);
         this.setLogSize(-1);
+        this.setLogCounter(0);
     }
 
     /**
@@ -196,6 +198,13 @@ public class BJClientGameState implements GameState {
     }
 
     /**
+     * @return the value of the log counter.
+     */
+    private int getLogCount() {
+        return this.logCounter;
+    }
+
+    /**
      * Sets the bet of the person who's turn it is to `value`
      *
      * @param value the value of the bet made.
@@ -319,11 +328,12 @@ public class BJClientGameState implements GameState {
      */
     private void appendLog(String toAppend) {
         if (this.getLogSize() < 0 || this.getEventLog().size() < this.getLogSize()) {
-            this.getEventLog().addFirst(getEventLog().size() + ":\t" + toAppend);
+            this.getEventLog().addFirst(toAppend);
         } else if (this.getLogSize() != 0) {
             this.getEventLog().removeLast();
-            this.getEventLog().addFirst(getEventLog().size() + ":\t" + toAppend);
+            this.getEventLog().addFirst(toAppend);
         }
+        logCounter++;
     }
 
     /**
@@ -355,10 +365,20 @@ public class BJClientGameState implements GameState {
      * @return a log of everything that has occurred in this game.
      */
     public String getLog() {
+        int count = this.getLogCount() - 1;
         StringBuilder sb = new StringBuilder();
-        for (String s : this.getEventLog())
-            sb.append(s);
+        for (String s : this.getEventLog()){
+            sb.append(count + ":\t" + s);
+            count--;
+        }
         return sb.toString();
+    }
+
+    /**
+     * @param value the value to set `this.logCounter` to.
+     */
+    private void setLogCounter(int value) {
+        this.logCounter = value;
     }
 
     /**
@@ -467,20 +487,17 @@ public class BJClientGameState implements GameState {
 
         /**
          * Sets the Cards of `this`.
-         * <p/>
+         *
          * Cards are represented as follows....
          * {{{
-         * A card `c` must be contained in the range [0,52]
-         * <p/>
-         * if( `c` == 52 )
-         * then `c` represents an unknown card and must be handled as such.
-         * else
-         * c/4 denotes the value of the card.
-         * i.e. c/4 = 0 represents an Ace and c = 12 denote a King.
-         * c%4 denotes the suit of the card.
-         * i.e. c%4 = 0 represents a Spade
-         * <p/>
-         * <p/>
+         *     A card `c` must be contained in the range [0,52]
+         *     if( `c` == 52 )
+         *         then `c` represents an unknown card and must be handled as such.
+         *     else
+         *         c/4 denotes the value of the card.
+         *             i.e. c/4 = 0 represents an Ace and c = 12 denote a King.
+         *         c%4 denotes the suit of the card.
+         *             i.e. c%4 = 0 represents a Spade
          * }}}
          *
          * @param cards the LinkedList<Integer> to set `this.cards` to.
