@@ -7,7 +7,7 @@
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.blackjack.BJServerGameEvent
+ * Class: com.piindustries.picasino.blackjack.BJDirectedGameEvent
  * Version: 1.0
  * Date: October 30, 2013
  *
@@ -34,10 +34,10 @@ package com.piindustries.picasino.blackjack;
 import com.piindustries.picasino.api.GameEvent;
 
 /**
- * A BJServerGameEvent is a Game event with a little additional
+ * A BJDirectedGameEvent is a Game event with a little additional
  * meta data provided over a BJGameEvent.
  *
- * A BJServerGameEvent includes the name of the user that the action
+ * A BJDirectedGameEvent includes the name of the user that the action
  * should be broadcast to. `toUser`
  *
  * @see com.piindustries.picasino.api.GameEvent
@@ -45,7 +45,7 @@ import com.piindustries.picasino.api.GameEvent;
  * @author A. Jensen
  * @version 1.0
  */
-public class BJServerGameEvent implements GameEvent {
+public class BJDirectedGameEvent implements GameEvent {
     private String toUser;
     private String name;
     private Object value;
