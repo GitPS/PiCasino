@@ -55,7 +55,7 @@ public class BJClientGameState implements GameState {
     private BJPhases phase;
     private LinkedList<Hand> hands;
     private NetworkHandler networkHandler;
-    private ArrayList<String> eventLog;
+    private LinkedList<String> eventLog;
 
     // The following are collections of the names of which BJGameEvents this can handle in each of its phases.
     // Can be directly access by inheriting implementations because it is final and immutable.
@@ -80,7 +80,7 @@ public class BJClientGameState implements GameState {
     public BJClientGameState(){
         this.setHands(new LinkedList<Hand>());
         this.setPhase(BJPhases.INITIALIZATION);
-        this.eventLog = new ArrayList<String>();
+        this.eventLog = new LinkedList<String>();
     }
 
     /**
@@ -92,14 +92,9 @@ public class BJClientGameState implements GameState {
      * current state.
      */
     public void invoke(GameEvent event) throws InvalidGameEventException {
-
-        // Check if this phase can handle `BJEvent`
         if( !this.isValidEvent(event))
             throw new InvalidGameEventException();
-
         BJGameEvent BJEvent = (BJGameEvent)event;
-
-        // Determine which phase this is in.
         switch( this.phase ){
             case INITIALIZATION:
                 if(BJEvent.getName().equals("AddPlayer"))
@@ -156,6 +151,7 @@ public class BJClientGameState implements GameState {
      */
     private void addPlayer(String username){
         this.hands.add(new Hand(username, new LinkedList<Integer>()));
+        this.appendLog("Player " +username+ " added to game.");
     }
 
     /**
@@ -167,12 +163,14 @@ public class BJClientGameState implements GameState {
         for(Hand h : this.hands)
             if( h.getUsername().equals(username))
                 this.hands.remove(h);
+        this.appendLog("Player " +username+ " removed from game.");
     }
 
     /**
      * Advances the state of this to the next logical state.
      */
     private void advancePhase(){
+        String initialPhase = this.phase.name();
         switch (this.phase){
             case INITIALIZATION:
                 this.phase = BJPhases.BETTING;
@@ -189,6 +187,7 @@ public class BJClientGameState implements GameState {
             default:
                 throw new Error("Logical flaw.  Cannot Recover");
         }
+        this.appendLog("Phase advanced from " + initialPhase +" to "+this.phase.name()+'.' );
     }
 
     /**
@@ -198,6 +197,7 @@ public class BJClientGameState implements GameState {
      */
     private void bet( int value ){
         this.hands.getFirst().setBet(value);
+        this.appendLog(this.hands.getFirst().getUsername() +" bet "+value+'.');
     }
 
     /**
@@ -210,6 +210,7 @@ public class BJClientGameState implements GameState {
         Hand tmp = this.hands.getFirst();
         this.hands.removeFirst();
         this.hands.addLast(tmp);
+        this.appendLog(this.hands.getFirst().getUsername() +" passes.");
     }
 
     /**
@@ -217,14 +218,44 @@ public class BJClientGameState implements GameState {
      */
     private void sendCard(int cardId){
         this.hands.getFirst().getCards().addLast(cardId);
+        if(cardId/13 > 12)
+            this.appendLog( this.hands.getFirst().getUsername()+" was dealt an unknown card." );
+        else
+            this.appendLog(this.hands.getFirst().getUsername() +" was dealt a "+cardId/13+" of "+evaluateCardSuit(cardId)+'.');
+    }
+
+    /**
+     * @return Evaluates and returns the named suit of a card
+     */
+    private String evaluateCardSuit(int cardId){
+        switch( cardId % 13 ){
+            case 0:
+                return "Spade";
+                break;
+            case 1:
+                return "Heart";
+                break;
+            case 2:
+                return "Club";
+                break;
+            case 3:
+                return "Diamond";
+                break;
+            default:
+                throw new Error("Logical Error. Cannot recover");
+        }
     }
 
     /**
      * Called when a player Doubles Down.
      */
     private void doubleDown(){
-        bet( this.hands.getFirst().getBet() * 2 );
-        pass();
+        // Separated from .bet() and .pass for logging purposes.
+        this.hands.getFirst().setBet(this.hands.getFirst().getBet() * 2);
+        Hand tmp = this.hands.getFirst();
+        this.hands.removeFirst();
+        this.hands.addLast(tmp);
+        this.appendLog(this.hands.getFirst().getUsername() +" doubles down.");
     }
 
     /**
@@ -237,6 +268,7 @@ public class BJClientGameState implements GameState {
         this.hands.removeFirst();
         this.hands.addFirst( new Hand( toSplit.getUsername(), cards ) );
         this.hands.addFirst( new Hand( toSplit.getUsername(), cards ) );
+        this.appendLog(this.hands.getFirst().getUsername() +" split their hand.");
     }
 
     /**
@@ -249,9 +281,8 @@ public class BJClientGameState implements GameState {
      * can be handled in the phase that `this` is in. Otherwise false.
      */
     private boolean isValidEvent(GameEvent e){
-        if( !(e instanceof BJGameEvent) ){
+        if( !(e instanceof BJGameEvent) )
             return false;
-        }
         BJGameEvent event = (BJGameEvent)e;
         String name = event.getName();
         switch(this.phase){
@@ -279,6 +310,15 @@ public class BJClientGameState implements GameState {
                 throw new Error("Unreachable code reached");
         }
         return false;
+    }
+
+    /**
+     * Adds `toAppend` to the log
+     *
+     * @param toAppend the String to append to this.
+     */
+    private void appendLog(String toAppend){
+        this.eventLog.addFirst( eventLog.size() + ":\t" +toAppend);
     }
 
     /**
