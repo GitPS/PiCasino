@@ -78,7 +78,7 @@ public class BJClientGameState implements GameState {
 
     private LinkedList<Hand> getPassedList() {
         if(this.passedList == null)
-            this.passedList = new LinkedList<Hand>();
+            this.setPassedList(new LinkedList<Hand>());
         return passedList;
     }
 
@@ -146,16 +146,19 @@ public class BJClientGameState implements GameState {
      * action list.
      *
      * @param username the username of the new player to add.
+     *
+     * @return true if the player is added, otherwise false.
      */
-    private void addPlayer(String username) {
+    private boolean addPlayer(String username) {
         for(Hand h : this.getHands() ){
             if( h.getUsername().equals(username) ){
                 this.appendLog(username + " could not be added to game because a player by that name already exists.");
-                return;
+                return false;
             }
         }
-        this.hands.add(new Hand(username, new LinkedList<Integer>()));
+        this.getHands().add(new Hand(username, new LinkedList<Integer>()));
         this.appendLog(username + " has been added to game.");
+        return true;
     }
 
     /**
@@ -169,18 +172,23 @@ public class BJClientGameState implements GameState {
      * Removes a player from this GameState
      *
      * @param username the username of the player to remove
+     * @return true if player is removed, otherwise false
      */
-    private void removePlayer(String username) {
+    private boolean removePlayer(String username) {
         boolean removed = false;
         for (Hand h : this.getHands())
             if (h.getUsername().equals(username)){
                 removed = true;
                 this.getHands().remove(h);
             }
-        if( removed )
+        if( removed ){
             this.appendLog( username + " has been removed from the game.");
-        else
+            return true;
+        }
+        else{
             this.appendLog( "Attempted to removed "+username+" from game but no player with that username exists.");
+            return false;
+        }
     }
 
     /**
@@ -194,20 +202,18 @@ public class BJClientGameState implements GameState {
                     this.appendLog("Not enough players to advance phase. Player count: "+this.getHands().size());
                     return;
                 }
-                for (Hand h : this.getHands())
-                    h.setCards(new LinkedList<Integer>());
-                this.phase = BJPhases.BETTING;
+                this.setPhase(BJPhases.BETTING);
                 break;
             case BETTING:
-                this.betList = null;
-                this.phase = BJPhases.PLAYING;
+                this.setBetList(new LinkedList<Hand>());
+                this.setPhase(BJPhases.PLAYING);
                 break;
             case PLAYING:
-                betList = null;
-                this.phase = BJPhases.CONCLUSION;
+                this.setBetList(new LinkedList<Hand>());
+                this.setPhase(BJPhases.CONCLUSION);
                 break;
             case CONCLUSION:
-                this.phase = BJPhases.INITIALIZATION;
+                this.setPhase(BJPhases.INITIALIZATION);
                 break;
             default:
                 throw new Error("Logical flaw.  Cannot Recover");
@@ -245,19 +251,27 @@ public class BJClientGameState implements GameState {
      * @param value the value of the bet made.
      */
     private void bet(int value) {
-        if( this.betList == null )
-            betList = new LinkedList<Hand>();
-        this.betList.add( this.getCurrentHand() );
+        this.getBetList().add(this.getCurrentHand());
         this.getCurrentHand().setBet(value);
         Hand tmp = this.getCurrentHand();
         this.getHands().removeFirst();
         this.getHands().addLast(tmp);
-        if( betList.contains( this.getCurrentHand() ) ){
+        if( this.getBetList().contains(this.getCurrentHand()) ){
             this.appendLog(tmp.getUsername() + " bet " + value + ".\nBetting this round has concluded.");
             this.advancePhase();
         } else {
             this.appendLog(tmp.getUsername() + " bet " + value + ". It is now " + this.getCurrentPlayer() + "'s turn to act.");
         }
+    }
+
+    public LinkedList<Hand> getBetList() {
+        if( this.betList == null )
+            this.setBetList( new LinkedList<Hand>() );
+        return betList;
+    }
+
+    public void setBetList(LinkedList<Hand> betList) {
+        this.betList = betList;
     }
 
     /**
@@ -281,13 +295,11 @@ public class BJClientGameState implements GameState {
      * Signifies that a player is done playing on a hand.
      */
     private void stay() {
-        if( this.betList == null )
-            this.betList = new LinkedList<Hand>();
         Hand tmp = this.getCurrentHand();
-        this.betList.add(tmp);
+        this.getBetList().add(tmp);
         this.getHands().removeFirst();
         this.getHands().addLast(tmp);
-        if(this.betList.contains(this.getCurrentHand())){
+        if(this.getBetList().contains(this.getCurrentHand())){
            this.appendLog( tmp.getUsername() + " stays. This concludes the playing phase for this round." );
            advancePhase();
         } else {
@@ -465,14 +477,23 @@ public class BJClientGameState implements GameState {
      */
     private LinkedList<String> getEventLog() {
         if (this.eventLog == null)
-            this.eventLog = new LinkedList<String>();
+            this.setEventLog( new LinkedList<String>() );
         return this.eventLog;
+    }
+
+    /**
+     * @param s
+     */
+    private void setEventLog(LinkedList<String> s){
+        this.eventLog = s;
     }
 
     /**
      * @return the NetworkHandler of `this`
      */
     public NetworkHandler getNetworkHandler() {
+        if( this.networkHandler == null )
+            throw new Error("Network handler not set.  Cannot Recover"); // Further specifies null point exception.  Network handler must be constructed.
         return networkHandler;
     }
 
@@ -492,7 +513,7 @@ public class BJClientGameState implements GameState {
         int count = this.getLogCount() - 1;
         StringBuilder sb = new StringBuilder();
         for (String s : this.getEventLog()){
-            sb.append(count + ":\t" + s + '\n');
+            sb.append(count).append(":\t").append(s).append('\n');
             count--;
         }
         return sb.toString();
@@ -518,6 +539,8 @@ public class BJClientGameState implements GameState {
      * @return `this.phase`
      */
     protected BJPhases getPhase() {
+        if(this.phase == null)
+            throw new Error("Phase not set. Cannot Recover"); // Most specific Exception than a null pointer exception
         return phase;
     }
 
@@ -536,6 +559,9 @@ public class BJClientGameState implements GameState {
      * @return `this.hands`
      */
     protected LinkedList<Hand> getHands() {
+        if( this.hands == null ){
+            this.hands = new LinkedList<Hand>();
+        }
         return hands;
     }
 
@@ -583,6 +609,8 @@ public class BJClientGameState implements GameState {
          * @return the username of `this`.
          */
         protected String getUsername() {
+            if( username == null )
+                this.setUsername("");
             return username;
         }
 
@@ -613,6 +641,8 @@ public class BJClientGameState implements GameState {
          *         }}}
          */
         protected LinkedList<Integer> getCards() {
+            if( this.cards == null )
+                this.setCards(new LinkedList<Integer>());
             return cards;
         }
 
