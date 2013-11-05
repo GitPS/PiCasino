@@ -124,4 +124,4 @@ public interface GameState extends Serializable, Cloneable {
      */
     public void invoke(GameEvent toInvoke) throws InvalidGameEventException;
 }
->>>>>>> origin/Experimental---BJ-Impl
+>>>>>>> origin/Experimental-API

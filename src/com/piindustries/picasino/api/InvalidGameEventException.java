@@ -40,7 +40,7 @@ package com.piindustries.picasino.api;
  * @author A. Jensen
  * @version 1.0
  */
-public class InvalidGameEventException extends Exception {
+public class InvalidGameEventException extends IllegalArgumentException {
 
     /**
      * Calls java.lang.Exception's default constructor passing `msg`.
@@ -103,7 +103,7 @@ package com.piindustries.picasino.api;
  * @author A. Jensen
  * @version 1.0
  */
-public class InvalidGameEventException extends IllegalArgumentException {
+public class InvalidGameEventException extends Exception {
 
     /**
      * Calls java.lang.Exception's default constructor passing `msg`.
@@ -124,4 +124,4 @@ public class InvalidGameEventException extends IllegalArgumentException {
         super();
     }
 }
->>>>>>> origin/Experimental---BJ-Impl
+>>>>>>> origin/Experimental-API
