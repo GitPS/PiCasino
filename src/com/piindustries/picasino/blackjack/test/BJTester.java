@@ -1,3 +1,26 @@
+/*
+ * [Class]
+ * [Current Version]
+ * [Date last modified]
+ *
+ * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
+ *
+ * This file is part of PiCasino.
+ *
+ * PiCasino is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PiCasino is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.piindustries.picasino.blackjack.test;
 
 import com.piindustries.picasino.blackjack.BJCards;
@@ -5,22 +28,108 @@ import com.piindustries.picasino.blackjack.BJClientGameState;
 import com.piindustries.picasino.blackjack.BJGameEvent;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class BJTester {
-    private BJClientGameState gameState;
-    private boolean verbose;
-    private boolean quit;
+    ClientTesterServer client;
+    ServerTesterServer server;
+    boolean verbose = false;
+    boolean quit = false;
 
-    public BJTester(){
-        System.out.println("\nThis Debugger is case sensitive");
-        System.out.println("At any time throughout the simulation you can type \n \t\"quit\", \t\"status\", \t\"verbose\"\t\"initial\".\n");
-        gameState = new BJClientGameState();
-        verbose = false;
-        quit = false;
-        step();
+    public BJTester() {
+        client = new ClientTesterServer();
+        server = new ServerTesterServer();
+        client.server = this.server;
+        server.sockets = new HashMap<String, ClientTesterServer>();
+        server.establishConnection("Test_User",client);
+        initialization();
+        server.innards.startTimer();
+        while(!quit){step();}
     }
-    
-    private String readLine(){
+
+    private synchronized void initialization(){
+        System.out.println("Would you like to add additional players?");
+        System.out.println("Yes or No");
+        String input = readLine();
+        if( input.equalsIgnoreCase("Yes") ){
+            System.out.println("Username?");
+            input = readLine();
+            ClientTesterServer toAdd = new ClientTesterServer();
+            toAdd.server = this.server;
+            server.establishConnection(input, toAdd );
+            System.out.println(client.innards.getMostRecentLog());
+            initialization();
+        } else if ( !input.equalsIgnoreCase("No") ){
+            initialization();
+        }
+    }
+
+    private synchronized BJGameEvent buildEvent(String name, Object value ) {
+        BJGameEvent result = new BJGameEvent();
+        result.setName(name);
+        result.setValue(value);
+        return result;
+    }
+
+    public synchronized boolean step(){
+        if( !client.innards.getValidEvents().isEmpty() && !(client.innards.getPhase() == BJClientGameState.BJPhases.INITIALIZATION) ){
+            printOptions();
+            String input = readLine();
+            if( input.equalsIgnoreCase("status") ){
+                printStatus();
+            } else if( isValid(input) ){
+                switch(client.innards.getPhase()){
+                    case INITIALIZATION:
+
+                        break;
+                    case BETTING:
+                        if( input.equals("Bet") ){
+                            System.out.println("How Much?");
+                            client.send( buildEvent( "Bet", Integer.valueOf(readLine()) ) );
+                        } else if( input.equals("Pass") ){
+                            client.send( buildEvent( "Pass", null ) );
+                        } else {
+                            System.out.println("Invalid input, try again.");
+                            step();
+                        }
+                        break;
+                    case DEALING:
+
+                        break;
+                    case PLAYING:
+                        if( input.equals("RequestCard") ){
+                            client.send( buildEvent( "RequestCard", null ) );
+                        } else if( input.equals("Stay") ){
+                            if( client.innards.getCurrentHand() instanceof BJClientGameState.DealerHand){
+                                server.send( buildEvent( "Stay", null ));
+                            } else {
+                                client.send( buildEvent( "Stay", null ) );
+                            }
+                        } else if( input.equals("DoubleDown") ){
+                            client.send( buildEvent( "DoubleDown", null ) );
+                        } else if( input.equals("Split") ){
+                            client.send( buildEvent( "Split", null ) );
+                        } else {
+                            System.out.println("Invalid input, try again.");
+                            step();
+                        }
+                        break;
+                    case CONCLUSION:
+
+                        break;
+                }
+            } else {
+                System.out.println( "Invalid input, try again.");
+            }
+            System.out.println(client.innards.getMostRecentLog());
+        }
+        if( verbose ){
+            printStatus();
+        }
+        return quit;
+    }
+
+    private synchronized String readLine(){
         StringBuilder sb = new StringBuilder();
         try{
             char focus = (char)System.in.read();
@@ -36,195 +145,28 @@ public class BJTester {
         return sb.toString().trim();
     }
 
-    public void step(){
-        System.out.println( "Available Actions..." );
-        String input;
-        switch( gameState.getPhase() ){
-            case INITIALIZATION:
-                printOption(gameState.getValidEvents());
-                input = this.readLine();
-                if( isValid( gameState.getPhase(), input ) ){
-                    BJGameEvent event = new BJGameEvent();
-                    event.setName(input);
-                    if( input.equals("AdvanceToBetting") ){
-                        gameState.invoke( event );
-                    } else {
-                        System.out.println("What is your username?");
-                        String user = this.readLine();
-                        event.setValue(user);
-                        gameState.invoke( event );
-                    }
-                } else {
-                    System.out.println( "Invalid Entry, try again");
-                    step();
-                }
-                break;
-            case BETTING:
-                printOption(gameState.getValidEvents());
-                input = this.readLine();
-                if( isValid( gameState.getPhase(), input ) ){
-                    BJGameEvent event = new BJGameEvent();
-                    event.setName(input);
-                    if( input.equals("Pass") ){
-                        gameState.invoke( event );
-                    } else {
-                        System.out.println("What value is your bet?");
-                        Integer val = Integer.valueOf(this.readLine());
-                        event.setValue(val);
-                        gameState.invoke( event );
-                    }
-                } else {
-                    System.out.println( "Invalid Entry, try again");
-                    step();
-                }
-                break;
-            case DEALING:
-                BJGameEvent event2 = new BJGameEvent();
-                event2.setName( "SendCard" );
-                event2.setValue( (int)(Math.random() * 52) );
-                gameState.invoke( event2 );
-                break;
-            case PLAYING:
-                printOption(gameState.getValidEvents());
-                input = this.readLine();
-                if( isValid( gameState.getPhase(), input ) ){
-                    BJGameEvent event = new BJGameEvent();
-                    event.setName(input);
-                    if( input.equals("Stay") || input.equals("DoubleDown") || input.equals("Split") ){
-                        gameState.invoke(event);
-                    } else if( input.equals("DoubleDown") ){
-                        System.out.println("Doubling Down is not supported in this simulator yet");
-                    } else if( input.equals("Split") ){
-                        System.out.println("Splitting is not supported in this simulator yet");
-                    } else if( input.equals("RequestCard") ){
-                        event.setValue(null);
-                        gameState.invoke(event);
-                        System.out.println(gameState.getMostRecentLog());
-                        System.out.println( "Automatically Sending Random Card" );
-                        BJGameEvent send = new BJGameEvent();
-                        send.setName("SendCard");
-                        send.setValue((int)(Math.random()*52));
-                        gameState.invoke(send);
-                    } else {
-                        System.out.println("What is the id of your card [0,51]?");
-                        Integer val = Integer.valueOf(this.readLine());
-                        event.setValue(val);
-                        gameState.invoke( event );
-                    }
-                } else {
-                    System.out.println( "Invalid Entry, try again");
-                    step();
-                }
-                break;
-            case CONCLUSION:
-                printOption( gameState.getValidEvents() );
-                System.out.println("Simulation is automatically advancing the phase");
-                BJGameEvent event = new BJGameEvent();
-                event.setName("AdvanceToInitialization");
-                gameState.invoke(event);
-                break;
-            default:
-                throw new Error("BAD");
-        }
-        System.out.println(this.gameState.getMostRecentLog());
-        if( this.verbose )
-            printStatus();
-        if( !this.quit )
-            step();
+    private synchronized boolean isValid(String s){
+        return client.innards.getValidEvents().contains(s);
     }
 
-    private boolean isValid(com.piindustries.picasino.blackjack.BJClientGameState.BJPhases phase, String input ){
-        if( input.equals("quit")){
-            this.quit = true;
-        } else if( input.equals("status")){
-            printStatus();
-            step();
-        } else if( input.equals("verbose")){
-            this.verbose = !verbose;
-            step();
-        } else if( input.equals("initial")){
-            gameState = new BJClientGameState();
-            BJGameEvent e = new BJGameEvent();
-            e.setName("AddPlayer");
-            e.setValue("Aaron");
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-            e.setValue("Andrew");
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-            e.setValue("Mike");
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-            e.setValue("Phil");
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-            e.setName("AdvancePhase");
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-            e.setName("Bet");
-            e.setValue(100);
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-            e.setValue(110);
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-            e.setValue(120);
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-            e.setValue(130);
-            gameState.invoke(e);
-            System.out.println(gameState.getMostRecentLog());
-        }
-        switch( phase ){
-            case INITIALIZATION:
-                for( String s : gameState.getValidEvents() )
-                    if( s.equals(input) )
-                        return true;
-                return false;
-            case BETTING:
-                for( String s : gameState.getValidEvents() )
-                    if( s.equals(input) )
-                        return true;
-                return false;
-            case DEALING:
-                for( String s: gameState.getValidEvents() )
-                    if( s.equals(input))
-                        return true;
-                return false;
-            case PLAYING:
-                for( String s : gameState.getValidEvents() )
-                    if( s.equals(input) )
-                        return true;
-                return false;
-            case CONCLUSION:
-                for( String s : gameState.getValidEvents() )
-                    if( s.equals(input) )
-                        return true;
-                return false;
-            default:
-                throw new Error("BAD");
-        }
-    }
-
-    private void printOption(java.util.LinkedList<String> s){
-        for( String str : s){
+    private synchronized void printOptions(){
+        System.out.println("Available Actions...");
+        for( String str : client.innards.getValidEvents()){
             System.out.println( "\t"+str );
         }
     }
 
-    private void printStatus(){
-        System.out.println("\tCurrent Phase: "+gameState.getPhase().name());
-        System.out.println("\tPlayer: \tBet: \tHand: ");
-        for(BJClientGameState.Hand h: gameState.getHands()){
-            String toPrint = "\t"+h.getUsername() + '\t' + h.getBet() + "\t";
-            for( Integer i : h.getCards() )
-                toPrint += "[ " + i % 13 + " of "+ BJCards.evaluateCardSuit(i)+"s ]";
-            System.out.println(toPrint);
+    private synchronized void printStatus(){
+        System.out.println( client.innards.getPhase().name());
+        for( BJClientGameState.Hand h : this.client.innards.getHands() ){
+            System.out.print(h.getUsername()+'\t'+h.getBet()+"\t[" );
+            for( int i : h.getCards() )
+                System.out.print( " " + BJCards.evaluateCardName(i) );
+            System.out.print(" ]\n" );
         }
     }
 
     public static void main(String[] args ){
         new BJTester();
     }
-
 }
