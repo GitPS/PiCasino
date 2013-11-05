@@ -63,7 +63,7 @@ public class BJCards {
      * @return the blackjack value of the card.
      * If it is an Ace, it will return 2 values.
      */
-    public int[] getBJValue(int cardId){
+    public static int[] getBJValue(int cardId){
         int[] result;
         if( cardId / 13 == 0 )
             result =  new int[] { 1, 11 };
@@ -72,8 +72,11 @@ public class BJCards {
         return result;
     }
 
-    public LinkedList<Integer> getHandValues(int[] hand){
+    public static LinkedList<Integer> getHandValues(int[] hand){
         LinkedList<Integer> result = new LinkedList<Integer>();
+        if( hand != null && hand.length > 0 )
+            return null;
+        result.add(hand[0]);
         for(int i : hand ){
             int[] value = getBJValue(i);
             if( value.length > 1 ){
@@ -93,7 +96,7 @@ public class BJCards {
         return result;
     }
 
-    public int getMaxHandValue(int[] hand){
+    public static int getMaxHandValue(int[] hand){
         int result = Integer.MIN_VALUE;
         for( int v : getHandValues( hand ) ){
             result = Math.max(result,v);
@@ -101,7 +104,7 @@ public class BJCards {
         return result;
     }
 
-    public int getMinHandValue(int[] hand){
+    public static int getMinHandValue(int[] hand){
         int result = Integer.MAX_VALUE;
         for(int v: getHandValues(hand))
             result = Math.min(result,v);

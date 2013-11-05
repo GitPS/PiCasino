@@ -23,10 +23,10 @@
 
 package com.piindustries.picasino.blackjack.test;
 
+import com.piindustries.picasino.blackjack.BJCards;
 import com.piindustries.picasino.blackjack.BJClientGameState;
 import com.piindustries.picasino.blackjack.BJGameEvent;
 
-import java.io.Console;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -42,12 +42,31 @@ public class BJTester2 {
         client.server = this.server;
         server.sockets = new HashMap<String, ClientTesterServer>();
         server.establishConnection("Test_User",client);
-        BJGameEvent event = new BJGameEvent();
-        event.setName("AddPlayer");
-        event.setValue("Test_User");
-        server.receive(event);
-        server.send(event);
+        //BJGameEvent event = new BJGameEvent();
+        //event.setName("AddPlayer");
+        //event.setValue("Test_User");
+        //server.receive(event);
+        // server.send(event);
+        initialization();
+        server.innards.startTimer();
         while(!quit){step();}
+    }
+
+    private synchronized void initialization(){
+        System.out.println("Would you like to add additional players?");
+        System.out.println("Yes or No");
+        String input = readLine();
+        if( input.equalsIgnoreCase("Yes") ){
+            System.out.println("Username?");
+            input = readLine();
+            ClientTesterServer toAdd = new ClientTesterServer();
+            toAdd.server = this.server;
+            server.establishConnection(input, toAdd );
+            System.out.println(client.innards.getMostRecentLog());
+            initialization();
+        } else if ( !input.equalsIgnoreCase("No") ){
+            initialization();
+        }
     }
 
     private synchronized BJGameEvent buildEvent(String name, Object value ) {
@@ -61,7 +80,9 @@ public class BJTester2 {
         if( !client.innards.getValidEvents().isEmpty() && !(client.innards.getPhase() == BJClientGameState.BJPhases.INITIALIZATION) ){
             printOptions();
             String input = readLine();
-            if( isValid(input) ){
+            if( input.equalsIgnoreCase("status") ){
+                printStatus();
+            } else if( isValid(input) ){
                 switch(client.innards.getPhase()){
                     case INITIALIZATION:
 
@@ -81,7 +102,22 @@ public class BJTester2 {
 
                         break;
                     case PLAYING:
-
+                        if( input.equals("RequestCard") ){
+                            client.send( buildEvent( "RequestCard", null ) );
+                        } else if( input.equals("Stay") ){
+                            if( client.innards.getCurrentHand() instanceof BJClientGameState.DealerHand){
+                                server.send( buildEvent( "Stay", null ));
+                            } else {
+                                client.send( buildEvent( "Stay", null ) );
+                            }
+                        } else if( input.equals("DoubleDown") ){
+                            client.send( buildEvent( "DoubleDown", null ) );
+                        } else if( input.equals("Split") ){
+                            client.send( buildEvent( "Split", null ) );
+                        } else {
+                            System.out.println("Invalid input, try again.");
+                            step();
+                        }
                         break;
                     case CONCLUSION:
 
@@ -90,8 +126,9 @@ public class BJTester2 {
             } else {
                 System.out.println( "Invalid input, try again.");
             }
+            System.out.println(client.innards.getMostRecentLog());
         }
-        if( verbose){
+        if( verbose ){
             printStatus();
         }
         return quit;
@@ -113,10 +150,6 @@ public class BJTester2 {
         return sb.toString().trim();
     }
 
-    private synchronized void writeLine(String s){
-        System.out.println(s);
-    }
-
     private synchronized boolean isValid(String s){
         return client.innards.getValidEvents().contains(s);
     }
@@ -129,13 +162,12 @@ public class BJTester2 {
     }
 
     private synchronized void printStatus(){
-        System.out.println("\t-Status-");
-        System.out.println('\t' + client.innards.getPhase().name());
+        System.out.println( client.innards.getPhase().name());
         for( BJClientGameState.Hand h : this.client.innards.getHands() ){
-            System.out.print( "\t"+h.getUsername()+'\t'+h.getBet()+"\t[ " );
+            System.out.print(h.getUsername()+'\t'+h.getBet()+"\t[" );
             for( int i : h.getCards() )
-                System.out.print(i+'\t');
-            System.out.print(" ]\n");
+                System.out.print( " " + BJCards.evaluateCardName(i) );
+            System.out.print(" ]\n" );
         }
     }
 

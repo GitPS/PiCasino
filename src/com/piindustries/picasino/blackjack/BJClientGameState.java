@@ -215,6 +215,8 @@ public class BJClientGameState implements GameState {
                     }
                 // ADVANCE TO BETTING
                 } else if ( event.getName().equals("AdvanceToBetting") ) {
+                    //Append Log
+                    this.appendLog("Advancing phase from Initialization to Betting");
                     this.setPhase(BJPhases.BETTING);
                 // ANYTHING ELSE
                 } else {
@@ -239,6 +241,8 @@ public class BJClientGameState implements GameState {
                     this.passedList.add(this.getHands().removeFirst());
                 // ADVANCE TO DEALING
                 } else if( event.getName().equals("AdvanceToDealing") ) {
+                    //Append Log
+                    this.appendLog("Advancing phase from Betting to Dealing");
                     this.setPhase(BJPhases.DEALING);    // Advance Phase
                  // ANYTHING ELSE
                 } else {
@@ -258,6 +262,9 @@ public class BJClientGameState implements GameState {
                     this.appendLog( toBack.getUsername() + " has been dealt a "+BJCards.evaluateCardName(card) );
                 // ADVANCE TO PLAYING
                 } else if( event.getName().equals("AdvanceToPlaying") ) {
+                    //Append Log
+                    this.appendLog("Advancing phase from Dealing to Playing");
+                    //Advance Phase
                     this.setPhase(BJPhases.PLAYING);    // Advance Phase
                 // ANYTHING ELSE
                 } else {
@@ -278,7 +285,7 @@ public class BJClientGameState implements GameState {
                     this.getHands().addLast(toBack);
 
                     // Append to the log
-                    this.appendLog(this.getHands().getFirst().getUsername() + " has elected to stay.");
+                    this.appendLog(toBack.getUsername() + " has elected to stay.");
                 // DOUBLE DOWN
                 } else if ( event.getName().equals("DoubleDown") ) {
                     // Increase the bet of the currently acting player to twice its magnitude
@@ -301,6 +308,8 @@ public class BJClientGameState implements GameState {
                 } else if( event.getName().equals("AdvanceToConclusion") ) {
                     // Advance Phase
                     this.setPhase(BJPhases.CONCLUSION);
+                    // Append Log
+                    this.appendLog("Advancing phase from Playing to Concluding");
                 // ANYTHING ELSE
                 } else {
                     throw new InvalidGameEventException();
@@ -332,6 +341,7 @@ public class BJClientGameState implements GameState {
                     }
                     // Advance Phase
                     this.setPhase(BJPhases.INITIALIZATION);
+                    this.appendLog("Advancing phase from Concluding to Initialization");
                 // ADVANCE TO INITIALIZATION
                 } else {
                     throw new InvalidGameEventException();
@@ -685,7 +695,7 @@ public class BJClientGameState implements GameState {
                     }
                     result = tmp;
                 } else if( c % 13 <= 12){ // 2 through K
-                    for( int i = 0; i < this.getCards().size(); i++){
+                    for( int i = 0; i < result.length; i++){
                         result[i] = result[i] + Math.min(c + 1,10);
                     }
                 }
