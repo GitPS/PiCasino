@@ -7,9 +7,9 @@
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.api.GuiHandler
+ * Class: com.piindustries.picasino.blackjack.BJGuiHandler
  * Version: 1.0
- * Date: October 29, 2013
+ * Date: October 30, 2013
  *
  * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
  *
@@ -29,20 +29,21 @@
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.piindustries.picasino.api;
+package com.piindustries.picasino.blackjack;
+
+import com.piindustries.picasino.api.GuiHandler;
 
 /**
- * An interface that handles the graphics
- * of a com.piindustries.picasino.Game.
+ * BlackJack GuiHandler
  *
  * @author A. Jensen
  * @version 1.0
  */
-public interface GuiHandler {
+public class BJGuiHandler implements GuiHandler {
 
-    /**
-     * Updates the Graphical Interface of this game
-     * given its current GameState.
-     */
-    public void updateGui();
+    public void updateGui(){
+        System.out.println( "Unimplemented Method" );
+        throw new Error("Unimplemented Method");
+    }
+
 }

@@ -7,9 +7,9 @@
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.api.NetworkHandler
+ * Class: com.piindustries.picasino.blackjack.BJServerNetworkHandler
  * Version: 1.0
- * Date: October 29, 2013
+ * Date: October 30, 2013
  *
  * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
  *
@@ -29,33 +29,51 @@
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.piindustries.picasino.api;
+package com.piindustries.picasino.blackjack;
+
+import com.piindustries.picasino.api.GameEvent;
+import com.piindustries.picasino.api.NetworkHandler;
 
 /**
- * Sends and receives GameEvents.  It can handle upper-level
- * GameEvents or relay them to the appropriate GameState as
- * needed.
+ * A server network handler.
  *
- * Server-side NetworkHandlers and Client-side
- * NetworkHandlers may or may not need to be different
- * depending on their implementation.
- *
+ * @see com.piindustries.picasino.api.NetworkHandler
  * @author A. Jensen
  * @version 1.0
  */
-public interface NetworkHandler {
+public class BJServerNetworkHandler implements NetworkHandler {
 
     /**
      * Transmit and handle an GameEvent.
      *
      * @param toSend the GameEvent to transmit.
      */
-    public void send(GameEvent toSend);
+    public void send(GameEvent toSend){
+
+        if( toSend instanceof BJDirectedGameEvent){
+            // TODO HANDLE AS A SERVER GAME EVENT
+            // Server events need to be sent to specific players denoted by toSend.getToUser()
+
+            BJDirectedGameEvent event = (BJDirectedGameEvent)toSend;
+
+
+        } else if (toSend instanceof BJGameEvent ) {
+            // TODO HANDLE AS A NORMAL EVENT
+            //BJGameEvents need to be sent to all connected players
+
+            BJGameEvent event = (BJGameEvent)toSend;
+        }
+    }
 
     /**
      * Receive and handle an GameEvent.
      *
      * @param toReceive the GameEvent to receive/handle
      */
-    public void receive(GameEvent toReceive);
+    public void receive(GameEvent toReceive){
+        if (toReceive instanceof BJGameEvent ) {
+            // TODO HANDLE AS A NORMAL EVENT
+            BJGameEvent event = (BJGameEvent)toReceive;
+        }
+    }
 }

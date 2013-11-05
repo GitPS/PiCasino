@@ -7,9 +7,9 @@
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.api.NetworkHandler
+ * Class: com.piindustries.picasino.blackjack.BJClientNetworkHandler
  * Version: 1.0
- * Date: October 29, 2013
+ * Date: October 30, 2013
  *
  * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
  *
@@ -29,33 +29,45 @@
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.piindustries.picasino.api;
+package com.piindustries.picasino.blackjack;
+
+import com.piindustries.picasino.api.GameEvent;
+import com.piindustries.picasino.api.NetworkHandler;
 
 /**
- * Sends and receives GameEvents.  It can handle upper-level
- * GameEvents or relay them to the appropriate GameState as
- * needed.
+ * A ClientNetworkHandler.
  *
- * Server-side NetworkHandlers and Client-side
- * NetworkHandlers may or may not need to be different
- * depending on their implementation.
- *
+ * @see com.piindustries.picasino.api.NetworkHandler
  * @author A. Jensen
  * @version 1.0
  */
-public interface NetworkHandler {
+public class BJClientNetworkHandler implements NetworkHandler {
 
     /**
      * Transmit and handle an GameEvent.
      *
      * @param toSend the GameEvent to transmit.
      */
-    public void send(GameEvent toSend);
+    public void send(GameEvent toSend){
+        // TODO
+        if(toSend instanceof BJGameEvent){
+            BJGameEvent event = (BJGameEvent)toSend;
+        }
+
+        throw new Error("Unimplemented Method BJClientNetworkHandler.send()");
+    }
 
     /**
      * Receive and handle an GameEvent.
      *
      * @param toReceive the GameEvent to receive/handle
      */
-    public void receive(GameEvent toReceive);
+    public void receive(GameEvent toReceive){
+        // TODO
+        if(toReceive instanceof BJGameEvent){
+            BJGameEvent event = (BJGameEvent)toReceive;
+        }
+
+        throw new Error("Unimplemented Method BJClientNetworkHandler.send()");
+    }
 }

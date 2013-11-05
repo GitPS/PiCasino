@@ -7,9 +7,9 @@
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.api.GuiHandler
+ * Class: com.piindustries.picasino.blackjack.BJGameEvent
  * Version: 1.0
- * Date: October 29, 2013
+ * Date: October 30, 2013
  *
  * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
  *
@@ -29,20 +29,35 @@
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.piindustries.picasino.api;
+package com.piindustries.picasino.blackjack;
+
+import com.piindustries.picasino.api.GameEvent;
 
 /**
- * An interface that handles the graphics
- * of a com.piindustries.picasino.Game.
+ * A basic BJGameEvent.  Unlike a BJDirectedGameEvent
+ * a BJGameEvent does not contain toUser information.
  *
+ * @see com.piindustries.picasino.api.GameEvent
  * @author A. Jensen
  * @version 1.0
  */
-public interface GuiHandler {
+public class BJGameEvent implements GameEvent {
+    private String name;
+    private Object value;
 
-    /**
-     * Updates the Graphical Interface of this game
-     * given its current GameState.
-     */
-    public void updateGui();
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    public void setValue(Object value) {
+        this.value = value;
+    }
 }
