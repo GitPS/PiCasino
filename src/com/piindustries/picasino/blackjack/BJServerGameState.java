@@ -176,7 +176,7 @@ public class BJServerGameState implements GameState {
         }
     }
 
-    public void conclude(){
+    public void conclude() throws InvalidGameEventException {
         // TODO concluding tasks
         BJGameEvent result = new BJGameEvent();
         result.setName("AdvanceToInitialization");
@@ -189,7 +189,7 @@ public class BJServerGameState implements GameState {
         gameTimer.start();
     }
 
-    private void playDealersHand(){
+    private void playDealersHand() throws InvalidGameEventException {
         // Ensure the dealer is up
         BJClientGameState.DealerHand d;
         if( gameState.getCurrentHand() instanceof BJClientGameState.DealerHand )
@@ -216,7 +216,7 @@ public class BJServerGameState implements GameState {
      * Deals 1 card at a time to all players in order until all players
      * and the dealer have 2 cards.
      */
-    private void deal(){
+    private void deal() throws InvalidGameEventException {
         // While not all players have 2 cards, continue dealing
         while( gameState.getCurrentHand().getCards().size() < 2 ){
             // If this is the first card, it need to be hidden to other players
@@ -260,7 +260,7 @@ public class BJServerGameState implements GameState {
     /**
      * Begin a new game.
      */
-    private void beginGame(){
+    private void beginGame() throws InvalidGameEventException {
         // Advance all client phases
         this.gameState.appendLog("Game Started at "+System.currentTimeMillis());
         BJGameEvent event = new BJGameEvent();
@@ -320,7 +320,7 @@ public class BJServerGameState implements GameState {
     /**
      * Adds all players from the waiting list to the game
      */
-    private void addPlayersFromWaitingListToGame(){
+    private void addPlayersFromWaitingListToGame() throws InvalidGameEventException {
         for( String player: getWaitingList()){
             BJGameEvent toSend = new BJGameEvent();
             toSend.setName("AddPlayer");
@@ -348,15 +348,23 @@ public class BJServerGameState implements GameState {
         private int counter = intermissionTime;
 
         @Override
-        public void actionPerformed(ActionEvent e){
+        public void actionPerformed(ActionEvent e) {
             if( counter == 0 ){
                 counter = intermissionTime + 1;
                 gameTimer.stop();
-                addPlayersFromWaitingListToGame();
-                beginGame();
+                try {
+                    addPlayersFromWaitingListToGame();
+                    beginGame();
+                } catch (InvalidGameEventException e1) {
+                    System.err.println("InvalidGameEventException caught at game timer event");
+                }
             } else if( counter % 10 == 0 ) {
                 System.out.println("Game will begin in "+counter+" seconds.");
-                addPlayersFromWaitingListToGame();
+                try {
+                    addPlayersFromWaitingListToGame();
+                } catch (InvalidGameEventException e1) {
+                    System.err.println("InvalidGameEventException caught at game timer event");
+                }
             }
             counter--;
         }
