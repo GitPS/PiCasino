@@ -7,7 +7,7 @@
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.blackjack.BJGameState
+ * Class: com.piindustries.picasino.blackjack.BJClientGameState
  * Version: 1.0
  * Date: October 30, 2013
  *
@@ -38,12 +38,89 @@ import com.piindustries.picasino.api.NetworkHandler;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 /**
- * A Client-side GameState.  Handles the logic of the game.
- * <p/>
- * The Server will also implement a BJClientGameState but
- * will handle other networking processes on top of it.
+ * A Client-Side {@link GameState}. For blackjack.
+ * <p>
+ * A {@link BJClientGameState} will strictly and exclusively manage all data needed
+ * to determine the state of a Blackjack game.  A {@link BJClientGameState} will
+ * also manage micro-transitions between states within a given phase of the game.
+ * A {@link BJClientGameState} will operate in tandem with a {@link BJServerGameState}
+ * to determine when to transition between phases of a blackjack game.
+ * </p>
+ * <p>
+ * A {@link BJClientGameState} can be and must be in exactly one {@link BJPhases} at a
+ * given time.  What a {@link BJClientGameState} can handle during any of the specified
+ * phases will be described in detail below.
+ * </p>
+ *
+ * <pre>{{{
+ *     During the {@link BJPhases#INITIALIZATION} phase, a {@link BJClientGameState} can
+ *     receive the following {@link BJGameEvent}s.
+ *       - A {@link BJGameEvent} whose name is "AddPlayer" and whose value is of type
+ *         {@link String}.  The value should be the username of the player to be added.
+ *         When "AddPlayer" is invoked during this phase, A hand is created for a player
+ *         with the specified username.
+ *       - A {@link BJGameEvent} whose name is "RemovePlayer" and whose value is of type
+ *         {@link String}.  The value should be the username of the player to be removed.
+ *         When "RemovePlayer" is invoked during this phase, Any hand mapped to the specified
+ *         username will be removed from this {@link BJClientGameState}.
+ *       - A {@link BJGameEvent} whose name is "AdvanceToBetting" and whose value is of any
+ *         type.  When "AdvanceToBetting" is invoked during this phase, the phase of
+ *         <code>this</code> will be changed from {@link BJPhases#INITIALIZATION} to
+ *         {@link BJPhases#BETTING}.
+ *     During the {@link BJPhases#BETTING} phase, a {@link BJClientGameState} can
+ *     receive the following {@link BJGameEvent}s.
+ *       - A {@link BJGameEvent} whose name is "Bet" and whose value is of type
+ *         {@link Integer}.  The value should be the value of the bet that the currently
+ *         acting player is betting.  When "Bet" is invoked during this phase, the bet
+ *         of the currently acting player is updated to reflect the specified value, and
+ *         the next player to bet is moved to the front of the acting queue.
+ *       - A {@link BJGameEvent} whose name is "Pass" and whose value is of any type.
+ *         When "Pass" is invoked during this phase, the currently acting player is removed
+ *         from the current game for the duration of the current hand.  They will be added
+ *         back in to the beginning of the next next game.
+ *       - A {@link BJGameEvent} whose name is "AdvanceToDealing" and whose value is of any
+ *         type.  When "AdvanceToDealing" is invoked during this phase, the phase of
+ *         <code>this</code> will be changed from {@link BJPhases#BETTING} to
+ *         {@link BJPhases#DEALING}.
+ *     During the {@link BJPhases#DEALING} phase, a {@link BJClientGameState} can
+ *     receive the following {@link BJGameEvent}s.
+ *       - A {@link BJGameEvent} whose name is "SendCard" and whose value is of type
+ *         {@link Integer}.  The value should represent the card that was sent to the player.
+ *         When "SendCard" is invoked during this phase, the currently acting player's hand
+ *         is updated to contain the specified card and the next player to act is moved
+ *         to the front of the action queue.
+ *       - A {@link BJGameEvent} whose name is "AdvanceToPlaying" and whose value is of any type.
+ *         When "AdvanceToPlaying" is invoked during this phase, the phase of <code>this</code>
+ *         will be changed from {@link BJPhases#DEALING} to {@link BJPhases#PLAYING}.
+ *     During the {@link BJPhases#PLAYING} phase, a {@link BJClientGameState} can
+ *     receive the following {@link BJGameEvent}s.
+ *       - A {@link BJGameEvent} whose name is "SendCard" and whose value is of type
+ *         {@link Integer}.  The value should represent the card that was sent to the player.
+ *         When "SendCard" is invoked during this phase, the currently acting player's hand
+ *         is updated to contain the specified card.
+ *       - A {@link BJGameEvent} whose name is "Stay" and whose value is of any type.
+ *         When "Stay" is invoked during this phase, the next player to act is moved
+ *         to the front of the action queue.
+ *       - A {@link BJGameEvent} whose name is "DoubleDown" and whose value is of any type.
+ *         When "DoubleDown" is invoked during this phase, the currently acting player's bet is
+ *       - A {@link BJGameEvent} whose name is "Split" and whose value is of any type.
+ *         When "Split" is invoked during this phase, the currently acting player's hand is split
+ *         and both hands are located at the front of the action queue.
+ *       - A {@link BJGameEvent} whose name is "AdvanceToConclusion" and whose value is of any type.
+ *         When "AdvanceToConclusion" is invoked during this phase, the phase of <code>this</code>
+ *         will be changed from {@link BJPhases#PLAYING} to {@link BJPhases#CONCLUSION}.
+ *     During the {@link BJPhases#CONCLUSION} phase, a {@link BJClientGameState} can
+ *     receive the following {@link BJGameEvent}s.
+ *       - A {@link BJGameEvent} whose name is "AdvanceToInitialization" and whose value is of any type.
+ *         When "AdvanceToInitialization" is invoked during this phase, the phase of <code>this</code>
+ *         will be changed from {@link BJPhases#CONCLUSION} to {@link BJPhases#INITIALIZATION}.
+ *
+ *
+ * }}}</pre>
+ *
  *
  * @author A. Jensen
  * @version 1.0
@@ -53,10 +130,11 @@ public class BJClientGameState implements GameState {
 
     // The following are collections of the names of which BJGameEvents this can handle in each of its phases.
     // Can be directly access by inheriting implementations because it is final and immutable.
-    protected static final String[] INITIALIZATION_EVENTS = new String[]{"AddPlayer", "RemovePlayer", "AdvancePhase"};
-    protected static final String[] BETTING_EVENTS = new String[]{"Bet", "Pass", "AdvancePhase"};
-    protected static final String[] PLAYING_EVENTS = new String[]{"RequestCard", "SendCard", "Stay", "DoubleDown", "Split"};
-    protected static final String[] CONCLUSION_EVENTS = new String[]{"AdvancePhase"};
+    protected static final String[] INITIALIZATION_EVENTS = new String[]{"AddPlayer", "RemovePlayer", "AdvanceToBetting"};
+    protected static final String[] BETTING_EVENTS = new String[]{"Bet", "Pass", "AdvanceToDealing"};
+    protected static final String[] DEALING_EVENTS = new String[]{"SendCard","AdvanceToPlaying"};
+    protected static final String[] PLAYING_EVENTS = new String[]{"RequestCard", "SendCard", "Stay", "DoubleDown", "Split","AdvanceToConclusion"};
+    protected static final String[] CONCLUSION_EVENTS = new String[]{"AdvanceToInitialization"};
     private BJPhases phase;
     private LinkedList<Hand> hands;
     private LinkedList<Hand> passedList;
@@ -64,170 +142,257 @@ public class BJClientGameState implements GameState {
     private LinkedList<String> eventLog;
     private int logSize;
     private int logCounter;
-    private LinkedList<Hand> betList;
 
     /**
      * Default Constructor.
      */
     public BJClientGameState() {
-        this.setHands(new LinkedList<Hand>());
         this.setPhase(BJPhases.INITIALIZATION);
-        this.setLogSize(-1);
-        this.setLogCounter(0);
-    }
-
-    private LinkedList<Hand> getPassedList() {
-        if(this.passedList == null)
-            this.setPassedList(new LinkedList<Hand>());
-        return passedList;
-    }
-
-    private void setPassedList(LinkedList<Hand> passedList) {
-        this.passedList = passedList;
+        LinkedList<Hand> h = new LinkedList<Hand>();
+        h.add( new DealerHand() );
+        this.setHands( h );
+        this.passedList = new LinkedList<Hand>();
     }
 
     /**
      * Invokes a GameEvent on this GameState.
      *
-     * @param event the GameEvent to invoke on `this`.
+     * @param e the GameEvent to invoke on `this`.
      * @throws InvalidGameEventException if `this` cannot handle `event` in its
      *                                   current state.
      */
-    public void invoke(GameEvent event) throws InvalidGameEventException {
-        if (!this.isValidEvent(event))
-            throw new InvalidGameEventException();
-        BJGameEvent BJEvent = (BJGameEvent) event;
+    public void invoke(GameEvent e) throws InvalidGameEventException {
+
+        // If the GameEvent is not a Blackjack game event, throw exception
+        if (!(e instanceof BJGameEvent))
+            throw new InvalidGameEventException(e.toString());
+        // Case event to type correct type.
+        BJGameEvent event = (BJGameEvent) e;
         switch (this.getPhase()) {
+
+            // Handle INITIALIZATION GameEvents.
             case INITIALIZATION:
-                if (BJEvent.getName().equals("AddPlayer"))
-                    addPlayer((String) BJEvent.getValue());
-                else if (BJEvent.getName().equals("RemovePlayer"))
-                    removePlayer((String) BJEvent.getValue());
-                else if (BJEvent.getName().equals("AdvancePhase"))
-                    advancePhase();
-                else
-                    throw new Error("Failed to implement a supported Action");
-                break;
+                // ADD PLAYER
+                if( event.getName().equals("AddPlayer") ){
+
+                    // If the player is already in the game, don't add them
+                    // Otherwise, add them to the game
+                    String username = (String)event.getValue();
+                    boolean contained = false;
+                    for( Hand h : this.getHands() ){
+                        if( h.getUsername().equals(username)){
+                            contained = true;
+                            break;
+                        }
+                    }
+
+                    // Append to the log appropriately
+                    if( !contained ){
+                        this.getHands().add( this.getHands().size() - 1, new Hand(username, new LinkedList<Integer>()));
+                        this.appendLog(username + " was added to the game.");
+                    } else {
+                        this.appendLog(username + " could not be added to the game.");
+                    }
+                // REMOVE PLAYER
+                } else if ( event.getName().equals("RemovePlayer") ) {
+
+                    // If the player is in the game, remove them.
+                    boolean removed = false;
+                    String toRemove = (String)event.getValue();
+                    for( Hand h : this.getHands() ){
+                        if( h.getUsername().equals( toRemove ) ){
+                            this.getHands().remove( h );
+                            removed = true;
+                            break;  // Break for loop
+                        }
+                    }
+
+                    // Append to the log appropriately
+                    if( removed ){
+                        this.appendLog( toRemove +" has been removed from the game." );
+                    } else {
+                        this.appendLog( toRemove +" could not be removed from the game." );
+                    }
+                // ADVANCE TO BETTING
+                } else if ( event.getName().equals("AdvanceToBetting") ) {
+                    this.setPhase(BJPhases.BETTING);
+                // ANYTHING ELSE
+                } else {
+                    throw new InvalidGameEventException(event.getName());
+                }
+                break;  // Break INITIALIZATION case
             case BETTING:
-                if (BJEvent.getName().equals("Bet"))
-                    bet((Integer) BJEvent.getValue());
-                else if (BJEvent.getName().equals("Pass"))
-                    pass();
-                else
-                    throw new Error("Failed to implement a supported Action");
-                break;
+                // BET
+                if( event.getName().equals("Bet") ){
+                    // Set the bet of the current hand
+                    Integer value = (Integer)event.getValue();
+                    this.getHands().getFirst().setBet(value);
+
+                    // Shift hand to back and bring next hand to front.
+                    Hand toBack = this.getHands().removeFirst();
+                    this.getHands().addLast(toBack);
+                    this.appendLog(toBack.getUsername()+" bets "+value+".");
+                // PASS
+                } else if ( event.getName().equals("Pass") ) {
+                    // Add the passing player to the passed list and remove them from the queue.
+                    this.appendLog( this.getHands().getFirst().getUsername() + " passes." );
+                    this.passedList.add(this.getHands().removeFirst());
+                // ADVANCE TO DEALING
+                } else if( event.getName().equals("AdvanceToDealing") ) {
+                    this.setPhase(BJPhases.DEALING);    // Advance Phase
+                 // ANYTHING ELSE
+                } else {
+                    throw new InvalidGameEventException(event.getName());
+                }
+                break;  // break BETTING case
+            // Handle DEALING GameEvents
+            case DEALING:
+                if ( event.getName().equals("SendCard") ) {
+                    // Add the passed card to the current acting player
+                    int card = (Integer)event.getValue();
+                    this.getHands().getFirst().getCards().addLast(card);
+
+                    // Shift hand to back and bring next hand to front.
+                    Hand toBack = this.getHands().removeFirst();
+                    this.getHands().addLast(toBack);
+                    this.appendLog( toBack.getUsername() + " has been dealt a "+BJCards.evaluateCardName(card) );
+                // ADVANCE TO PLAYING
+                } else if( event.getName().equals("AdvanceToPlaying") ) {
+                    this.setPhase(BJPhases.PLAYING);    // Advance Phase
+                // ANYTHING ELSE
+                } else {
+                    throw new InvalidGameEventException(event.getName());
+                }
+                break;  // BREAK DEALING CASE
             case PLAYING:
-                if (BJEvent.getName().equals("RequestCard"))
-                    requestCard();
-                else if (BJEvent.getName().equals("SendCard"))
-                    sendCard((Integer) BJEvent.getValue());
-                else if (BJEvent.getName().equals("Stay"))
-                    stay();
-                else if (BJEvent.getName().equals("DoubleDown"))
-                    doubleDown();
-                else if (BJEvent.getName().equals("Split"))
-                    split();
-                else
-                    throw new Error("Failed to implement a supported Action");
-                break;
+                // SEND CARD
+                if( event.getName().equals("SendCard") ){
+                    // Add the card to the currently acting player
+                    Integer card = (Integer)event.getValue();
+                    this.getHands().getFirst().getCards().addLast(card);
+                    this.appendLog(this.getHands().getFirst().getUsername() + " was dealt a "+BJCards.evaluateCardName(card));
+                // STAY
+                } else if ( event.getName().equals("Stay") ) {
+                    // Add the currently acting player to the end of the queue
+                    Hand toBack = this.getHands().removeFirst();
+                    this.getHands().addLast(toBack);
+
+                    // Append to the log
+                    this.appendLog(this.getHands().getFirst().getUsername() + " has elected to stay.");
+                // DOUBLE DOWN
+                } else if ( event.getName().equals("DoubleDown") ) {
+                    // Increase the bet of the currently acting player to twice its magnitude
+                    this.getHands().getFirst().setBet(this.getHands().getFirst().getBet() * 2);
+                    // Append to the log
+                    this.appendLog(this.getHands().getFirst().getUsername() + " doubled down.");
+                // SPLIT
+                } else if ( event.getName().equals("Split") ) {
+                    // Create 2 hands and add them to the front of the queue
+                    Hand toDuplicate = this.getHands().removeFirst();
+                    LinkedList<Integer> c1 = new LinkedList<Integer>();
+                    LinkedList<Integer> c2 = new LinkedList<Integer>();
+                    Hand h1 = new Hand( toDuplicate.getUsername(), c1 );
+                    Hand h2 = new Hand( toDuplicate.getUsername(), c2 );
+                    this.getHands().addFirst( h1 );
+                    this.getHands().addFirst( h2 );
+                    // Append to log
+                    this.appendLog(this.getHands().getFirst().getUsername() + " split their hand.");
+                // ADVANCE TO CONCLUSION
+                } else if( event.getName().equals("AdvanceToConclusion") ) {
+                    // Advance Phase
+                    this.setPhase(BJPhases.CONCLUSION);
+                // ANYTHING ELSE
+                } else {
+                    throw new InvalidGameEventException();
+                }
+                break;  // BREAK PLAYING CASE
             case CONCLUSION:
-                if (BJEvent.getName().equals("AdvancePhase"))
-                    advancePhase();
-                else
-                    throw new Error("Failed to implement a supported Action");
-                break;
+                //ADVANCE TO INITIALIZATION
+                if ( event.getName().equals("AdvanceToInitialization") ) {
+                    // Reset hand data and move to next hand
+                    // Add back passed hands and clear passedList
+                    for( Hand h : this.passedList ){
+                        this.getHands().addLast(h);
+                    }
+                    this.passedList.clear();
+                    // Remove duplicate hands (Split usernames)
+                    for( int x = 0; x < this.getHands().size(); x++ ){
+                        for( int y = x + 1; y < this.getHands().size(); y++ ){
+                            if( this.getHands().get(x).getUsername().equals( this.getHands().get(y).getUsername() ) ){
+                                this.getHands().remove(y);
+                                y--;
+                            }
+                        }
+                    }
+
+                    // Reset bets and cards
+                    for( Hand h : this.getHands() ){
+                        h.getCards().clear();
+                        h.setBet(0);
+                    }
+                    // Advance Phase
+                    this.setPhase(BJPhases.INITIALIZATION);
+                // ADVANCE TO INITIALIZATION
+                } else {
+                    throw new InvalidGameEventException();
+                }
+                break;  // BREAK CONCLUSION PHASE
             default:
                 throw new Error("Logical Error, Cannot Recover");
         }
     }
 
     /**
-     * Adds a new player to this GameState and the end of the
-     * action list.
-     *
-     * @param username the username of the new player to add.
-     *
-     * @return true if the player is added, otherwise false.
+     * @return a list of GameEvents that <code>this</code> can accept in
+     * its current state.
      */
-    private boolean addPlayer(String username) {
-        for(Hand h : this.getHands() ){
-            if( h.getUsername().equals(username) ){
-                this.appendLog(username + " could not be added to game because a player by that name already exists.");
-                return false;
-            }
-        }
-        this.getHands().add(new Hand(username, new LinkedList<Integer>()));
-        this.appendLog(username + " has been added to game.");
-        return true;
-    }
-
-    /**
-     * To be called when a player has requested a card
-     */
-    private void requestCard(){
-        this.appendLog(this.getCurrentPlayer() + " has requested a card." );
-    }
-
-    /**
-     * Removes a player from this GameState
-     *
-     * @param username the username of the player to remove
-     * @return true if player is removed, otherwise false
-     */
-    private boolean removePlayer(String username) {
-        boolean removed = false;
-        for (Hand h : this.getHands())
-            if (h.getUsername().equals(username)){
-                removed = true;
-                this.getHands().remove(h);
-            }
-        if( removed ){
-            this.appendLog( username + " has been removed from the game.");
-            return true;
-        }
-        else{
-            this.appendLog( "Attempted to removed "+username+" from game but no player with that username exists.");
-            return false;
-        }
-    }
-
-    /**
-     * Advances the state of this to the next logical state.
-     */
-    private void advancePhase() {
-        String initialPhase = this.getPhase().name();
-        switch (this.getPhase()) {
+    public LinkedList<String> getValidEvents(){
+        LinkedList<String> result = new LinkedList<String>();
+        switch (this.getPhase()){
             case INITIALIZATION:
-                if(this.getHands().isEmpty()){
-                    this.appendLog("Not enough players to advance phase. Player count: "+this.getHands().size());
-                    return;
-                }
-                this.setPhase(BJPhases.BETTING);
+                for( String s : BJClientGameState.INITIALIZATION_EVENTS )
+                    result.add(s);
                 break;
             case BETTING:
-                this.setBetList(new LinkedList<Hand>());
-                this.setPhase(BJPhases.PLAYING);
+                for( String s : BJClientGameState.BETTING_EVENTS )
+                    result.add(s);
+                break;
+            case DEALING:
+                for( String s : BJClientGameState.DEALING_EVENTS )
+                    result.add(s);
                 break;
             case PLAYING:
-                this.setBetList(new LinkedList<Hand>());
-                this.setPhase(BJPhases.CONCLUSION);
+                for( String s : BJClientGameState.PLAYING_EVENTS ){
+                    if( s.equals("DoubleDown") ){
+                        if( this.getHands().getFirst().getCards().size() == 2 ){
+                            result.add("DoubleDown");
+                        }
+                    } else if (s.equals("Split")){
+                        if( this.getHands().getFirst().getCards().size() == 2 ){
+                            if( this.getHands().getFirst().getCards().get(0) == this.getHands().getFirst().getCards().get(1) ){
+                                result.add("Split");
+                            }
+                        }
+                    } else {
+                        result.add(s);
+                    }
+                }
                 break;
             case CONCLUSION:
-                this.setPhase(BJPhases.INITIALIZATION);
+                for( String s : BJClientGameState.CONCLUSION_EVENTS )
+                    result.add(s);
                 break;
             default:
-                throw new Error("Logical flaw.  Cannot Recover");
+                throw new Error("Logical error.  Cannot recover.");
         }
-        this.appendLog("Phase advanced from " + initialPhase + " to " + this.getPhase().name() + '.');
-        if(this.getPhase().equals(BJPhases.BETTING))
-            this.appendLog("It is now "+this.getCurrentPlayer()+"'s turn to act.");
+        return result;
     }
 
     /**
-     * @return the max size (in events) of the log file.
+     * @param s a {@link String} to append to the end of <code>this</code> log.
      */
-    public int getLogSize() {
-        return logSize;
+    protected void appendLog(String s){
+        this.getEventLog().addFirst(s);
     }
 
     /**
@@ -239,243 +404,30 @@ public class BJClientGameState implements GameState {
     }
 
     /**
+     * @return the hand currently in action.
+     */
+    public Hand getCurrentHand(){
+        return this.getHands().getFirst();
+    }
+
+    /**
+     * @return the username of the currently action hand.
+     */
+    public String getCurrentUser(){
+        return getCurrentHand().getUsername();
+    }
+
+    /**
      * @return the value of the log counter.
      */
-    private int getLogCount() {
+    public int getLogCount() {
         return this.logCounter;
-    }
-
-    /**
-     * Sets the bet of the person who's turn it is to `value`
-     *
-     * @param value the value of the bet made.
-     */
-    private void bet(int value) {
-        this.getBetList().add(this.getCurrentHand());
-        this.getCurrentHand().setBet(value);
-        Hand tmp = this.getCurrentHand();
-        this.getHands().removeFirst();
-        this.getHands().addLast(tmp);
-        if( this.getBetList().contains(this.getCurrentHand()) ){
-            this.appendLog(tmp.getUsername() + " bet " + value + ".\nBetting this round has concluded.");
-            this.advancePhase();
-        } else {
-            this.appendLog(tmp.getUsername() + " bet " + value + ". It is now " + this.getCurrentPlayer() + "'s turn to act.");
-        }
-    }
-
-    public LinkedList<Hand> getBetList() {
-        if( this.betList == null )
-            this.setBetList( new LinkedList<Hand>() );
-        return betList;
-    }
-
-    public void setBetList(LinkedList<Hand> betList) {
-        this.betList = betList;
-    }
-
-    /**
-     * Advances the focus to the next player to act.
-     *
-     * Signifies that a player is sitting out of a hand.
-     */
-    private void pass() {
-        this.getPassedList().add( this.getCurrentHand() );
-        this.getHands().removeFirst();
-        if( this.getHands().isEmpty() ){
-            this.appendLog("User choices to sit out. There are not enough players to continue");
-            this.setPhase(BJPhases.INITIALIZATION);
-        } else
-            this.appendLog(this.getCurrentPlayer() + " choices to sit out this hand.");
-    }
-
-    /**
-     * Advances the focus to the next player to act.
-     *
-     * Signifies that a player is done playing on a hand.
-     */
-    private void stay() {
-        Hand tmp = this.getCurrentHand();
-        this.getBetList().add(tmp);
-        this.getHands().removeFirst();
-        this.getHands().addLast(tmp);
-        if(this.getBetList().contains(this.getCurrentHand())){
-           this.appendLog( tmp.getUsername() + " stays. This concludes the playing phase for this round." );
-           advancePhase();
-        } else {
-            this.appendLog(tmp.getUsername() + " stays.  It is now "+this.getCurrentPlayer()+"'s turn to act.");
-        }
-    }
-
-    /**
-     * Called when a client receives a card from the server.
-     */
-    private void sendCard(int cardId) {
-        this.getCurrentHand().getCards().addLast(cardId);
-        if (cardId % 13 > 12)
-            this.appendLog(this.getCurrentPlayer() + " was dealt an unknown card.");
-        else
-            this.appendLog(this.getCurrentPlayer() + " was dealt a " + cardId % 13 + " of " + evaluateCardSuit(cardId) + "s.");
-    }
-
-    /**
-     * @return Evaluates and returns the named suit of a card
-     */
-    private String evaluateCardSuit(int cardId) {
-        switch (cardId / 13) {
-            case 0:
-                return "Spade";
-            case 1:
-                return "Heart";
-            case 2:
-                return "Club";
-            case 3:
-                return "Diamond";
-            default:
-                throw new Error("Logical Error. Cannot recover");
-        }
-    }
-
-    /**
-     * Called when a player Doubles Down.
-     */
-    private void doubleDown() {
-        // Separated from .bet() and .pass for logging purposes.
-        this.getCurrentHand().setBet(this.getCurrentHand().getBet() * 2);
-        Hand tmp = this.getCurrentHand();
-        this.getHands().removeFirst();
-        this.getHands().addLast(tmp);
-        this.appendLog(tmp.getUsername() + " doubles down.");
-    }
-
-    /**
-     * Called when a player splits
-     */
-    private void split() {
-        Hand toSplit = this.getCurrentHand();
-        LinkedList<Integer> cards = new LinkedList<Integer>();
-        cards.add(toSplit.getCards().getFirst());
-        this.getHands().removeFirst();
-        this.getHands().addFirst(new Hand(toSplit.getUsername(), cards));
-        this.getHands().addFirst(new Hand(toSplit.getUsername(), cards));
-        this.appendLog(this.getCurrentPlayer() + " split their hand.");
-    }
-
-    /**
-     * Checks if this BJGameState can handle the given
-     * GameEvent in its current state.
-     *
-     * @param e the event to evaluate.
-     * @return `true` if e is an instance of BJGameEvent and its name
-     *         can be handled in the phase that `this` is in. Otherwise false.
-     */
-    private boolean isValidEvent(GameEvent e) {
-        if (!(e instanceof BJGameEvent))
-            return false;
-        BJGameEvent event = (BJGameEvent) e;
-        String name = event.getName();
-        switch (this.getPhase()) {
-            case INITIALIZATION:
-                for (String s : BJClientGameState.INITIALIZATION_EVENTS)
-                    if (s.equals(name))
-                        return true;
-                break;
-            case BETTING:
-                for (String s : BJClientGameState.BETTING_EVENTS)
-                    if (s.equals(name))
-                        return true;
-                break;
-            case PLAYING:
-                for (String s : BJClientGameState.PLAYING_EVENTS)
-                    if (s.equals(name))
-                        return true;
-                break;
-            case CONCLUSION:
-                for (String s : BJClientGameState.CONCLUSION_EVENTS)
-                    if (s.equals(name))
-                        return true;
-                break;
-            default:
-                throw new Error("Unreachable code reached");
-        }
-        return false;
-    }
-
-    /**
-     * Adds `toAppend` to the log
-     *
-     * @param toAppend the String to append to this.
-     */
-    private void appendLog(String toAppend) {
-        if (this.getLogSize() < 0 || this.getEventLog().size() < this.getLogSize()) {
-            this.getEventLog().addFirst(toAppend);
-        } else if (this.getLogSize() != 0) {
-            this.getEventLog().removeLast();
-            this.getEventLog().addFirst(toAppend);
-        }
-        logCounter++;
-    }
-
-    //TODO comment
-    /**
-     *
-     * @return
-     */
-    public LinkedList<String> getValidEvents(){
-        LinkedList<String> result = new LinkedList<String>();
-        switch( this.getPhase() ){
-            case INITIALIZATION:
-               for(String s: BJClientGameState.INITIALIZATION_EVENTS)
-                   result.add(s);
-                break;
-            case BETTING:
-                for(String s : BJClientGameState.BETTING_EVENTS )
-                    if( !s.equals("AdvancePhase"))
-                        result.add(s);
-                break;
-            case PLAYING:
-                for(String s: BJClientGameState.PLAYING_EVENTS){
-                    if( s.equals("Split")  ){
-                        if( this.getCurrentHand().getCards().size() == 2 && ( this.getCurrentHand().getCards().get(0) % 13 == ( this.getCurrentHand().getCards().get(1) % 13 ) ) ){
-                            result.add(s);
-                        }
-                    } else if( s.equals("DoubleDown") ){
-                        if( this.getCurrentHand().getCards().size() == 2 ){
-                            result.add(s);
-                        }
-                    } else /* if( !s.equals("AdvancePhase")  && !s.equals("Split") && !s.equals("DoubleDown")  ) */{
-                        result.add(s);
-                    }
-                }
-                break;
-            case CONCLUSION:
-                for(String s: BJClientGameState.CONCLUSION_EVENTS)
-                    result.add(s);
-                break;
-            default:
-                throw new Error("Error in logic.  Cannot recover");
-        }
-        return result;
-    }
-
-    /**
-     * @return the player who is next to act.
-     */
-    public String getCurrentPlayer(){
-       return this.getCurrentHand().getUsername(); 
-    }
-
-    /**
-     * @return the hand that is next to act.
-     */
-    protected Hand getCurrentHand(){
-        return this.getHands().getFirst();
     }
 
     /**
      * @return Lazily returns this.eventLog
      */
-    private LinkedList<String> getEventLog() {
+    public LinkedList<String> getEventLog() {
         if (this.eventLog == null)
             this.setEventLog( new LinkedList<String>() );
         return this.eventLog;
@@ -523,7 +475,11 @@ public class BJClientGameState implements GameState {
      * @return the most recent log.
      */
     public String getMostRecentLog() {
-        return this.getEventLog().getFirst();
+        try {
+            return this.getEventLog().getFirst();
+        } catch (NoSuchElementException e){
+            return "No log history.";
+        }
     }
 
     /**
@@ -538,7 +494,7 @@ public class BJClientGameState implements GameState {
      *
      * @return `this.phase`
      */
-    protected BJPhases getPhase() {
+    public BJPhases getPhase() {
         if(this.phase == null)
             throw new Error("Phase not set. Cannot Recover"); // Most specific Exception than a null pointer exception
         return phase;
@@ -558,11 +514,21 @@ public class BJClientGameState implements GameState {
      *
      * @return `this.hands`
      */
-    protected LinkedList<Hand> getHands() {
+    public LinkedList<Hand> getHands() {
         if( this.hands == null ){
             this.hands = new LinkedList<Hand>();
         }
         return hands;
+    }
+
+
+    public BJClientGameState clone(){
+        try{
+            return (BJClientGameState)super.clone();
+        } catch (CloneNotSupportedException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -577,9 +543,10 @@ public class BJClientGameState implements GameState {
     /**
      * A Simple enumeration that represent all the phases of a Black Jack game.
      */
-    protected enum BJPhases {
+    public enum BJPhases {
         INITIALIZATION,
         BETTING,
+        DEALING,
         PLAYING,
         CONCLUSION
     }
@@ -588,7 +555,7 @@ public class BJClientGameState implements GameState {
      * A basic data class.  That holds a Username, a list
      * of their cards, and the value of their current bet.
      */
-    protected class Hand implements Serializable {
+    public class Hand implements Serializable {
 
         private LinkedList<Integer> cards;
         private String username;
@@ -608,7 +575,7 @@ public class BJClientGameState implements GameState {
         /**
          * @return the username of `this`.
          */
-        protected String getUsername() {
+        public String getUsername() {
             if( username == null )
                 this.setUsername("");
             return username;
@@ -619,28 +586,26 @@ public class BJClientGameState implements GameState {
          *
          * @param username the String to set `this.username` to.
          */
-        protected void setUsername(String username) {
+        public void setUsername(String username) {
             this.username = username;
         }
 
         /**
          * @return the cards of `this`.
-         *         <p/>
-         *         {{{
-         *         A card `c` must be contained in the range [0,52]
-         *         <p/>
-         *         if( `c` == 52 )
+         *
+         *   {{{
+         *      A card `c` must be contained in the range [0,52]
+         *
+         *      if( `c` == 52 )
          *         then `c` represents an unknown card and must be handled as such.
-         *         else
+         *      else
          *         c/4 denotes the value of the card.
-         *         i.e. c/4 = 0 represents an Ace and c = 12 denote a King.
+         *          i.e. c/4 = 0 represents an Ace and c = 12 denote a King.
          *         c%4 denotes the suit of the card.
-         *         i.e. c%4 = 0 represents a Spade
-         *         <p/>
-         *         <p/>
-         *         }}}
+         *           i.e. c%4 = 0 represents a Spade
+         *    }}}
          */
-        protected LinkedList<Integer> getCards() {
+        public LinkedList<Integer> getCards() {
             if( this.cards == null )
                 this.setCards(new LinkedList<Integer>());
             return cards;
@@ -663,7 +628,7 @@ public class BJClientGameState implements GameState {
          *
          * @param cards the LinkedList<Integer> to set `this.cards` to.
          */
-        protected void setCards(LinkedList<Integer> cards) {
+        public void setCards(LinkedList<Integer> cards) {
             this.cards = cards;
         }
 
@@ -672,10 +637,23 @@ public class BJClientGameState implements GameState {
          *
          * @return the bet value of `this`.  If null, lazily sets to 0 and returns.
          */
-        protected Integer getBet() {
+        public Integer getBet() {
             if (this.bet == null)
                 this.bet = 0;
             return bet;
+        }
+
+        /**
+         * @return the highest value that this hand can
+         * have that is equal to or less than 21.  If the hand
+         * can only bust, than -1 is returned indicating a bust.
+         */
+        public int getBestHandValue(){
+            int[] v = this.getHandValues();
+            int result = -1;
+            for( int i : v )
+                result = ( i > 21 ) ? result : Math.max( result, i );
+            return result;
         }
 
         /**
@@ -683,8 +661,53 @@ public class BJClientGameState implements GameState {
          *
          * @param bet the Integer to set `this.bet` to.
          */
-        protected void setBet(Integer bet) {
+        public void setBet(Integer bet) {
             this.bet = bet;
+        }
+
+        /**
+         * @return an array of the possible values that this hand could have.  Because
+         * Aces can be handled as 1's or 11's, the number of aces determines the size of
+         * the array returned.  A hand with no aces will return an array of length one. A hand
+         * with one ace will return a hand of length 2.  A hand with 2 aces will return an
+         * array of length 4.  And so on.  All possibilities are returned, including those
+         * that have a value over 21.
+         */
+        public int[] getHandValues(){
+            int[] result = new int[1];
+            result[0] = 0;
+            for( int c : this.getCards() ){
+                if( c % 13 == 0 ){ // Ace
+                    int[] tmp = new int[result.length*2];
+                    for( int i = 0; i < result.length; i++ ){
+                        tmp[i] = result[i] + 1;
+                        tmp[i + result.length] = result[i] + 11;
+                    }
+                    result = tmp;
+                } else if( c % 13 <= 12){ // 2 through K
+                    for( int i = 0; i < this.getCards().size(); i++){
+                        result[i] = result[i] + Math.min(c + 1,10);
+                    }
+                }
+            }
+            return result;
+        }
+    }
+
+    /**
+     * A dealer hand
+     */
+    public class DealerHand extends Hand {
+
+        public DealerHand(){
+            super("PiCasino Dealer",new LinkedList<Integer>());
+        }
+
+        /**
+         * @return true if this hand must hit.  Otherwise false;
+         */
+        public boolean mustHit(){
+            return this.getBestHandValue() < 17 && this.getBestHandValue() >= 0;
         }
     }
 }

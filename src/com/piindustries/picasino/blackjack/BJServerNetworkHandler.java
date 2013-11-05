@@ -73,7 +73,6 @@ public class BJServerNetworkHandler implements NetworkHandler {
     public void receive(GameEvent toReceive){
         if (toReceive instanceof BJGameEvent ) {
             // TODO HANDLE AS A NORMAL EVENT
-
             BJGameEvent event = (BJGameEvent)toReceive;
         }
     }

@@ -48,7 +48,7 @@ import java.io.Serializable;
  * @author A. Jensen
  * @version 1.0
  */
-public interface GameState extends Serializable {
+public interface GameState extends Serializable, Cloneable {
 
     /**
      * Progresses `this` to its next logical state according to the GameEvent.
