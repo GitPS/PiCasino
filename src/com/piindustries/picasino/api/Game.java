@@ -40,11 +40,20 @@ package com.piindustries.picasino.api;
 public interface Game {
 
     /**
-     * Builds and returns an object conforming to type GameState.
+     * Builds and returns an object conforming to type GameState
+     * to be constructed on the client-side;
      *
      * @return a GameState
      */
-    public GameState buildGameState();
+    public GameState buildClientGameState();
+
+    /**
+     * Builds and returns an object conforming to type GameState
+     * to be constructed on the server-side;
+     *
+     * @return a GameState
+     */
+    public GameState buildServerGameState();
 
     /**
      * Builds and returns an object conforming to type NetworkHandler
