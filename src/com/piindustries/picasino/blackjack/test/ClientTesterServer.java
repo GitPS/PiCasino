@@ -40,7 +40,7 @@ public class ClientTesterServer implements NetworkHandler {
 
     public void send(GameEvent e){
         if (e instanceof BJGameEvent) {
-            server.receive((BJGameEvent)e);
+            server.receive(e);
         }
     }
 
@@ -52,7 +52,7 @@ public class ClientTesterServer implements NetworkHandler {
     public void receive(GameEvent toReceive){
         if (toReceive instanceof BJGameEvent ) {
             try {
-                innards.invoke((BJGameEvent) toReceive);
+                innards.invoke(toReceive);
             } catch (InvalidGameEventException e) {
                 System.err.println("InvalidGameEvent has been caught.");
             }
