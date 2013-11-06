@@ -50,7 +50,7 @@ public class ServerTesterServer implements NetworkHandler {
             this.sockets.get(event.getToUser()).receive((BJGameEvent)toSend);
         } else if (e instanceof BJGameEvent ) {
             for(String s : this.sockets.keySet()){
-                sockets.get(s).receive((BJGameEvent)e);
+                sockets.get(s).receive(e);
             }
         }
     }
