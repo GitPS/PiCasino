@@ -33,7 +33,6 @@ import java.util.HashMap;
 public class BJTester {
     ClientTesterServer client;
     ServerTesterServer server;
-    boolean verbose = false;
     boolean quit = false;
 
     public BJTester() {
@@ -43,6 +42,7 @@ public class BJTester {
         server.sockets = new HashMap<String, ClientTesterServer>();
         server.establishConnection("Test_User",client);
         initialization();
+        server.innards.setVerbose(true);
         server.innards.startTimer();
         while(!quit){step();}
     }
@@ -77,6 +77,10 @@ public class BJTester {
             String input = readLine();
             if( input.equalsIgnoreCase("status") ){
                 printStatus();
+            } else if ( input.equalsIgnoreCase("verbose") ){
+                server.innards.setVerbose( !server.innards.isVerbose() );
+            } else if(input.equalsIgnoreCase("quit")){
+                quit = true;
             } else if( isValid(input) ){
                 switch(client.innards.getPhase()){
                     case INITIALIZATION:
@@ -122,9 +126,6 @@ public class BJTester {
                 System.out.println( "Invalid input, try again.");
             }
             System.out.println(client.innards.getMostRecentLog());
-        }
-        if( verbose ){
-            printStatus();
         }
         return quit;
     }
