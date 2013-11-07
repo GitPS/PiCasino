@@ -142,6 +142,7 @@ public class BJClientGameState implements GameState {
     private LinkedList<String> eventLog;
     private int logSize;
     private int logCounter;
+    private boolean isVerbose; // False by default
 
     /**
      * Default Constructor.
@@ -152,6 +153,7 @@ public class BJClientGameState implements GameState {
         h.add( new DealerHand() );
         this.setHands( h );
         this.passedList = new LinkedList<Hand>();
+        this.setVerbose(false);
     }
 
     /**
@@ -353,6 +355,24 @@ public class BJClientGameState implements GameState {
     }
 
     /**
+     * @return True if `this` is set to log event verbosely,
+     * otherwise false.
+     */
+    public boolean isVerbose() {
+        return isVerbose;
+    }
+
+    /**
+     * @param verbose a boolean.  If true, this game state will
+     *                print all new log events to the standard
+     *                output console, otherwise logging will take
+     *                place silently.
+     */
+    public void setVerbose(boolean verbose) {
+        isVerbose = verbose;
+    }
+
+    /**
      * @return a list of GameEvents that <code>this</code> can accept in
      * its current state.
      */
@@ -399,9 +419,14 @@ public class BJClientGameState implements GameState {
     }
 
     /**
+     * Appends a string to the event log, and if `this.isVerbose` == `true`, than
+     * `s` will be printed to the standard output console.
+     *
      * @param s a {@link String} to append to the end of <code>this</code> log.
      */
     protected void appendLog(String s){
+        if(this.isVerbose)
+            System.out.println(s);
         this.getEventLog().addFirst(s);
     }
 
