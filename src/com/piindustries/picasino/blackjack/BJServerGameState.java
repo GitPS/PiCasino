@@ -38,6 +38,7 @@ public class BJServerGameState implements GameState {
     // A global game timer
     private Timer gameTimer;
 
+    // number of seconds between games
     private int intermissionTime = 5;
 
 
@@ -178,15 +179,32 @@ public class BJServerGameState implements GameState {
 
     public void conclude() throws InvalidGameEventException {
         // TODO concluding tasks
+        gameState.appendLog("Writing back data to database.");
         BJGameEvent result = new BJGameEvent();
         result.setName("AdvanceToInitialization");
         result.setValue(null);
         this.invoke( result );
     }
 
+    /** Starts the intermission game timer */
     public void startTimer(){
-        System.out.println("Game will begin in "+intermissionTime+" seconds.");
+        gameState.appendLog("Initializing a new game.");
+        System.out.println("A new game will begin in "+intermissionTime+" seconds.");
         gameTimer.start();
+    }
+
+    public boolean isVerbose(){
+        return this.gameState.isVerbose();
+    }
+
+    /**
+     * @param verbose a boolean.  If true, this game state will
+     *                print all new log events to the standard
+     *                output console, otherwise logging will take
+     *                place silently.
+     */
+    public void setVerbose(boolean toSet){
+        this.gameState.setVerbose(toSet);
     }
 
     private void playDealersHand() throws InvalidGameEventException {
