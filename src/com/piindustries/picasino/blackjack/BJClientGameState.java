@@ -175,55 +175,40 @@ public class BJClientGameState implements GameState {
         BJGameEvent event = (BJGameEvent) e;    // Case event to type correct type.
         switch (this.getPhase()) {
             case INITIALIZATION:
-                if( event.getName().equals("AddPlayer") )
-                    this.addPlayer(event);
-                else if ( event.getName().equals("AdvanceToBetting") )
-                    this.advanceToBetting();
-                else if ( event.getName().equals("RemovePlayer") )
-                    this.removePlayer(event);
-                else
-                    throw new InvalidGameEventException(event.getName());
-                break;
+                switch( event.getName() ){
+                    case "AddPlayer": addPlayer(event); break;
+                    case "AdvanceToBetting": advanceToBetting(); break;
+                    case "RemovePlayer": removePlayer(event); break;
+                    default: throw new InvalidGameEventException(event.getName());
+                } break;
             case BETTING:
-                if( event.getName().equals("Bet") )
-                    this.bet(event);
-                else if ( event.getName().equals("Pass") )
-                    this.pass();
-                else if( event.getName().equals("AdvanceToDealing") )
-                    this.advanceToDealing();
-                else
-                    throw new InvalidGameEventException(event.getName());
-                break;
+                switch(event.getName()){
+                    case "Bet": bet(event); break;
+                    case "Pass": pass(); break;
+                    case "AdvanceToDealing": advanceToDealing(); break;
+                    default: throw new InvalidGameEventException(event.getName());
+                } break;
             case DEALING:
-                if ( event.getName().equals("SendCard") )
-                    this.dealingSendCard(event);
-                else if( event.getName().equals("AdvanceToPlaying") )
-                    this.advanceToPlaying();
-                else
-                    throw new InvalidGameEventException(event.getName());
-                break;
+                switch(event.getName()){
+                    case "SendCard": dealingSendCard(event); break;
+                    case "AdvanceToPlaying": advanceToPlaying(); break;
+                    default: throw new InvalidGameEventException(event.getName());
+                } break;
             case PLAYING:
-                if( event.getName().equals("SendCard") )
-                    this.sendCard(event);
-                else if ( event.getName().equals("Stay") )
-                    this.stay();
-                else if ( event.getName().equals("DoubleDown") )
-                    this.doubleDown();
-                else if ( event.getName().equals("Split") )
-                    this.split();
-                else if( event.getName().equals("AdvanceToConclusion") )
-                    this.advanceToConclusion();
-                else
-                    throw new InvalidGameEventException();
-                break;
+                switch(event.getName()){
+                    case "SendCard": sendCard(event); break;
+                    case "Stay": stay(); break;
+                    case "DoubleDown": break;
+                    case "Split": break;
+                    case "AdvanceToConclusion": advanceToConclusion(); break;
+                    default: throw new InvalidGameEventException(event.getName());
+                } break;
             case CONCLUSION:
-                if ( event.getName().equals("AdvanceToInitialization") )
-                    this.advanceToInitialization();
-                else
-                    throw new InvalidGameEventException();
-                break;
-            default:
-                throw new Error("Logical Error, Cannot Recover");
+                switch(event.getName()){
+                    case "AdvanceToInitialization": advanceToInitialization(); break;
+                    default: throw new InvalidGameEventException(event.getName());
+                } break;
+            default: throw new Error("Logical Error, Cannot Recover");
         }
     }
 
