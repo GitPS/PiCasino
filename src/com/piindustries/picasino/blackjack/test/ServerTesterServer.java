@@ -45,9 +45,9 @@ public class ServerTesterServer implements NetworkHandler {
         if( e instanceof BJDirectedGameEvent){
             BJDirectedGameEvent event = (BJDirectedGameEvent)e;
             BJGameEvent toSend = new BJGameEvent();
-            toSend.setName(event.getName());
+            toSend.setType(event.getType());
             toSend.setValue(event.getValue());
-            this.sockets.get(event.getToUser()).receive((BJGameEvent)toSend);
+            this.sockets.get(event.getToUser()).receive(toSend);
         } else if (e instanceof BJGameEvent ) {
             for(String s : this.sockets.keySet()){
                 sockets.get(s).receive(e);
@@ -64,7 +64,7 @@ public class ServerTesterServer implements NetworkHandler {
         if (toReceive instanceof BJGameEvent ) {
             BJGameEvent event = (BJGameEvent)toReceive;
             try {
-                innards.invoke((BJGameEvent) toReceive);
+                innards.invoke( toReceive);
             } catch (InvalidGameEventException e) {
                 System.err.println("InvalidGameEvent has been caught.");
             }
