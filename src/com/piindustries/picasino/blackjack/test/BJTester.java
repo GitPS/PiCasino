@@ -26,6 +26,7 @@ package com.piindustries.picasino.blackjack.test;
 import com.piindustries.picasino.blackjack.BJCards;
 import com.piindustries.picasino.blackjack.BJClientGameState;
 import com.piindustries.picasino.blackjack.BJGameEvent;
+import com.piindustries.picasino.blackjack.BJGameEventType;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class BJTester {
         client = new ClientTesterServer();
         server = new ServerTesterServer();
         client.server = this.server;
-        server.sockets = new HashMap<String, ClientTesterServer>();
+        server.sockets = new HashMap<>();
         server.establishConnection("Test_User",client);
         initialization();
         server.innards.setVerbose(true);
@@ -64,15 +65,15 @@ public class BJTester {
         }
     }
 
-    private synchronized BJGameEvent buildEvent(String name, Object value ) {
+    private synchronized BJGameEvent buildEvent(BJGameEventType type, Object value ) {
         BJGameEvent result = new BJGameEvent();
-        result.setName(name);
+        result.setType(type);
         result.setValue(value);
         return result;
     }
 
     public synchronized boolean step(){
-        if( !client.innards.getValidEvents().isEmpty() && !(client.innards.getPhase() == BJClientGameState.BJPhases.INITIALIZATION) ){
+        if( !BJGameEventType.getValidEvents(client.innards).isEmpty() && !(client.innards.getPhase() == BJClientGameState.BJPhases.INITIALIZATION) ){
             printOptions();
             String input = readLine();
             if( input.equalsIgnoreCase("status") ){
@@ -87,11 +88,11 @@ public class BJTester {
 
                         break;
                     case BETTING:
-                        if( input.equals("Bet") ){
+                        if( input.equalsIgnoreCase("Bet") ){
                             System.out.println("How Much?");
-                            client.send( buildEvent( "Bet", Integer.valueOf(readLine()) ) );
-                        } else if( input.equals("Pass") ){
-                            client.send( buildEvent( "Pass", null ) );
+                            client.send( buildEvent( BJGameEventType.BET, Integer.valueOf(readLine()) ) );
+                        } else if( input.equalsIgnoreCase("Pass") ){
+                            client.send( buildEvent( BJGameEventType.PASS, null ) );
                         } else {
                             System.out.println("Invalid input, try again.");
                             step();
@@ -101,18 +102,17 @@ public class BJTester {
 
                         break;
                     case PLAYING:
-                        if( input.equals("RequestCard") ){
-                            client.send( buildEvent( "RequestCard", null ) );
-                        } else if( input.equals("Stay") ){
-                            if( client.innards.getCurrentHand() instanceof BJClientGameState.DealerHand){
-                                server.send( buildEvent( "Stay", null ));
-                            } else {
-                                client.send( buildEvent( "Stay", null ) );
-                            }
-                        } else if( input.equals("DoubleDown") ){
-                            client.send( buildEvent( "DoubleDown", null ) );
-                        } else if( input.equals("Split") ){
-                            client.send( buildEvent( "Split", null ) );
+                        if( input.equalsIgnoreCase("Hit") ){
+                            client.send( buildEvent( BJGameEventType.HIT, null ) );
+                        } else if( input.equalsIgnoreCase("Stand") ){
+                            if( client.innards.getCurrentHand() instanceof BJClientGameState.DealerHand)
+                                server.send( buildEvent( BJGameEventType.STAND, null ));
+                            else
+                                client.send( buildEvent( BJGameEventType.STAND, null ) );
+                        } else if( input.equalsIgnoreCase("DoubleDown") ){
+                            client.send( buildEvent( BJGameEventType.DOUBLE_DOWN, null ) );
+                        } else if( input.equalsIgnoreCase("Split") ){
+                            client.send( buildEvent( BJGameEventType.SPLIT, null ) );
                         } else {
                             System.out.println("Invalid input, try again.");
                             step();
@@ -146,14 +146,18 @@ public class BJTester {
         return sb.toString().trim();
     }
 
-    private synchronized boolean isValid(String s){
-        return client.innards.getValidEvents().contains(s);
+    private synchronized boolean isValid(String e){
+        try{
+            return BJGameEventType.getValidEvents(client.innards).contains(BJGameEventType.valueOf(e.toUpperCase()));
+        } catch (IllegalArgumentException exception){
+            return false;
+        }
     }
 
     private synchronized void printOptions(){
         System.out.println("Available Actions...");
-        for( String str : client.innards.getValidEvents()){
-            System.out.println( "\t"+str );
+        for( BJGameEventType str : BJGameEventType.getValidEvents(client.innards)){
+            System.out.println( "\t"+str.name() );
         }
     }
 
