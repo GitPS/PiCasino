@@ -87,6 +87,12 @@ public class BJServerGameState implements GameState {
         this.gameState.appendLog("Server Game State Constructed");
     }
 
+    // TODO Make sure splitting works as designed
+    // TODO Make sure doubling down works as designed
+    // TODO Make sure empty games don't explode
+    // TODO Make sure empty games caused by disconnects don't explode
+    // TODO Make sure empty games caused by passes don't explode
+
     /**
      * Invokes GameEvents.  First calls the invoke method
      * on its underlying BJClientGameState so the logic of
@@ -176,6 +182,7 @@ public class BJServerGameState implements GameState {
      * @throws InvalidGameEventException
      */
     private void split(BJGameEvent event) throws InvalidGameEventException {
+        // FIXME Behavior unverified
         BJGameEvent result = new BJGameEvent();
         result.setName("Split");
         result.setValue(null);
@@ -190,6 +197,7 @@ public class BJServerGameState implements GameState {
      * @throws InvalidGameEventException
      */
     private void doubleDown(BJGameEvent event) throws InvalidGameEventException {
+        // FIXME Behavior unverified
         BJGameEvent result = new BJGameEvent(); // TODO check if i can reuse event
         result.setName("DoubleDown");
         result.setValue(null);
@@ -267,6 +275,7 @@ public class BJServerGameState implements GameState {
      *  Send a Pass event to all players
      */
     private void pass(){
+        // FIXME Behavior unverified
         BJGameEvent result = new BJGameEvent();
         result.setName("Pass");
         result.setValue(null);
