@@ -1,3 +1,34 @@
+/*
+ *
+ *       ___ _   ___          _
+ *      / _ (_) / __\__ _ ___(_)_ __   ___
+ *     / /_)/ |/ /  / _` / __| | '_ \ / _ \
+ *    / ___/| / /__| (_| \__ \ | | | | (_) |
+ *    \/    |_\____/\__,_|___/_|_| |_|\___/
+ *
+ *
+ * Class: com.piindustries.picasino.blackjack.BJServerGameState
+ * Version: 1.0
+ * Date: October 30, 2013
+ *
+ * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
+ *
+ * This file is part of PiCasino.
+ *
+ * PiCasino is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PiCasino is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.piindustries.picasino.blackjack;
 
 import com.piindustries.picasino.api.GameEvent;
@@ -9,6 +40,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 
 /**
@@ -68,7 +100,6 @@ public class BJServerGameState implements GameState {
      */
     public void invoke(GameEvent e) throws InvalidGameEventException {
         BJGameEvent event = (BJGameEvent)e;
-
         switch( gameState.getPhase() ){
             case INITIALIZATION:
                 if( !gameState.getValidEvents().contains(event.getName()))
@@ -76,107 +107,193 @@ public class BJServerGameState implements GameState {
                 gameState.invoke(e);
                 break;  // Break Initialization phase
             case BETTING:
-                if( event.getName().equals("Bet") ){
-                    // Send a a Bet event to all players with the value specified
-                    BJGameEvent result = new BJGameEvent();
-                    result.setName("Bet");
-                    result.setValue( event.getValue() );
-                    gameState.getNetworkHandler().send( result );
-                    // Update the underlying gameState
-                    gameState.invoke(result);
-                } else if( event.getName().equals("Pass") ){
-                    // Send a Pass event to all players
-                    BJGameEvent result = new BJGameEvent();
-                    result.setName("Pass");
-                    result.setValue(null);
-                    gameState.getNetworkHandler().send( result );
-                    // Update the underlying gameState
-                } else {
+                if( event.getName().equals("Bet") )
+                    this.bet(event);
+                else if( event.getName().equals("Pass") )
+                    this.pass();
+                else
                     throw new InvalidGameEventException(event.getName());
-                }
-
-                // If the dealer is up to bet, Advance to dealing
-                if( gameState.getHands().getFirst() instanceof BJClientGameState.DealerHand){
-                    BJGameEvent result = new BJGameEvent();
-                    result.setName("Bet");
-                    result.setValue(0);
-                    this.gameState.invoke(result);
-                    this.getNetworkHandler().send(result);
-                    result.setName("AdvanceToDealing");
-                    this.gameState.invoke(result);
-                    this.getNetworkHandler().send(result);
-                    deal();
-                }
-                break;  //BREAK BETTING CASE
+                if( gameState.getHands().getFirst() instanceof BJClientGameState.DealerHand)    // If the dealer is up to bet.
+                    this.advanceToDealing();
+                break;
             case DEALING:
-                // No actions should ever be received by this during the dealing phase.
-                throw new InvalidGameEventException(event.getName());
+                throw new InvalidGameEventException(event.getName());   // No actions should ever be received by this during the dealing phase.
             case PLAYING:
-                if( event.getName().equals("RequestCard") ){
-                    Integer cardVal = getRandomCard();
-                    BJDirectedGameEvent directedEvent = new BJDirectedGameEvent();
-                    BJGameEvent standardEvent = new BJGameEvent();
-                    // Send cards to all other players except the dealer
-                    for( BJClientGameState.Hand h : gameState.getHands() ){
-                        directedEvent.setName("SendCard");
-                        directedEvent.setValue(cardVal);
-                        if( !(h instanceof BJClientGameState.DealerHand) ){
-                            directedEvent.setToUser(h.getUsername());
-                            gameState.getNetworkHandler().send( directedEvent );   // TODO not sure if type eraser will remove necessary data here.
-                        }
-                    }
-                    // Update the underlying gameState
-                    standardEvent.setValue(cardVal);
-                    standardEvent.setName("SendCard");
-                    gameState.invoke(standardEvent);
-                } else if( event.getName().equals("SendCard") ) {
+                if( event.getName().equals("RequestCard") )
+                    this.requestCard();
+                else if( event.getName().equals("SendCard") )
                     gameState.invoke(event);
-                } else if( event.getName().equals("Stay") ) {
-                    BJGameEvent result = new BJGameEvent();
-                    result.setName("Stay");
-                    result.setValue(null);
-                    gameState.invoke(event);
-                    gameState.getNetworkHandler().send(result);
-                    // If it is the dealer's turn to act. Play as the dealer
-                    if(gameState.getCurrentHand() instanceof BJClientGameState.DealerHand){
-                        playDealersHand();
-                    }
-                } else if( event.getName().equals("DoubleDown") ) {
-                    BJGameEvent result = new BJGameEvent();
-                    result.setName("DoubleDown");
-                    result.setValue(null);
-                    gameState.invoke(event);
-                    gameState.getNetworkHandler().send( result );
-                    // If it is the dealer's turn to act. Play as the dealer
-                    if(gameState.getCurrentHand() instanceof BJClientGameState.DealerHand){
-                        playDealersHand();
-                    }
-                } else if( event.getName().equals("Split") ) {
-                    BJGameEvent result = new BJGameEvent();
-                    result.setName("Split");
-                    result.setValue(null);
-                    gameState.invoke(event);
-                    gameState.getNetworkHandler().send( result );
-                } else if( event.getName().equals("AdvanceToConclusion") ) {
-                    gameState.invoke(event);
-                    getNetworkHandler().send(event);
-                    conclude();
-                } else {
+                else if( event.getName().equals("Stay") )
+                    this.stay(event);
+                else if( event.getName().equals("DoubleDown") )
+                    this.doubleDown(event);
+                else if( event.getName().equals("Split") )
+                    this.split(event);
+                else if( event.getName().equals("AdvanceToConclusion") )
+                    this.advanceToConclusion(event);
+                else
                     throw new InvalidGameEventException(event.getName());
-                }
                 break;
             case CONCLUSION:
-                if( event.getName().equals("AdvanceToInitialization") ){
-                    gameState.invoke(event);
-                    getNetworkHandler().send(event);
-                    startTimer();
-                } else {
+                if( event.getName().equals("AdvanceToInitialization") )
+                    this.advanceToInitialization(event);
+                else
                     throw new InvalidGameEventException(event.getName());
-                }
                 break;
+            default:
+                throw new Error("Logical Error, Cannot Recover.");
         }
     }
 
+    /**
+     * Informs clients that it is time to advance to INITIALIZATION phase.
+     *
+     * @param event a BJGameEvent whose name is "AdvanceToInitialization"
+     * @throws InvalidGameEventException
+     */
+    private void advanceToInitialization(BJGameEvent event) throws InvalidGameEventException {
+        gameState.invoke(event);
+        getNetworkHandler().send(event);
+        startTimer();
+    }
+
+    /**
+     * Informs all clients to that they should advance to the CONCLUSION phase.
+     *
+     * @param event a BJGameEvent whose name "AdvanceToConclusion".
+     * @throws InvalidGameEventException
+     */
+    private void advanceToConclusion(BJGameEvent event) throws InvalidGameEventException {
+        gameState.invoke(event);
+        getNetworkHandler().send(event);
+        conclude();
+    }
+
+    /**
+     * Informs all clients that the current player has elected to split their hand.
+     *
+     * @param event a BJGameEvent whose name is "Split"
+     * @throws InvalidGameEventException
+     */
+    private void split(BJGameEvent event) throws InvalidGameEventException {
+        BJGameEvent result = new BJGameEvent();
+        result.setName("Split");
+        result.setValue(null);
+        gameState.invoke(event);
+        gameState.getNetworkHandler().send( result );
+    }
+
+    /**
+     * Informs all clients that the current player has elected to double down
+     *
+     * @param event a BJGameEvent whose name is "DoubleDown".
+     * @throws InvalidGameEventException
+     */
+    private void doubleDown(BJGameEvent event) throws InvalidGameEventException {
+        BJGameEvent result = new BJGameEvent(); // TODO check if i can reuse event
+        result.setName("DoubleDown");
+        result.setValue(null);
+        gameState.invoke(event);
+        gameState.getNetworkHandler().send(result);   // TODO check if i can reuse event
+        // If it is the dealer's turn to act. Play as the dealer
+        if(gameState.getCurrentHand() instanceof BJClientGameState.DealerHand)
+            playDealersHand();
+
+    }
+
+    /**
+     * Informs all players that the current player has elected to stay.
+     *
+     * If the next player is the dealer, `this` will continue to play the
+     * dealer's hand.
+     *
+     * @param event a BJGameEvent whose name is "Stay"
+     * @throws InvalidGameEventException
+     */
+    private void stay(BJGameEvent event) throws InvalidGameEventException {
+        BJGameEvent result = new BJGameEvent(); // TODO check if i can reuse event
+        result.setName("Stay");
+        result.setValue(null);
+        gameState.invoke(event);
+        gameState.getNetworkHandler().send(result); // TODO check if I can just pass the same event on to all other clients.
+        // If it is the dealer's turn to act. Play as the dealer
+        if(gameState.getCurrentHand() instanceof BJClientGameState.DealerHand)
+            playDealersHand();
+    }
+
+    /**
+     * Deals a card back to the requesting player and informs all other players
+     * about it.
+     *
+     * @throws InvalidGameEventException
+     */
+    private void requestCard() throws InvalidGameEventException {
+        Integer cardVal = getRandomCard();
+        BJDirectedGameEvent directedEvent = new BJDirectedGameEvent();
+        BJGameEvent standardEvent = new BJGameEvent();
+        for( BJClientGameState.Hand h : gameState.getHands() ){
+            directedEvent.setName("SendCard");
+            directedEvent.setValue(cardVal);
+            if( !(h instanceof BJClientGameState.DealerHand) ){
+                directedEvent.setToUser(h.getUsername());
+                gameState.getNetworkHandler().send( directedEvent );
+            }
+        }
+        // Update the underlying gameState
+        standardEvent.setValue(cardVal);
+        standardEvent.setName("SendCard");
+        gameState.invoke(standardEvent);
+    }
+
+    /**
+     * Bets a default value of 0 for the dealer, and advances
+     * the phase of `this` to DEALING.
+     *
+     * @throws InvalidGameEventException
+     */
+    private void advanceToDealing() throws InvalidGameEventException {
+        BJGameEvent result = new BJGameEvent();
+        result.setName("Bet");
+        result.setValue(0);
+        this.gameState.invoke(result);
+        this.getNetworkHandler().send(result);
+        result.setName("AdvanceToDealing");
+        this.gameState.invoke(result);
+        this.getNetworkHandler().send(result);
+        deal();
+    }
+
+    /**
+     *  Send a Pass event to all players
+     */
+    private void pass(){
+        BJGameEvent result = new BJGameEvent();
+        result.setName("Pass");
+        result.setValue(null);
+        gameState.getNetworkHandler().send(result);
+        // Update the underlying gameState
+    }
+
+    /**
+     * Sends a bet event to all players with the value specified
+     *
+     * @param event a BJGameEvent whose name is "Bet"
+     */
+    private void bet(BJGameEvent event) throws InvalidGameEventException{
+        BJGameEvent result = new BJGameEvent();
+        result.setName("Bet");
+        result.setValue( event.getValue() );
+        gameState.getNetworkHandler().send(result);
+        // Update the underlying gameState
+        gameState.invoke(result);
+    }
+
+    /**
+     * Performs concluding tasks.  Append to log.
+     * Advances the phase of `this` to INITIALIZATION.
+     *
+     * @throws InvalidGameEventException
+     */
     public void conclude() throws InvalidGameEventException {
         // TODO concluding tasks
         gameState.appendLog("Writing back data to database.");
@@ -189,16 +306,20 @@ public class BJServerGameState implements GameState {
     /** Starts the intermission game timer */
     public void startTimer(){
         gameState.appendLog("Initializing a new game.");
-        System.out.println("A new game will begin in "+intermissionTime+" seconds.");
+        System.out.println("A new game will begin in " + intermissionTime + " seconds.");
         gameTimer.start();
     }
 
+    /**
+     * @return `true` if `this` is set to behave verbosely,
+     * otherwise `false`.
+     */
     public boolean isVerbose(){
         return this.gameState.isVerbose();
     }
 
     /**
-     * @param verbose a boolean.  If true, this game state will
+     * @param toSet a boolean.  If true, this game state will
      *                print all new log events to the standard
      *                output console, otherwise logging will take
      *                place silently.
@@ -207,6 +328,11 @@ public class BJServerGameState implements GameState {
         this.gameState.setVerbose(toSet);
     }
 
+    /**
+     * Plays through the dealers hand.
+     *
+     * @throws InvalidGameEventException
+     */
     private void playDealersHand() throws InvalidGameEventException {
         // Ensure the dealer is up
         BJClientGameState.DealerHand d;
@@ -280,30 +406,49 @@ public class BJServerGameState implements GameState {
      */
     private void beginGame() throws InvalidGameEventException {
         // Advance all client phases
-        this.gameState.appendLog("Game Started at "+System.currentTimeMillis());
+        this.gameState.appendLog("Game Started at "+new Date());
         BJGameEvent event = new BJGameEvent();
         event.setName("AdvanceToBetting");
         this.getNetworkHandler().send(event);
         this.gameState.invoke(event);
     }
 
+    /**
+     * @return a clone of this
+     * @throws CloneNotSupportedException
+     * @see java.lang.Object#clone()
+     */
     public BJServerGameState clone() throws CloneNotSupportedException {
         return (BJServerGameState)super.clone();
     }
 
+    /** @return `this` network handler */
     public NetworkHandler getNetworkHandler(){
         return this.gameState.getNetworkHandler();
     }
 
-    public void setNetworkHandler(NetworkHandler nh){
-        this.gameState.setNetworkHandler(nh);
+    /**
+     * Just a setter method.  A dime a dozen.
+     *
+     * @param toSet the value to set `this.networkHandler` to.
+     */
+    public void setNetworkHandler(NetworkHandler toSet){
+        this.gameState.setNetworkHandler(toSet);
     }
 
+    /**
+     * @return the phase of the underlying GameState of `this`
+     */
     public BJClientGameState.BJPhases getPhase(){
         return this.gameState.getPhase();
     }
 
-    //TODO comment
+    /**
+     * Adds a player with the specified user name to the waiting list
+     * and appends to the log of `this`.
+     *
+     * @param username the username of the player to add to the list.
+     */
     public void addPlayerToWaitingList(String username){
         if( !getWaitingList().contains(username)){
             this.getWaitingList().add(username);
@@ -311,7 +456,14 @@ public class BJServerGameState implements GameState {
         this.gameState.appendLog(username + " has been added to the waiting list.");
     }
 
-    //TODO comment
+    /**
+     * Removes the player with the specified user name from the waiting list
+     * if there is a player with the given username in the waiting list, otherwise
+     * it nothing happens.
+     *
+     * @param username the username of the player to remove from the waiting list.
+     * @return `true` if the player was removed, otherwise `false`.
+     */
     public boolean removePlayerFromWaitingList(String username){
         return this.getWaitingList().remove(username);
     }
@@ -349,12 +501,23 @@ public class BJServerGameState implements GameState {
         getWaitingList().clear();
     }
 
+    /**
+     * Lazily returns the waiting list
+     *
+     * @return the waiting list, or a new waiting list if none
+     * exists.
+     */
     private LinkedList<String> getWaitingList() {
         if( this.waitingList == null )
-            this.waitingList = new LinkedList<String>();
+            this.setWaitingList(new LinkedList<String>());
         return waitingList;
     }
 
+    /**
+     * Sets the waiting list.
+     *
+     * @param waitingList the list to set the waiting list to.
+     */
     private void setWaitingList(LinkedList<String> waitingList) {
         this.waitingList = waitingList;
     }
@@ -391,7 +554,8 @@ public class BJServerGameState implements GameState {
     /**
      * Must be greater than 0.
      *
-     * @param seconds
+     * @param seconds the number of seconds to wait in between
+     *                games.
      */
     public void setIntermissionTime(int seconds){
         if( !(seconds < 1) )
