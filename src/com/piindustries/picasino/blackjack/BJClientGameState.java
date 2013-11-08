@@ -148,11 +148,11 @@ public class BJClientGameState implements GameState {
      * Default Constructor.
      */
     public BJClientGameState() {
-        this.setPhase(BJPhases.INITIALIZATION);
-        LinkedList<Hand> h = new LinkedList<Hand>();
-        h.add( new DealerHand() );
+        this.setPhase(BJPhases.INITIALIZATION);     // Set phase
+        LinkedList<Hand> h = new LinkedList<Hand>();   // Build Player List
+        h.add( new DealerHand() );                  // Add a dealer
         this.setHands( h );
-        this.passedList = new LinkedList<Hand>();
+        this.passedList = new LinkedList<Hand>();   // Create an empty passed list
         this.setVerbose(false);
     }
 
@@ -164,195 +164,279 @@ public class BJClientGameState implements GameState {
      *                                   current state.
      */
     public void invoke(GameEvent e) throws InvalidGameEventException {
-
-        // If the GameEvent is not a Blackjack game event, throw exception
-        if (!(e instanceof BJGameEvent))
+        if (!(e instanceof BJGameEvent))        // If the GameEvent is not a Blackjack game event, throw exception
             throw new InvalidGameEventException(e.toString());
-        // Case event to type correct type.
-        BJGameEvent event = (BJGameEvent) e;
+        BJGameEvent event = (BJGameEvent) e;    // Case event to type correct type.
         switch (this.getPhase()) {
-
-            // Handle INITIALIZATION GameEvents.
             case INITIALIZATION:
-                // ADD PLAYER
-                if( event.getName().equals("AddPlayer") ){
-
-                    // If the player is already in the game, don't add them
-                    // Otherwise, add them to the game
-                    String username = (String)event.getValue();
-                    boolean contained = false;
-                    for( Hand h : this.getHands() ){
-                        if( h.getUsername().equals(username)){
-                            contained = true;
-                            break;
-                        }
-                    }
-
-                    // Append to the log appropriately
-                    if( !contained ){
-                        this.getHands().add( this.getHands().size() - 1, new Hand(username, new LinkedList<Integer>()));
-                        this.appendLog(username + " was added to the game.");
-                    } else {
-                        this.appendLog(username + " could not be added to the game.");
-                    }
-                // REMOVE PLAYER
-                } else if ( event.getName().equals("RemovePlayer") ) {
-
-                    // If the player is in the game, remove them.
-                    boolean removed = false;
-                    String toRemove = (String)event.getValue();
-                    for( Hand h : this.getHands() ){
-                        if( h.getUsername().equals( toRemove ) ){
-                            this.getHands().remove( h );
-                            removed = true;
-                            break;  // Break for loop
-                        }
-                    }
-
-                    // Append to the log appropriately
-                    if( removed ){
-                        this.appendLog( toRemove +" has been removed from the game." );
-                    } else {
-                        this.appendLog( toRemove +" could not be removed from the game." );
-                    }
-                // ADVANCE TO BETTING
-                } else if ( event.getName().equals("AdvanceToBetting") ) {
-                    //Append Log
-                    this.appendLog("Advancing phase from Initialization to Betting");
-                    this.setPhase(BJPhases.BETTING);
-                // ANYTHING ELSE
-                } else {
+                if( event.getName().equals("AddPlayer") )
+                    this.addPlayer(event);
+                else if ( event.getName().equals("AdvanceToBetting") )
+                    this.advanceToBetting();
+                else if ( event.getName().equals("RemovePlayer") )
+                    this.removePlayer(event);
+                else
                     throw new InvalidGameEventException(event.getName());
-                }
-                break;  // Break INITIALIZATION case
+                break;
             case BETTING:
-                // BET
-                if( event.getName().equals("Bet") ){
-                    // Set the bet of the current hand
-                    Integer value = (Integer)event.getValue();
-                    this.getHands().getFirst().setBet(value);
-
-                    // Shift hand to back and bring next hand to front.
-                    Hand toBack = this.getHands().removeFirst();
-                    this.getHands().addLast(toBack);
-                    this.appendLog(toBack.getUsername()+" bets "+value+".");
-                // PASS
-                } else if ( event.getName().equals("Pass") ) {
-                    // Add the passing player to the passed list and remove them from the queue.
-                    this.appendLog( this.getHands().getFirst().getUsername() + " passes." );
-                    this.passedList.add(this.getHands().removeFirst());
-                // ADVANCE TO DEALING
-                } else if( event.getName().equals("AdvanceToDealing") ) {
-                    //Append Log
-                    this.appendLog("Advancing phase from Betting to Dealing");
-                    this.setPhase(BJPhases.DEALING);    // Advance Phase
-                 // ANYTHING ELSE
-                } else {
+                if( event.getName().equals("Bet") )
+                    this.bet(event);
+                else if ( event.getName().equals("Pass") )
+                    this.pass();
+                else if( event.getName().equals("AdvanceToDealing") )
+                    this.advanceToDealing();
+                else
                     throw new InvalidGameEventException(event.getName());
-                }
-                break;  // break BETTING case
-            // Handle DEALING GameEvents
+                break;
             case DEALING:
-                if ( event.getName().equals("SendCard") ) {
-                    // Add the passed card to the current acting player
-                    int card = (Integer)event.getValue();
-                    this.getHands().getFirst().getCards().addLast(card);
-
-                    // Shift hand to back and bring next hand to front.
-                    Hand toBack = this.getHands().removeFirst();
-                    this.getHands().addLast(toBack);
-                    this.appendLog( toBack.getUsername() + " has been dealt a "+BJCards.evaluateCardName(card) );
-                // ADVANCE TO PLAYING
-                } else if( event.getName().equals("AdvanceToPlaying") ) {
-                    //Append Log
-                    this.appendLog("Advancing phase from Dealing to Playing");
-                    //Advance Phase
-                    this.setPhase(BJPhases.PLAYING);    // Advance Phase
-                // ANYTHING ELSE
-                } else {
+                if ( event.getName().equals("SendCard") )
+                    this.dealingSendCard(event);
+                else if( event.getName().equals("AdvanceToPlaying") )
+                    this.advanceToPlaying();
+                else
                     throw new InvalidGameEventException(event.getName());
-                }
-                break;  // BREAK DEALING CASE
+                break;
             case PLAYING:
-                // SEND CARD
-                if( event.getName().equals("SendCard") ){
-                    // Add the card to the currently acting player
-                    Integer card = (Integer)event.getValue();
-                    this.getHands().getFirst().getCards().addLast(card);
-                    this.appendLog(this.getHands().getFirst().getUsername() + " was dealt a "+BJCards.evaluateCardName(card));
-                // STAY
-                } else if ( event.getName().equals("Stay") ) {
-                    // Add the currently acting player to the end of the queue
-                    Hand toBack = this.getHands().removeFirst();
-                    this.getHands().addLast(toBack);
-
-                    // Append to the log
-                    this.appendLog(toBack.getUsername() + " has elected to stay.");
-                // DOUBLE DOWN
-                } else if ( event.getName().equals("DoubleDown") ) {
-                    // Increase the bet of the currently acting player to twice its magnitude
-                    this.getHands().getFirst().setBet(this.getHands().getFirst().getBet() * 2);
-                    // Append to the log
-                    this.appendLog(this.getHands().getFirst().getUsername() + " doubled down.");
-                // SPLIT
-                } else if ( event.getName().equals("Split") ) {
-                    // Create 2 hands and add them to the front of the queue
-                    Hand toDuplicate = this.getHands().removeFirst();
-                    LinkedList<Integer> c1 = new LinkedList<Integer>();
-                    LinkedList<Integer> c2 = new LinkedList<Integer>();
-                    Hand h1 = new Hand( toDuplicate.getUsername(), c1 );
-                    Hand h2 = new Hand( toDuplicate.getUsername(), c2 );
-                    this.getHands().addFirst( h1 );
-                    this.getHands().addFirst( h2 );
-                    // Append to log
-                    this.appendLog(this.getHands().getFirst().getUsername() + " split their hand.");
-                // ADVANCE TO CONCLUSION
-                } else if( event.getName().equals("AdvanceToConclusion") ) {
-                    // Advance Phase
-                    this.setPhase(BJPhases.CONCLUSION);
-                    // Append Log
-                    this.appendLog("Advancing phase from Playing to Concluding");
-                // ANYTHING ELSE
-                } else {
+                if( event.getName().equals("SendCard") )
+                    this.sendCard(event);
+                else if ( event.getName().equals("Stay") )
+                    this.stay();
+                else if ( event.getName().equals("DoubleDown") )
+                    this.doubleDown();
+                else if ( event.getName().equals("Split") )
+                    this.split();
+                else if( event.getName().equals("AdvanceToConclusion") )
+                    this.advanceToConclusion();
+                else
                     throw new InvalidGameEventException();
-                }
-                break;  // BREAK PLAYING CASE
+                break;
             case CONCLUSION:
-                //ADVANCE TO INITIALIZATION
-                if ( event.getName().equals("AdvanceToInitialization") ) {
-                    // Reset hand data and move to next hand
-                    // Add back passed hands and clear passedList
-                    for( Hand h : this.passedList ){
-                        this.getHands().addLast(h);
-                    }
-                    this.passedList.clear();
-                    // Remove duplicate hands (Split usernames)
-                    for( int x = 0; x < this.getHands().size(); x++ ){
-                        for( int y = x + 1; y < this.getHands().size(); y++ ){
-                            if( this.getHands().get(x).getUsername().equals( this.getHands().get(y).getUsername() ) ){
-                                this.getHands().remove(y);
-                                y--;
-                            }
-                        }
-                    }
-
-                    // Reset bets and cards
-                    for( Hand h : this.getHands() ){
-                        h.getCards().clear();
-                        h.setBet(0);
-                    }
-                    // Advance Phase
-                    this.setPhase(BJPhases.INITIALIZATION);
-                    this.appendLog("Advancing phase from Concluding to Initialization");
-                // ADVANCE TO INITIALIZATION
-                } else {
+                if ( event.getName().equals("AdvanceToInitialization") )
+                    this.advanceToInitialization();
+                else
                     throw new InvalidGameEventException();
-                }
-                break;  // BREAK CONCLUSION PHASE
+                break;
             default:
                 throw new Error("Logical Error, Cannot Recover");
         }
     }
+
+    /**
+     * Resets all hands, adds players from passedList back into the
+     * game.  Removes duplicate hands cause by splits.  Resets Bets.
+     * And advances the phase of `this` to INITIALIZATION.
+     */
+    private void advanceToInitialization(){
+        for( Hand h : this.passedList ){
+            this.getHands().addLast(h);
+        }
+        this.passedList.clear();
+        // Remove duplicate hands
+        for( int x = 0; x < this.getHands().size(); x++ ){
+            for( int y = x + 1; y < this.getHands().size(); y++ ){
+                if( this.getHands().get(x).getUsername().equals( this.getHands().get(y).getUsername() ) ){
+                    this.getHands().remove(y);
+                    y--;
+                }
+            }
+        }
+        for( Hand h : this.getHands() ){
+            h.getCards().clear();
+            h.setBet(0);
+        }
+        this.setPhase(BJPhases.INITIALIZATION);
+        this.appendLog("Advancing phase from Concluding to Initialization");
+    }
+
+    /**
+     * Advances the phase of `this` to CONCLUSION`
+     * and logs it.
+     */
+    private void advanceToConclusion(){
+        this.setPhase(BJPhases.CONCLUSION);
+        this.appendLog("Advancing phase from Playing to Concluding");
+    }
+
+    /**
+     * Create 2 hands for the currently acting player and add them to the
+     * front of the queue.
+     */
+    private void split(){
+        Hand toDuplicate = this.getHands().removeFirst();
+        LinkedList<Integer> c1 = new LinkedList<Integer>();
+        LinkedList<Integer> c2 = new LinkedList<Integer>();
+        Hand h1 = new Hand( toDuplicate.getUsername(), c1 );
+        Hand h2 = new Hand( toDuplicate.getUsername(), c2 );
+        this.getHands().addFirst( h1 );
+        this.getHands().addFirst( h2 );
+        // Append to log
+        this.appendLog(this.getHands().getFirst().getUsername() + " split their hand.");
+    }
+
+    /**
+     * Sends a card to the currently acting player, logs it, and moves the
+     * currently acting player to the back of the action queue.
+     *
+     * @param event a BJGameEvent named "SendCard" whose value is id of the card.
+     */
+    private void dealingSendCard(BJGameEvent event){
+        Integer card = (Integer)event.getValue();
+        this.getCurrentHand().getCards().addLast(card);
+        // Log Event
+        this.appendLog( this.getCurrentUser() + " has been dealt a "+BJCards.evaluateCardName((Integer)event.getValue()) );
+        // Move to back
+        this.firstHandToBack();
+    }
+
+    /**
+     * Advances the phase of `this` to PLAYING`
+     * and logs it.
+     */
+    private void advanceToPlaying(){
+        this.appendLog("Advancing phase from Dealing to Playing");
+        this.setPhase(BJPhases.PLAYING);
+    }
+
+    /**
+     *  Increase the bet of the currently acting player to twice its magnitude
+     *  Logs the event
+     */
+    private void doubleDown(){
+        this.getCurrentHand().setBet(this.getCurrentHand().getBet() * 2);
+        this.appendLog(this.getHands().getFirst().getUsername() + " doubled down.");
+    }
+
+    /**
+     * Advances action to the next player to act.
+     */
+    private void stay(){
+        // Append to the log
+        this.appendLog(this.getCurrentUser() + " has elected to stay.");
+        // Move player to back
+        this.firstHandToBack();
+    }
+
+    /**
+     * Sends a card to a player
+     *
+     * @param event a BJGameEvent named "SendCard" whose value is id of the card.
+     */
+    private void sendCard(BJGameEvent event){
+        Integer card = (Integer)event.getValue();
+        this.getCurrentHand().getCards().addLast(card);
+        // Log event
+        this.appendLog(this.getHands().getFirst().getUsername() + " was dealt a "+BJCards.evaluateCardName(card));
+    }
+
+    /**
+     * Adds a player to the current game if a player by the specified username does
+     * not already exist.
+     *
+     * @param event a BJGameEvent named "AddPlayer" whose value is the username of the
+     *              player to add.
+     */
+    private void addPlayer( BJGameEvent event ){
+        String username = (String)event.getValue();
+        boolean contained = false;
+        for( Hand h : this.getHands() ){
+            if( h.getUsername().equals(username)){
+                contained = true;
+                break;
+            }
+        }
+        // Append to the log appropriately
+        if( !contained ){
+            this.getHands().add( this.getHands().size() - 1, new Hand(username, new LinkedList<Integer>()));
+            this.appendLog(username + " was added to the game.");
+        } else {
+            this.appendLog(username + " could not be added to the game.");
+        }
+    }
+
+    /**
+     * Sets the bet of the currently acting player, and moves that
+     * player to the back of the action queue.
+     *
+     * @param event a BJGameEvent named "Bet" whose value is the integer value
+     *              of the bet.
+     */
+    private void bet(BJGameEvent event){
+        // Set the bet of the current hand
+        Integer value = (Integer)event.getValue();
+        this.getHands().getFirst().setBet(value);
+
+        // Append Log
+        this.appendLog(this.getCurrentUser()+" has bet "+value+".");
+        this.firstHandToBack();
+    }
+
+    /**
+     * Removes a player from the current game ifa a player ith the specified username
+     * currently exists in the game.
+     *
+     * @param event a BJGameEvent named "RemovePlayer" whose value is the username of the
+     *              player to remove.
+     */
+    private void removePlayer(BJGameEvent event){
+        // If the player is in the game, remove them.
+        boolean removed = false;
+        String toRemove = (String)event.getValue();
+        for( Hand h : this.getHands() ){
+            if( h.getUsername().equals( toRemove ) ){
+                this.getHands().remove( h );
+                removed = true;
+                break;  // Break for loop
+            }
+        }
+
+        // Append to the log appropriately
+        if( removed ){
+            this.appendLog( toRemove +" has been removed from the game." );
+        } else {
+            this.appendLog( toRemove +" could not be removed from the game." );
+        }
+    }
+
+    /**
+     * Adds the current player to the passedList and logs the event
+     *
+     * @param event a BJGameEvent named "Pass".
+     */
+    private void pass(){
+        this.appendLog( this.getCurrentUser() + " has elected to pass this round." );
+        this.passedList.add(this.getHands().removeFirst());
+    }
+
+    /**
+     * Advances `this.phase` to BETTING
+     *
+     * @param event a BJGameEvent named "AdvanceToBetting".
+     */
+    private void advanceToBetting(){
+        //Append Log
+        this.appendLog("Advancing phase from INITIALIZATION to BETTING");
+        this.setPhase(BJPhases.BETTING);
+    }
+
+    /**
+     * Moves the first hand in the action queue to the
+     * back.
+     */
+    private void firstHandToBack(){
+        this.getHands().addLast(this.getHands().removeFirst());
+    }
+
+    /**
+     * Advances the phase of `this.phase` to DEALING
+     *
+     * @param event a BJGameEvent named "AdvanceToDealing".
+     */
+    private void advanceToDealing(){
+        this.appendLog("Advancing phase from BETTING to DEALING");
+        this.setPhase(BJPhases.DEALING);
+    }
+
+
 
     /**
      * @return True if `this` is set to log event verbosely,
@@ -469,7 +553,7 @@ public class BJClientGameState implements GameState {
     }
 
     /**
-     * @param s
+     * @param s value to set event log to
      */
     private void setEventLog(LinkedList<String> s){
         this.eventLog = s;
@@ -556,7 +640,11 @@ public class BJClientGameState implements GameState {
         return hands;
     }
 
-
+    /**
+     * @see java.lang.Object#clone()
+     *
+     * @return `this` cloned.
+     */
     public BJClientGameState clone(){
         try{
             return (BJClientGameState)super.clone();
