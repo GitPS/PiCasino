@@ -1,8 +1,8 @@
-package com.piindustries.picasino.blackjack;/*
- * [Class]
+/*
+ * com.piindustries.picasino.blackjack.BJCards
  * [Current Version]
  * [Date last modified]
- * 
+ *
  * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
  *
  * This file is part of PiCasino.
@@ -11,15 +11,17 @@ package com.piindustries.picasino.blackjack;/*
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * PiCasino is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+package com.piindustries.picasino.blackjack;
 
 import java.util.LinkedList;
 
@@ -76,7 +78,7 @@ public class BJCards {
         LinkedList<Integer> result = new LinkedList<Integer>();
         if( hand != null && hand.length > 0 )
             return null;
-        result.add(hand[0]);
+        result.add(hand[0]);    // TODO make sure there can't be an index out of bounds exception
         for(int i : hand ){
             int[] value = getBJValue(i);
             if( value.length > 1 ){
