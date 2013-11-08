@@ -110,33 +110,33 @@ public class BJServerGameState implements GameState {
             case INITIALIZATION:
                 handleInitializationEvent(event); break;
             case BETTING:
-                switch(event.getName()){
-                    case "Bet": bet(event); break;
-                    case "Pass": pass(); break;
-                    default: throw new InvalidGameEventException(event.getName());
+                switch(event.getType()){
+                    case BET: bet(event); break;
+                    case PASS: pass(); break;
+                    default: throw new InvalidGameEventException(event.getType().name());
                 }
                 // If the dealer is up to bet.
-                if( gameState.getHands().getFirst() instanceof BJClientGameState.DealerHand)
+                if( gameState.getCurrentHand() instanceof BJClientGameState.DealerHand)
                     this.advanceToDealing();
                 break;
             case DEALING:
                 // No actions should ever be received by this during the dealing phase
                 // because it is dictated by the server and requires no user interaction.
-                throw new InvalidGameEventException(event.getName());
+                throw new InvalidGameEventException(event.getType().name());
             case PLAYING:
-                switch(event.getName()){
-                    case "RequestCard": requestCard(); break;
-                    case "SendCard": gameState.invoke(event); break;
-                    case "Stay": this.stay(event); break;
-                    case "DoubleDown": doubleDown(event); break;
-                    case "Split": split(event); break;
-                    case "AdvanceToConclusion": advanceToConclusion(event); break;
-                    default: throw new InvalidGameEventException(event.getName());
+                switch(event.getType()){
+                    case HIT: requestCard(); break;
+                    // case SEND_CARD: gameState.invoke(event); break; TODO CHECK IF THIS CAN BE REMOVED
+                    case STAND: this.stay(event); break;
+                    case DOUBLE_DOWN: doubleDown(event); break;
+                    case SPLIT: split(event); break;
+                    case ADVANCE_TO_CONCLUDING: advanceToConclusion(event); break;
+                    default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             case CONCLUSION:
-                switch(event.getName()){
-                    case "AdvanceToInitialization": advanceToInitialization(event); break;
-                    default: throw new InvalidGameEventException(event.getName());
+                switch(event.getType()){
+                    case ADVANCE_TO_INITIALIZATION: advanceToInitialization(event); break;
+                    default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             default: throw new Error("Logical Error, Cannot Recover.");
         }
@@ -150,8 +150,8 @@ public class BJServerGameState implements GameState {
      * @throws InvalidGameEventException
      */
     private void handleInitializationEvent(BJGameEvent event) throws InvalidGameEventException {
-        if( !gameState.getValidEvents().contains(event.getName()))
-            throw new InvalidGameEventException(event.getName());
+        if( !BJGameEventType.getValidEvents(gameState).contains(event.getType()))
+            throw new InvalidGameEventException(event.getType().name());
         gameState.invoke(event);
     }
 
@@ -188,7 +188,7 @@ public class BJServerGameState implements GameState {
     private void split(BJGameEvent event) throws InvalidGameEventException {
         // FIXME Behavior unverified
         BJGameEvent result = new BJGameEvent();
-        result.setName("Split");
+        result.setType(BJGameEventType.SPLIT);
         result.setValue(null);
         gameState.invoke(event);
         gameState.getNetworkHandler().send( result );
@@ -203,7 +203,7 @@ public class BJServerGameState implements GameState {
     private void doubleDown(BJGameEvent event) throws InvalidGameEventException {
         // FIXME Behavior unverified
         BJGameEvent result = new BJGameEvent(); // TODO check if i can reuse event
-        result.setName("DoubleDown");
+        result.setType(BJGameEventType.DOUBLE_DOWN);
         result.setValue(null);
         gameState.invoke(event);
         gameState.getNetworkHandler().send(result);   // TODO check if i can reuse event
@@ -224,7 +224,7 @@ public class BJServerGameState implements GameState {
      */
     private void stay(BJGameEvent event) throws InvalidGameEventException {
         BJGameEvent result = new BJGameEvent(); // TODO check if i can reuse event
-        result.setName("Stay");
+        result.setType(BJGameEventType.STAND);
         result.setValue(null);
         gameState.invoke(event);
         gameState.getNetworkHandler().send(result); // TODO check if I can just pass the same event on to all other clients.
@@ -244,7 +244,7 @@ public class BJServerGameState implements GameState {
         BJDirectedGameEvent directedEvent = new BJDirectedGameEvent();
         BJGameEvent standardEvent = new BJGameEvent();
         for( BJClientGameState.Hand h : gameState.getHands() ){
-            directedEvent.setName("SendCard");
+            directedEvent.setType(BJGameEventType.SEND_CARD);
             directedEvent.setValue(cardVal);
             if( !(h instanceof BJClientGameState.DealerHand) ){
                 directedEvent.setToUser(h.getUsername());
@@ -253,7 +253,7 @@ public class BJServerGameState implements GameState {
         }
         // Update the underlying gameState
         standardEvent.setValue(cardVal);
-        standardEvent.setName("SendCard");
+        standardEvent.setType(BJGameEventType.SEND_CARD);
         gameState.invoke(standardEvent);
     }
 
@@ -265,11 +265,11 @@ public class BJServerGameState implements GameState {
      */
     private void advanceToDealing() throws InvalidGameEventException {
         BJGameEvent result = new BJGameEvent();
-        result.setName("Bet");
+        result.setType(BJGameEventType.BET);
         result.setValue(0);
         this.gameState.invoke(result);
         this.getNetworkHandler().send(result);
-        result.setName("AdvanceToDealing");
+        result.setType(BJGameEventType.ADVANCE_TO_DEALING);
         this.gameState.invoke(result);
         this.getNetworkHandler().send(result);
         deal();
@@ -281,7 +281,7 @@ public class BJServerGameState implements GameState {
     private void pass(){
         // FIXME Behavior unverified
         BJGameEvent result = new BJGameEvent();
-        result.setName("Pass");
+        result.setType(BJGameEventType.PASS);
         result.setValue(null);
         gameState.getNetworkHandler().send(result);
         // Update the underlying gameState
@@ -294,7 +294,7 @@ public class BJServerGameState implements GameState {
      */
     private void bet(BJGameEvent event) throws InvalidGameEventException{
         BJGameEvent result = new BJGameEvent();
-        result.setName("Bet");
+        result.setType(BJGameEventType.BET);
         result.setValue( event.getValue() );
         gameState.getNetworkHandler().send(result);
         // Update the underlying gameState
@@ -311,7 +311,7 @@ public class BJServerGameState implements GameState {
         // TODO concluding tasks
         gameState.appendLog("Writing back data to database.");
         BJGameEvent result = new BJGameEvent();
-        result.setName("AdvanceToInitialization");
+        result.setType(BJGameEventType.ADVANCE_TO_INITIALIZATION);
         result.setValue(null);
         this.invoke( result );
     }
@@ -357,7 +357,7 @@ public class BJServerGameState implements GameState {
         // Play dealers hand
         while(d.mustHit()){
             BJGameEvent toSend = new BJGameEvent();
-            toSend.setName("SendCard");
+            toSend.setType(BJGameEventType.SEND_CARD);
             toSend.setValue(getRandomCard());
             gameState.invoke(toSend);
             gameState.appendLog(gameState.getCurrentUser()+" has been dealt an "+BJCards.evaluateCardName((Integer)toSend.getValue())+".");
@@ -367,7 +367,7 @@ public class BJServerGameState implements GameState {
 
         // Advance Phase
         BJGameEvent toSend = new BJGameEvent();
-        toSend.setName("AdvanceToConclusion");
+        toSend.setType(BJGameEventType.ADVANCE_TO_CONCLUDING);
         gameState.appendLog("Advancing phase from PLAYING to CONCLUSION.");
         this.invoke(toSend);
     }
@@ -382,7 +382,7 @@ public class BJServerGameState implements GameState {
             // If this is the first card, it need to be hidden to other players
             if( gameState.getCurrentHand().getCards().size() == 0){
                 BJDirectedGameEvent toSend = new BJDirectedGameEvent();
-                toSend.setName("SendCard");
+                toSend.setType(BJGameEventType.DEAL_CARD);
                 int card = getRandomCard();
                 // For all hands except the dealer's
                 for(BJClientGameState.Hand h : gameState.getHands()){
@@ -399,12 +399,12 @@ public class BJServerGameState implements GameState {
 
                 // Update the server data
                 BJGameEvent toSend2 = new BJGameEvent();
-                toSend2.setName("SendCard");
+                toSend2.setType(BJGameEventType.DEAL_CARD);
                 toSend2.setValue(card);
                 gameState.invoke(toSend2);
             } else {
                 BJGameEvent toSend = new BJGameEvent();
-                toSend.setName("SendCard");
+                toSend.setType(BJGameEventType.DEAL_CARD);
                 toSend.setValue(getRandomCard());
                 gameState.invoke(toSend);
                 this.getNetworkHandler().send(toSend);
@@ -412,7 +412,7 @@ public class BJServerGameState implements GameState {
         }
         // Once every hand has been dealt, Advance Phase
         BJGameEvent toSend = new BJGameEvent();
-        toSend.setName("AdvanceToPlaying");
+        toSend.setType(BJGameEventType.ADVANCE_TO_PLAYING);
         this.getNetworkHandler().send(toSend);
         gameState.invoke(toSend);
     }
@@ -424,7 +424,7 @@ public class BJServerGameState implements GameState {
         // Advance all client phases
         this.gameState.appendLog("Game Started at "+new Date());
         BJGameEvent event = new BJGameEvent();
-        event.setName("AdvanceToBetting");
+        event.setType(BJGameEventType.ADVANCE_TO_BETTING);
         this.getNetworkHandler().send(event);
         this.gameState.invoke(event);
     }
@@ -490,7 +490,7 @@ public class BJServerGameState implements GameState {
      * @return a deck containing all 52 cards.
      */
     private ArrayList<Integer> buildDeck(){
-        ArrayList<Integer> result = new ArrayList<Integer>();
+        ArrayList<Integer> result = new ArrayList<>();
         for( int i = 0; i < 52; i++ )
             result.add(i);
         return result;
@@ -509,7 +509,7 @@ public class BJServerGameState implements GameState {
     private void addPlayersFromWaitingListToGame() throws InvalidGameEventException {
         for( String player: getWaitingList()){
             BJGameEvent toSend = new BJGameEvent();
-            toSend.setName("AddPlayer");
+            toSend.setType(BJGameEventType.ADD_PLAYER);
             toSend.setValue(player);
             gameState.invoke(toSend);
             getNetworkHandler().send(toSend);
