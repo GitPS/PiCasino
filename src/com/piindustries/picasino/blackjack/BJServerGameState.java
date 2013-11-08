@@ -108,47 +108,51 @@ public class BJServerGameState implements GameState {
         BJGameEvent event = (BJGameEvent)e;
         switch( gameState.getPhase() ){
             case INITIALIZATION:
-                if( !gameState.getValidEvents().contains(event.getName()))
-                    throw new InvalidGameEventException(event.getName());
-                gameState.invoke(e);
-                break;  // Break Initialization phase
+                handleInitializationEvent(event); break;
             case BETTING:
-                if( event.getName().equals("Bet") )
-                    this.bet(event);
-                else if( event.getName().equals("Pass") )
-                    this.pass();
-                else
-                    throw new InvalidGameEventException(event.getName());
-                if( gameState.getHands().getFirst() instanceof BJClientGameState.DealerHand)    // If the dealer is up to bet.
+                switch(event.getName()){
+                    case "Bet": bet(event); break;
+                    case "Pass": pass(); break;
+                    default: throw new InvalidGameEventException(event.getName());
+                }
+                // If the dealer is up to bet.
+                if( gameState.getHands().getFirst() instanceof BJClientGameState.DealerHand)
                     this.advanceToDealing();
                 break;
             case DEALING:
-                throw new InvalidGameEventException(event.getName());   // No actions should ever be received by this during the dealing phase.
+                // No actions should ever be received by this during the dealing phase
+                // because it is dictated by the server and requires no user interaction.
+                throw new InvalidGameEventException(event.getName());
             case PLAYING:
-                if( event.getName().equals("RequestCard") )
-                    this.requestCard();
-                else if( event.getName().equals("SendCard") )
-                    gameState.invoke(event);
-                else if( event.getName().equals("Stay") )
-                    this.stay(event);
-                else if( event.getName().equals("DoubleDown") )
-                    this.doubleDown(event);
-                else if( event.getName().equals("Split") )
-                    this.split(event);
-                else if( event.getName().equals("AdvanceToConclusion") )
-                    this.advanceToConclusion(event);
-                else
-                    throw new InvalidGameEventException(event.getName());
-                break;
+                switch(event.getName()){
+                    case "RequestCard": requestCard(); break;
+                    case "SendCard": gameState.invoke(event); break;
+                    case "Stay": this.stay(event); break;
+                    case "DoubleDown": doubleDown(event); break;
+                    case "Split": split(event); break;
+                    case "AdvanceToConclusion": advanceToConclusion(event); break;
+                    default: throw new InvalidGameEventException(event.getName());
+                } break;
             case CONCLUSION:
-                if( event.getName().equals("AdvanceToInitialization") )
-                    this.advanceToInitialization(event);
-                else
-                    throw new InvalidGameEventException(event.getName());
-                break;
-            default:
-                throw new Error("Logical Error, Cannot Recover.");
+                switch(event.getName()){
+                    case "AdvanceToInitialization": advanceToInitialization(event); break;
+                    default: throw new InvalidGameEventException(event.getName());
+                } break;
+            default: throw new Error("Logical Error, Cannot Recover.");
         }
+    }
+
+    // TODO more descriptive comment
+    /**
+     * Handles any event received during the initialization phase
+     *
+     * @param event the event to handle
+     * @throws InvalidGameEventException
+     */
+    private void handleInitializationEvent(BJGameEvent event) throws InvalidGameEventException {
+        if( !gameState.getValidEvents().contains(event.getName()))
+            throw new InvalidGameEventException(event.getName());
+        gameState.invoke(event);
     }
 
     /**
