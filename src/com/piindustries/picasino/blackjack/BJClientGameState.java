@@ -156,6 +156,12 @@ public class BJClientGameState implements GameState {
         this.setVerbose(false);
     }
 
+    // TODO Make sure splitting works as designed
+    // TODO Make sure doubling down works as designed
+    // TODO Make sure empty games don't explode
+    // TODO Make sure empty games caused by disconnects don't explode
+    // TODO Make sure empty games caused by passes don't explode
+
     /**
      * Invokes a GameEvent on this GameState.
      *
@@ -262,6 +268,7 @@ public class BJClientGameState implements GameState {
      * front of the queue.
      */
     private void split(){
+        // FIXME Behavior unverified
         Hand toDuplicate = this.getHands().removeFirst();
         LinkedList<Integer> c1 = new LinkedList<Integer>();
         LinkedList<Integer> c2 = new LinkedList<Integer>();
@@ -302,6 +309,8 @@ public class BJClientGameState implements GameState {
      *  Logs the event
      */
     private void doubleDown(){
+        // FIXME Behavior unverified
+        // FIXME Behavior unverified
         this.getCurrentHand().setBet(this.getCurrentHand().getBet() * 2);
         this.appendLog(this.getHands().getFirst().getUsername() + " doubled down.");
     }
@@ -399,10 +408,9 @@ public class BJClientGameState implements GameState {
 
     /**
      * Adds the current player to the passedList and logs the event
-     *
-     * @param event a BJGameEvent named "Pass".
      */
     private void pass(){
+        // FIXME Behavior unverified
         this.appendLog( this.getCurrentUser() + " has elected to pass this round." );
         this.passedList.add(this.getHands().removeFirst());
     }
