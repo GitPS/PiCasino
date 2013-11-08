@@ -177,38 +177,38 @@ public class BJClientGameState implements GameState {
         if(handleGlobalEvent(event)) return;    // If is a global event and it can be handled, handle it, and return.
         switch (this.getPhase()) {
             case INITIALIZATION:
-                switch( event.getName() ){
-                    case "AddPlayer": addPlayer(event); break;
-                    case "AdvanceToBetting": advanceToBetting(); break;
-                    case "RemovePlayer": removePlayer(event); break;
-                    default: throw new InvalidGameEventException(event.getName());
+                switch( event.getType() ){
+                    case ADD_PLAYER: addPlayer(event); break;
+                    case ADVANCE_TO_BETTING: advanceToBetting(); break;
+                    case REMOVE_PLAYER: removePlayer(event); break;
+                    default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             case BETTING:
-                switch(event.getName()){
-                    case "Bet": bet(event); break;
-                    case "Pass": pass(); break;
-                    case "AdvanceToDealing": advanceToDealing(); break;
-                    default: throw new InvalidGameEventException(event.getName());
+                switch(event.getType()){
+                    case BET: bet(event); break;
+                    case PASS: pass(); break;
+                    case ADVANCE_TO_DEALING: advanceToDealing(); break;
+                    default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             case DEALING:
-                switch(event.getName()){
-                    case "SendCard": dealingSendCard(event); break;
-                    case "AdvanceToPlaying": advanceToPlaying(); break;
-                    default: throw new InvalidGameEventException(event.getName());
+                switch(event.getType()){
+                    case DEAL_CARD: dealingSendCard(event); break;
+                    case ADVANCE_TO_PLAYING: advanceToPlaying(); break;
+                    default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             case PLAYING:
-                switch(event.getName()){
-                    case "SendCard": playingSendCard(event); break;
-                    case "Stay": stay(); break;
-                    case "DoubleDown": doubleDown(); break;
-                    case "Split": split(); break;
-                    case "AdvanceToConclusion": advanceToConclusion(); break;
-                    default: throw new InvalidGameEventException(event.getName());
+                switch(event.getType()){
+                    case SEND_CARD: playingSendCard(event); break;
+                    case STAND: stay(); break;
+                    case DOUBLE_DOWN: doubleDown(); break;
+                    case SPLIT: split(); break;
+                    case ADVANCE_TO_CONCLUDING: advanceToConclusion(); break;
+                    default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             case CONCLUSION:
-                switch(event.getName()){
-                    case "AdvanceToInitialization": advanceToInitialization(); break;
-                    default: throw new InvalidGameEventException(event.getName());
+                switch(event.getType()){
+                    case ADVANCE_TO_INITIALIZATION: advanceToInitialization(); break;
+                    default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             default: throw new Error("Logical Error, Cannot Recover");
         }
@@ -225,14 +225,13 @@ public class BJClientGameState implements GameState {
      * otherwise `false`
      */
     private boolean handleGlobalEvent(BJGameEvent event){
-        switch(event.getName()){    // TODO add logic and establish global events
-            case "Message":
+        switch(event.getType()){    // TODO add logic and establish global events
+            case MESSAGE:
                 String data = (String)event.getValue(); // TODO out of bounds handling
                 String from = data.substring(0, data.indexOf('|') );
                 String message = data.substring( data.indexOf('|') + 1 );
                 appendMessage(new Message(from, message));
                 return true;
-            case "Player": return true;
             default: return false;
         }
     }
@@ -439,8 +438,6 @@ public class BJClientGameState implements GameState {
 
     /**
      * Advances `this.phase` to BETTING
-     *
-     * @param event a BJGameEvent named "AdvanceToBetting".
      */
     private void advanceToBetting(){
         //Append Log
@@ -482,52 +479,6 @@ public class BJClientGameState implements GameState {
      */
     public void setVerbose(boolean verbose) {
         isVerbose = verbose;
-    }
-
-    /**
-     * @return a list of GameEvents that <code>this</code> can accept in
-     * its current state.
-     */
-    public LinkedList<String> getValidEvents(){
-        LinkedList<String> result = new LinkedList<String>();
-        switch (this.getPhase()){
-            case INITIALIZATION:
-                for( String s : BJClientGameState.INITIALIZATION_EVENTS )
-                    result.add(s);
-                break;
-            case BETTING:
-                for( String s : BJClientGameState.BETTING_EVENTS )
-                    result.add(s);
-                break;
-            case DEALING:
-                for( String s : BJClientGameState.DEALING_EVENTS )
-                    result.add(s);
-                break;
-            case PLAYING:
-                for( String s : BJClientGameState.PLAYING_EVENTS ){
-                    if( s.equals("DoubleDown") ){
-                        if( this.getHands().getFirst().getCards().size() == 2 ){
-                            result.add("DoubleDown");
-                        }
-                    } else if (s.equals("Split")){
-                        if( this.getHands().getFirst().getCards().size() == 2 ){
-                            if( this.getHands().getFirst().getCards().get(0) == this.getHands().getFirst().getCards().get(1) ){
-                                result.add("Split");
-                            }
-                        }
-                    } else {
-                        result.add(s);
-                    }
-                }
-                break;
-            case CONCLUSION:
-                for( String s : BJClientGameState.CONCLUSION_EVENTS )
-                    result.add(s);
-                break;
-            default:
-                throw new Error("Logical error.  Cannot recover.");
-        }
-        return result;
     }
 
     /**
