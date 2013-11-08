@@ -47,15 +47,15 @@ import com.piindustries.picasino.api.GameEvent;
  */
 public class BJDirectedGameEvent implements GameEvent {
     private String toUser;
-    private String name;
+    private BJGameEventType type;
     private Object value;
 
-    public String getName() {
-        return name;
+    public BJGameEventType getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(BJGameEventType type) {
+        this.type = type;
     }
 
     public Object getValue() {
