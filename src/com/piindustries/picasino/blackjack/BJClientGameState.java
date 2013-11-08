@@ -143,6 +143,7 @@ public class BJClientGameState implements GameState {
     private int logSize;
     private int logCounter;
     private boolean isVerbose; // False by default
+    private LinkedList<Message> messages;
 
     /**
      * Default Constructor.
@@ -225,10 +226,20 @@ public class BJClientGameState implements GameState {
      */
     private boolean handleGlobalEvent(BJGameEvent event){
         switch(event.getName()){    // TODO add logic and establish global events
-            case "Message": return true;
+            case "Message":
+                String data = (String)event.getValue(); // TODO out of bounds handling
+                String from = data.substring(0, data.indexOf('|') );
+                String message = data.substring( data.indexOf('|') + 1 );
+                appendMessage(new Message(from, message));
+                return true;
             case "Player": return true;
             default: return false;
         }
+    }
+
+    // TODO comment
+    private void appendMessage(Message m){
+        this.getMessages().addLast(m);
     }
 
     /**
@@ -347,7 +358,7 @@ public class BJClientGameState implements GameState {
         Integer card = (Integer)event.getValue();
         this.getCurrentHand().getCards().addLast(card);
         // Log event
-        this.appendLog(this.getHands().getFirst().getUsername() + " was dealt a "+BJCards.evaluateCardName(card));
+        this.appendLog(this.getHands().getFirst().getUsername() + " was dealt a " + BJCards.evaluateCardName(card));
     }
 
     /**
@@ -370,9 +381,8 @@ public class BJClientGameState implements GameState {
         if( !contained ){
             this.getHands().add( this.getHands().size() - 1, new Hand(username, new LinkedList<Integer>()));
             this.appendLog(username + " was added to the game.");
-        } else {
+        } else
             this.appendLog(username + " could not be added to the game.");
-        }
     }
 
     /**
@@ -412,11 +422,10 @@ public class BJClientGameState implements GameState {
         }
 
         // Append to the log appropriately
-        if( removed ){
+        if( removed )
             this.appendLog( toRemove +" has been removed from the game." );
-        } else {
+        else
             this.appendLog( toRemove +" could not be removed from the game." );
-        }
     }
 
     /**
@@ -449,8 +458,6 @@ public class BJClientGameState implements GameState {
 
     /**
      * Advances the phase of `this.phase` to DEALING
-     *
-     * @param event a BJGameEvent named "AdvanceToDealing".
      */
     private void advanceToDealing(){
         this.appendLog("Advancing phase from BETTING to DEALING");
@@ -629,6 +636,18 @@ public class BJClientGameState implements GameState {
         this.logCounter = value;
     }
 
+    // TODO comment
+    private LinkedList<Message> getMessages() {
+        if( this.messages == null )
+            this.setMessages(new LinkedList<Message>());
+        return messages;
+    }
+
+    // TODO comment
+    private void setMessages(LinkedList<Message> messages) {
+        this.messages = messages;
+    }
+
     /**
      * Provides read access to `this.phase` to inheriting implementations.
      *
@@ -639,6 +658,8 @@ public class BJClientGameState implements GameState {
             throw new Error("Phase not set. Cannot Recover"); // Most specific Exception than a null pointer exception
         return phase;
     }
+
+
 
     /**
      * Provides write access to `this.phase` to inheriting implementations.
@@ -852,6 +873,38 @@ public class BJClientGameState implements GameState {
          */
         public boolean mustHit(){
             return this.getBestHandValue() < 17 && this.getBestHandValue() >= 0;
+        }
+    }
+
+    // TODO comment
+    private class Message {
+        private String from;
+        private String message;
+
+        // TODO comment
+        public Message(String from, String message){
+            setFrom(from);
+            setMessage(message);
+        }
+
+        // TODO comment
+        private String getFrom() {
+            return from;
+        }
+
+        // TODO comment
+        private void setFrom(String from) {
+            this.from = from;
+        }
+
+        // TODO comment
+        private String getMessage() {
+            return message;
+        }
+
+        // TODO comment
+        private void setMessage(String message) {
+            this.message = message;
         }
     }
 }
