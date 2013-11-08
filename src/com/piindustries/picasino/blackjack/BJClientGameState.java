@@ -173,6 +173,7 @@ public class BJClientGameState implements GameState {
         if (!(e instanceof BJGameEvent))        // If the GameEvent is not a Blackjack game event, throw exception
             throw new InvalidGameEventException(e.toString());
         BJGameEvent event = (BJGameEvent) e;    // Case event to type correct type.
+        if(handleGlobalEvent(event)) return;    // If is a global event and it can be handled, handle it, and return.
         switch (this.getPhase()) {
             case INITIALIZATION:
                 switch( event.getName() ){
@@ -196,10 +197,10 @@ public class BJClientGameState implements GameState {
                 } break;
             case PLAYING:
                 switch(event.getName()){
-                    case "SendCard": sendCard(event); break;
+                    case "SendCard": playingSendCard(event); break;
                     case "Stay": stay(); break;
-                    case "DoubleDown": break;
-                    case "Split": break;
+                    case "DoubleDown": doubleDown(); break;
+                    case "Split": split(); break;
                     case "AdvanceToConclusion": advanceToConclusion(); break;
                     default: throw new InvalidGameEventException(event.getName());
                 } break;
@@ -210,6 +211,33 @@ public class BJClientGameState implements GameState {
                 } break;
             default: throw new Error("Logical Error, Cannot Recover");
         }
+    }
+
+    /**
+     * If `event` is a global event that `this` can handle
+     * `#handleGlobalEvent` will handle it and return `true`.
+     * If `event` is not a global event or `this` cannot handle
+     * it, `this` will return `false`.
+     *
+     * @param event Any {@link BJGameEvent}
+     * @return 'true` if event was handled by `this#handleGlobalEvent`
+     * otherwise `false`
+     */
+    private boolean handleGlobalEvent(BJGameEvent event){
+        switch(event.getName()){    // TODO add logic and establish global events
+            case "Message": return true;
+            case "Player": return true;
+            default: return false;
+        }
+    }
+
+    /**
+     * @param event Any {@link BJGameEvent}
+     * @return `True` if this is a global event, otherwise
+     * `false`.
+     */
+    private boolean isGlobalEvent(BJGameEvent event){
+        return false;   // TODO add logic
     }
 
     /**
@@ -315,7 +343,7 @@ public class BJClientGameState implements GameState {
      *
      * @param event a BJGameEvent named "SendCard" whose value is id of the card.
      */
-    private void sendCard(BJGameEvent event){
+    private void playingSendCard(BJGameEvent event){
         Integer card = (Integer)event.getValue();
         this.getCurrentHand().getCards().addLast(card);
         // Log event
