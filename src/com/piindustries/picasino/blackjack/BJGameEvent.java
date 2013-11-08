@@ -42,15 +42,15 @@ import com.piindustries.picasino.api.GameEvent;
  * @version 1.0
  */
 public class BJGameEvent implements GameEvent {
-    private String name;
+    private BJGameEventType type;
     private Object value;
 
-    public String getName() {
-        return name;
+    public BJGameEventType getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(BJGameEventType type) {
+        this.type = type;
     }
 
     public Object getValue() {
