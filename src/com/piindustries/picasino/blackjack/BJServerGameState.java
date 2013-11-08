@@ -347,12 +347,15 @@ public class BJServerGameState implements GameState {
             toSend.setName("SendCard");
             toSend.setValue(getRandomCard());
             gameState.invoke(toSend);
+            gameState.appendLog(gameState.getCurrentUser()+" has been dealt an "+BJCards.evaluateCardName((Integer)toSend.getValue())+".");
             getNetworkHandler().send(toSend);
         }
+        gameState.appendLog(gameState.getCurrentUser()+" must stay.");
 
         // Advance Phase
         BJGameEvent toSend = new BJGameEvent();
         toSend.setName("AdvanceToConclusion");
+        gameState.appendLog("Advancing phase from PLAYING to CONCLUSION.");
         this.invoke(toSend);
     }
 
