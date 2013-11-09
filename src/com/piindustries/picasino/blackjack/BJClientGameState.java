@@ -37,6 +37,7 @@ import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
@@ -192,14 +193,14 @@ public class BJClientGameState implements GameState {
                 } break;
             case DEALING:
                 switch(event.getType()){
-                    case DEAL_CARD: dealingSendCard(event); break;
+                    case DEAL_CARD: dealCard(event); break;
                     case ADVANCE_TO_PLAYING: advanceToPlaying(); break;
                     default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             case PLAYING:
                 switch(event.getType()){
-                    case SEND_CARD: playingSendCard(event); break;
-                    case STAND: stay(); break;
+                    case SEND_CARD: sendCard(event); break;
+                    case STAND: stand(); break;
                     case DOUBLE_DOWN: doubleDown(); break;
                     case SPLIT: split(); break;
                     case ADVANCE_TO_CONCLUDING: advanceToConclusion(); break;
@@ -309,7 +310,7 @@ public class BJClientGameState implements GameState {
      *
      * @param event a BJGameEvent named "SendCard" whose value is id of the card.
      */
-    private void dealingSendCard(BJGameEvent event){
+    private void dealCard(BJGameEvent event){
         Integer card = (Integer)event.getValue();
         this.getCurrentHand().getCards().addLast(card);
         // Log Event
@@ -341,9 +342,9 @@ public class BJClientGameState implements GameState {
     /**
      * Advances action to the next player to act.
      */
-    private void stay(){
+    private void stand(){
         // Append to the log
-        this.appendLog(this.getCurrentUser() + " has elected to stay.");
+        this.appendLog(this.getCurrentUser() + " has elected to stand.");
         // Move player to back
         this.firstHandToBack();
     }
@@ -353,7 +354,7 @@ public class BJClientGameState implements GameState {
      *
      * @param event a BJGameEvent named "SendCard" whose value is id of the card.
      */
-    private void playingSendCard(BJGameEvent event){
+    private void sendCard(BJGameEvent event){
         Integer card = (Integer)event.getValue();
         this.getCurrentHand().getCards().addLast(card);
         // Log event
@@ -665,6 +666,44 @@ public class BJClientGameState implements GameState {
         DEALING,
         PLAYING,
         CONCLUSION
+    }
+
+    public ArrayList<BJGameEventType> getValidEvents(){
+        ArrayList<BJGameEventType> result = new ArrayList<>();
+        switch(this.getPhase()){
+            case INITIALIZATION:
+                result.add(BJGameEventType.ADD_PLAYER);
+                result.add(BJGameEventType.REMOVE_PLAYER);
+                result.add(BJGameEventType.ADVANCE_TO_BETTING);
+                break;
+            case BETTING:
+                result.add(BJGameEventType.BET);
+                result.add(BJGameEventType.PASS);
+                result.add(BJGameEventType.ADVANCE_TO_DEALING);
+                break;
+            case DEALING:
+                result.add(BJGameEventType.DEAL_CARD);
+                result.add(BJGameEventType.ADVANCE_TO_PLAYING);
+                break;
+            case PLAYING:
+                result.add(BJGameEventType.HIT);
+                result.add(BJGameEventType.SEND_CARD);
+                result.add(BJGameEventType.STAND);
+                result.add(BJGameEventType.SPLIT);
+                result.add(BJGameEventType.DOUBLE_DOWN);
+                result.add(BJGameEventType.ADVANCE_TO_CONCLUDING);
+                break;
+            case CONCLUSION:
+                result.add(BJGameEventType.ADVANCE_TO_INITIALIZATION);
+                break;
+            default: throw new Error("Logical Error.  Cannot Recover");
+        }
+        result.add(BJGameEventType.MESSAGE);
+        result.add(BJGameEventType.PING);
+        result.add(BJGameEventType.INTEGRITY_CHECK);
+        result.add(BJGameEventType.PLAYER_DISCONNECT);
+        result.add(BJGameEventType.REQUEST_GAME_STATE);
+        return result;
     }
 
     /**
