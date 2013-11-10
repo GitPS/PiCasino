@@ -456,8 +456,6 @@ public class BJClientGameState implements GameState {
         this.setPhase(BJPhases.DEALING);
     }
 
-
-
     /**
      * @return True if `this` is set to log event verbosely,
      * otherwise false.
@@ -606,8 +604,6 @@ public class BJClientGameState implements GameState {
         return phase;
     }
 
-
-
     /**
      * Provides write access to `this.phase` to inheriting implementations.
      *
@@ -630,6 +626,15 @@ public class BJClientGameState implements GameState {
     }
 
     /**
+     * Provides write access to `this.hands` to inheriting implementations.
+     *
+     * @param hands the value to set `this.hands` to.
+     */
+    protected void setHands(LinkedList<BJHand> hands) {
+        this.hands = hands;
+    }
+
+    /**
      * @see java.lang.Object#clone()
      *
      * @return `this` cloned.
@@ -637,15 +642,6 @@ public class BJClientGameState implements GameState {
     @Override
     public BJClientGameState clone() throws CloneNotSupportedException {
         return (BJClientGameState)super.clone();
-    }
-
-    /**
-     * Provides write access to `this.hands` to inheriting implementations.
-     *
-     * @param hands the value to set `this.hands` to.
-     */
-    protected void setHands(LinkedList<BJHand> hands) {
-        this.hands = hands;
     }
 
     public ArrayList<BJGameEventType> getValidEvents(){
