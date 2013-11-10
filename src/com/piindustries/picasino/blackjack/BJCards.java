@@ -84,7 +84,7 @@ public class BJCards {
 
     public static LinkedList<Integer> getHandValues(int[] hand){
         LinkedList<Integer> result = new LinkedList<>();
-        if( hand != null && hand.length > 0 )
+        if( hand == null || hand.length < 1 )
             return null;
         result.add(hand[0]);    // TODO make sure there can't be an index out of bounds exception
         for(int i : hand ){
