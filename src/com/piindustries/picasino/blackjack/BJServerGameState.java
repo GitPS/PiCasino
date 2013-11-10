@@ -150,7 +150,7 @@ public class BJServerGameState implements GameState {
      * @throws InvalidGameEventException
      */
     private void handleInitializationEvent(BJGameEvent event) throws InvalidGameEventException {
-        if( !BJGameEventType.getValidEvents(gameState).contains(event.getType()))
+        if( !gameState.getValidEvents().contains(event.getType()))
             throw new InvalidGameEventException(event.getType().name());
         gameState.invoke(event);
     }
@@ -320,6 +320,8 @@ public class BJServerGameState implements GameState {
     public void startTimer(){
         gameState.appendLog("Initializing a new game.");
         System.out.println("A new game will begin in " + intermissionTime + " seconds.");
+        System.out.println("Available Heap Space = "+Runtime.getRuntime().totalMemory()/1048576.0 +" megabytes."); // 1 megabyte = 1 048 576 bytes
+        System.out.flush();
         gameTimer.start();
     }
 
