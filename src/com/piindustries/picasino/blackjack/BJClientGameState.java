@@ -36,7 +36,6 @@ import com.piindustries.picasino.api.GameState;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -51,13 +50,13 @@ import java.util.NoSuchElementException;
  * to determine when to transition between phases of a blackjack game.
  * </p>
  * <p>
- * A {@link BJClientGameState} can be and must be in exactly one {@link BJPhases} at a
+ * A {@link BJClientGameState} can be and must be in exactly one {@link com.piindustries.picasino.blackjack.BJPhases} at a
  * given time.  What a {@link BJClientGameState} can handle during any of the specified
  * phases will be described in detail below.
  * </p>
  *
  * <pre>{{{
- *     During the {@link BJPhases#INITIALIZATION} phase, a {@link BJClientGameState} can
+ *     During the {@link com.piindustries.picasino.blackjack.BJPhases#INITIALIZATION} phase, a {@link BJClientGameState} can
  *     receive the following {@link BJGameEvent}s.
  *       - A {@link BJGameEvent} whose name is "AddPlayer" and whose value is of type
  *         {@link String}.  The value should be the username of the player to be added.
@@ -69,9 +68,9 @@ import java.util.NoSuchElementException;
  *         username will be removed from this {@link BJClientGameState}.
  *       - A {@link BJGameEvent} whose name is "AdvanceToBetting" and whose value is of any
  *         type.  When "AdvanceToBetting" is invoked during this phase, the phase of
- *         <code>this</code> will be changed from {@link BJPhases#INITIALIZATION} to
- *         {@link BJPhases#BETTING}.
- *     During the {@link BJPhases#BETTING} phase, a {@link BJClientGameState} can
+ *         <code>this</code> will be changed from {@link com.piindustries.picasino.blackjack.BJPhases#INITIALIZATION} to
+ *         {@link com.piindustries.picasino.blackjack.BJPhases#BETTING}.
+ *     During the {@link com.piindustries.picasino.blackjack.BJPhases#BETTING} phase, a {@link BJClientGameState} can
  *     receive the following {@link BJGameEvent}s.
  *       - A {@link BJGameEvent} whose name is "Bet" and whose value is of type
  *         {@link Integer}.  The value should be the value of the bet that the currently
@@ -84,9 +83,9 @@ import java.util.NoSuchElementException;
  *         back in to the beginning of the next next game.
  *       - A {@link BJGameEvent} whose name is "AdvanceToDealing" and whose value is of any
  *         type.  When "AdvanceToDealing" is invoked during this phase, the phase of
- *         <code>this</code> will be changed from {@link BJPhases#BETTING} to
- *         {@link BJPhases#DEALING}.
- *     During the {@link BJPhases#DEALING} phase, a {@link BJClientGameState} can
+ *         <code>this</code> will be changed from {@link com.piindustries.picasino.blackjack.BJPhases#BETTING} to
+ *         {@link com.piindustries.picasino.blackjack.BJPhases#DEALING}.
+ *     During the {@link com.piindustries.picasino.blackjack.BJPhases#DEALING} phase, a {@link BJClientGameState} can
  *     receive the following {@link BJGameEvent}s.
  *       - A {@link BJGameEvent} whose name is "SendCard" and whose value is of type
  *         {@link Integer}.  The value should represent the card that was sent to the player.
@@ -95,8 +94,8 @@ import java.util.NoSuchElementException;
  *         to the front of the action queue.
  *       - A {@link BJGameEvent} whose name is "AdvanceToPlaying" and whose value is of any type.
  *         When "AdvanceToPlaying" is invoked during this phase, the phase of <code>this</code>
- *         will be changed from {@link BJPhases#DEALING} to {@link BJPhases#PLAYING}.
- *     During the {@link BJPhases#PLAYING} phase, a {@link BJClientGameState} can
+ *         will be changed from {@link com.piindustries.picasino.blackjack.BJPhases#DEALING} to {@link com.piindustries.picasino.blackjack.BJPhases#PLAYING}.
+ *     During the {@link com.piindustries.picasino.blackjack.BJPhases#PLAYING} phase, a {@link BJClientGameState} can
  *     receive the following {@link BJGameEvent}s.
  *       - A {@link BJGameEvent} whose name is "SendCard" and whose value is of type
  *         {@link Integer}.  The value should represent the card that was sent to the player.
@@ -112,12 +111,12 @@ import java.util.NoSuchElementException;
  *         and both hands are located at the front of the action queue.
  *       - A {@link BJGameEvent} whose name is "AdvanceToConclusion" and whose value is of any type.
  *         When "AdvanceToConclusion" is invoked during this phase, the phase of <code>this</code>
- *         will be changed from {@link BJPhases#PLAYING} to {@link BJPhases#CONCLUSION}.
- *     During the {@link BJPhases#CONCLUSION} phase, a {@link BJClientGameState} can
+ *         will be changed from {@link com.piindustries.picasino.blackjack.BJPhases#PLAYING} to {@link com.piindustries.picasino.blackjack.BJPhases#CONCLUSION}.
+ *     During the {@link com.piindustries.picasino.blackjack.BJPhases#CONCLUSION} phase, a {@link BJClientGameState} can
  *     receive the following {@link BJGameEvent}s.
  *       - A {@link BJGameEvent} whose name is "AdvanceToInitialization" and whose value is of any type.
  *         When "AdvanceToInitialization" is invoked during this phase, the phase of <code>this</code>
- *         will be changed from {@link BJPhases#CONCLUSION} to {@link BJPhases#INITIALIZATION}.
+ *         will be changed from {@link com.piindustries.picasino.blackjack.BJPhases#CONCLUSION} to {@link com.piindustries.picasino.blackjack.BJPhases#INITIALIZATION}.
  *
  *
  * }}}</pre>
@@ -137,24 +136,24 @@ public class BJClientGameState implements GameState {
     protected static final String[] PLAYING_EVENTS = new String[]{"RequestCard", "SendCard", "Stay", "DoubleDown", "Split","AdvanceToConclusion"};
     protected static final String[] CONCLUSION_EVENTS = new String[]{"AdvanceToInitialization"};
     private BJPhases phase;
-    private LinkedList<Hand> hands;
-    private LinkedList<Hand> passedList;
+    private LinkedList<BJHand> hands;
+    private LinkedList<BJHand> passedList;
     private NetworkHandler networkHandler;
     private LinkedList<String> eventLog;
     private int logSize;
     private int logCounter;
     private boolean isVerbose; // False by default
-    private LinkedList<Message> messages;
+    private LinkedList<BJMessage> messages;
 
     /**
      * Default Constructor.
      */
     public BJClientGameState() {
         this.setPhase(BJPhases.INITIALIZATION);     // Set phase
-        LinkedList<Hand> h = new LinkedList<Hand>();   // Build Player List
-        h.add( new DealerHand() );                  // Add a dealer
+        LinkedList<BJHand> h = new LinkedList<BJHand>();   // Build Player List
+        h.add( new BJDealerHand() );                  // Add a dealer
         this.setHands( h );
-        this.passedList = new LinkedList<Hand>();   // Create an empty passed list
+        this.passedList = new LinkedList<BJHand>();   // Create an empty passed list
         this.setVerbose(false);
     }
 
@@ -231,14 +230,14 @@ public class BJClientGameState implements GameState {
                 String data = (String)event.getValue(); // TODO out of bounds handling
                 String from = data.substring(0, data.indexOf('|') );
                 String message = data.substring( data.indexOf('|') + 1 );
-                appendMessage(new Message(from, message));
+                appendMessage(new BJMessage(from, message));
                 return true;
             default: return false;
         }
     }
 
     // TODO comment
-    private void appendMessage(Message m){
+    private void appendMessage(BJMessage m){
         this.getMessages().addLast(m);
     }
 
@@ -257,7 +256,7 @@ public class BJClientGameState implements GameState {
      * And advances the phase of `this` to INITIALIZATION.
      */
     private void advanceToInitialization(){
-        for( Hand h : this.passedList ){
+        for( BJHand h : this.passedList ){
             this.getHands().addLast(h);
         }
         this.passedList.clear();
@@ -270,7 +269,7 @@ public class BJClientGameState implements GameState {
                 }
             }
         }
-        for( Hand h : this.getHands() ){
+        for( BJHand h : this.getHands() ){
             h.getCards().clear();
             h.setBet(0);
         }
@@ -293,11 +292,11 @@ public class BJClientGameState implements GameState {
      */
     private void split(){
         // FIXME Behavior unverified
-        Hand toDuplicate = this.getHands().removeFirst();
+        BJHand toDuplicate = this.getHands().removeFirst();
         LinkedList<Integer> c1 = new LinkedList<Integer>();
         LinkedList<Integer> c2 = new LinkedList<Integer>();
-        Hand h1 = new Hand( toDuplicate.getUsername(), c1 );
-        Hand h2 = new Hand( toDuplicate.getUsername(), c2 );
+        BJHand h1 = new BJHand( toDuplicate.getUsername(), c1 );
+        BJHand h2 = new BJHand( toDuplicate.getUsername(), c2 );
         this.getHands().addFirst( h1 );
         this.getHands().addFirst( h2 );
         // Append to log
@@ -371,7 +370,7 @@ public class BJClientGameState implements GameState {
     private void addPlayer( BJGameEvent event ){
         String username = (String)event.getValue();
         boolean contained = false;
-        for( Hand h : this.getHands() ){
+        for( BJHand h : this.getHands() ){
             if( h.getUsername().equals(username)){
                 contained = true;
                 break;
@@ -379,7 +378,7 @@ public class BJClientGameState implements GameState {
         }
         // Append to the log appropriately
         if( !contained ){
-            this.getHands().add( this.getHands().size() - 1, new Hand(username, new LinkedList<Integer>()));
+            this.getHands().add( this.getHands().size() - 1, new BJHand(username, new LinkedList<Integer>()));
             this.appendLog(username + " was added to the game.");
         } else
             this.appendLog(username + " could not be added to the game.");
@@ -413,7 +412,7 @@ public class BJClientGameState implements GameState {
         // If the player is in the game, remove them.
         boolean removed = false;
         String toRemove = (String)event.getValue();
-        for( Hand h : this.getHands() ){
+        for( BJHand h : this.getHands() ){
             if( h.getUsername().equals( toRemove ) ){
                 this.getHands().remove( h );
                 removed = true;
@@ -506,7 +505,7 @@ public class BJClientGameState implements GameState {
     /**
      * @return the hand currently in action.
      */
-    public Hand getCurrentHand(){
+    public BJHand getCurrentHand(){
         return this.getHands().getFirst();
     }
 
@@ -590,14 +589,14 @@ public class BJClientGameState implements GameState {
     }
 
     // TODO comment
-    private LinkedList<Message> getMessages() {
+    private LinkedList<BJMessage> getMessages() {
         if( this.messages == null )
-            this.setMessages(new LinkedList<Message>());
+            this.setMessages(new LinkedList<BJMessage>());
         return messages;
     }
 
     // TODO comment
-    private void setMessages(LinkedList<Message> messages) {
+    private void setMessages(LinkedList<BJMessage> messages) {
         this.messages = messages;
     }
 
@@ -628,9 +627,9 @@ public class BJClientGameState implements GameState {
      *
      * @return `this.hands`
      */
-    public LinkedList<Hand> getHands() {
+    public LinkedList<BJHand> getHands() {
         if( this.hands == null ){
-            this.hands = new LinkedList<Hand>();
+            this.hands = new LinkedList<BJHand>();
         }
         return hands;
     }
@@ -654,19 +653,8 @@ public class BJClientGameState implements GameState {
      *
      * @param hands the value to set `this.hands` to.
      */
-    protected void setHands(LinkedList<Hand> hands) {
+    protected void setHands(LinkedList<BJHand> hands) {
         this.hands = hands;
-    }
-
-    /**
-     * A Simple enumeration that represent all the phases of a Black Jack game.
-     */
-    public enum BJPhases {
-        INITIALIZATION,
-        BETTING,
-        DEALING,
-        PLAYING,
-        CONCLUSION
     }
 
     public ArrayList<BJGameEventType> getValidEvents(){
@@ -707,195 +695,4 @@ public class BJClientGameState implements GameState {
         return result;
     }
 
-    /**
-     * A basic data class.  That holds a Username, a list
-     * of their cards, and the value of their current bet.
-     */
-    public class Hand implements Serializable {
-
-        private LinkedList<Integer> cards;
-        private String username;
-        private Integer bet;
-
-        /**
-         * Default constructor.
-         *
-         * @param username the username associated with this hand.
-         * @param cards    the cards that this hand has
-         */
-        public Hand(String username, LinkedList<Integer> cards) {
-            this.setUsername(username);
-            this.setCards(cards);
-        }
-
-        /**
-         * @return the username of `this`.
-         */
-        public String getUsername() {
-            if( username == null )
-                this.setUsername("");
-            return username;
-        }
-
-        /**
-         * Sets the username of `this`
-         *
-         * @param username the String to set `this.username` to.
-         */
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        /**
-         * @return the cards of `this`.
-         *
-         *   {{{
-         *      A card `c` must be contained in the range [0,52]
-         *
-         *      if( `c` == 52 )
-         *         then `c` represents an unknown card and must be handled as such.
-         *      else
-         *         c/4 denotes the value of the card.
-         *          i.e. c/4 = 0 represents an Ace and c = 12 denote a King.
-         *         c%4 denotes the suit of the card.
-         *           i.e. c%4 = 0 represents a Spade
-         *    }}}
-         */
-        public LinkedList<Integer> getCards() {
-            if( this.cards == null )
-                this.setCards(new LinkedList<Integer>());
-            return cards;
-        }
-
-        /**
-         * Sets the Cards of `this`.
-         *
-         * Cards are represented as follows....
-         * {{{
-         *     A card `c` must be contained in the range [0,52]
-         *     if( `c` == 52 )
-         *         then `c` represents an unknown card and must be handled as such.
-         *     else
-         *         c/4 denotes the value of the card.
-         *             i.e. c/4 = 0 represents an Ace and c = 12 denote a King.
-         *         c%4 denotes the suit of the card.
-         *             i.e. c%4 = 0 represents a Spade
-         * }}}
-         *
-         * @param cards the LinkedList<Integer> to set `this.cards` to.
-         */
-        public void setCards(LinkedList<Integer> cards) {
-            this.cards = cards;
-        }
-
-        /**
-         * Lazily gets the bet of this. If it is null, it sets it to 0.
-         *
-         * @return the bet value of `this`.  If null, lazily sets to 0 and returns.
-         */
-        public Integer getBet() {
-            if (this.bet == null)
-                this.bet = 0;
-            return bet;
-        }
-
-        /**
-         * @return the highest value that this hand can
-         * have that is equal to or less than 21.  If the hand
-         * can only bust, than -1 is returned indicating a bust.
-         */
-        public int getBestHandValue(){
-            int[] v = this.getHandValues();
-            int result = -1;
-            for( int i : v )
-                result = ( i > 21 ) ? result : Math.max( result, i );
-            return result;
-        }
-
-        /**
-         * Sets the bet value of `this`
-         *
-         * @param bet the Integer to set `this.bet` to.
-         */
-        public void setBet(Integer bet) {
-            this.bet = bet;
-        }
-
-        /**
-         * @return an array of the possible values that this hand could have.  Because
-         * Aces can be handled as 1's or 11's, the number of aces determines the size of
-         * the array returned.  A hand with no aces will return an array of length one. A hand
-         * with one ace will return a hand of length 2.  A hand with 2 aces will return an
-         * array of length 4.  And so on.  All possibilities are returned, including those
-         * that have a value over 21.
-         */
-        public int[] getHandValues(){
-            int[] result = new int[1];
-            result[0] = 0;
-            for( int c : this.getCards() ){
-                if( c % 13 == 0 ){ // Ace
-                    int[] tmp = new int[result.length*2];
-                    for( int i = 0; i < result.length; i++ ){
-                        tmp[i] = result[i] + 1;
-                        tmp[i + result.length] = result[i] + 11;
-                    }
-                    result = tmp;
-                } else if( c % 13 <= 12){ // 2 through K
-                    for( int i = 0; i < result.length; i++){
-                        result[i] = result[i] + Math.min(c + 1,10);
-                    }
-                }
-            }
-            return result;
-        }
-    }
-
-    /**
-     * A dealer hand
-     */
-    public class DealerHand extends Hand {
-
-        public DealerHand(){
-            super("PiCasino Dealer",new LinkedList<Integer>());
-        }
-
-        /**
-         * @return true if this hand must hit.  Otherwise false;
-         */
-        public boolean mustHit(){
-            return this.getBestHandValue() < 17 && this.getBestHandValue() >= 0;
-        }
-    }
-
-    // TODO comment
-    private class Message {
-        private String from;
-        private String message;
-
-        // TODO comment
-        public Message(String from, String message){
-            setFrom(from);
-            setMessage(message);
-        }
-
-        // TODO comment
-        private String getFrom() {
-            return from;
-        }
-
-        // TODO comment
-        private void setFrom(String from) {
-            this.from = from;
-        }
-
-        // TODO comment
-        private String getMessage() {
-            return message;
-        }
-
-        // TODO comment
-        private void setMessage(String message) {
-            this.message = message;
-        }
-    }
 }
