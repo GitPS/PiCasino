@@ -136,6 +136,7 @@ public class BJClientGameState implements GameState {
     private LinkedList<String> eventLog;
     private NetworkHandler networkHandler;
     private LinkedList<BJMessage> messages;
+    private String thisUser;
     private int logSize;
     private int logCounter;
     private boolean isVerbose; // False by default
@@ -229,6 +230,14 @@ public class BJClientGameState implements GameState {
                 return true;
             default: return false;
         }
+    }
+
+    public String getThisUser() {
+        return thisUser;
+    }
+
+    public void setThisUser(String thisUser) {
+        this.thisUser = thisUser;
     }
 
     // TODO comment
@@ -521,7 +530,7 @@ public class BJClientGameState implements GameState {
      */
     public LinkedList<String> getEventLog() {
         if (this.eventLog == null)
-            this.setEventLog( new LinkedList<String>() );
+            this.setEventLog(new LinkedList<String>());
         return this.eventLog;
     }
 
@@ -679,6 +688,45 @@ public class BJClientGameState implements GameState {
         result.add(BJGameEventType.INTEGRITY_CHECK);
         result.add(BJGameEventType.PLAYER_DISCONNECT);
         result.add(BJGameEventType.REQUEST_GAME_STATE);
+        return result;
+    }
+
+    /**
+     * Returns a list of actions a client can invoke.
+     *
+     * @return a list of actions a client can invoke.
+     */
+    public ArrayList<BJGameEventType> getAvailableActions(){
+        ArrayList<BJGameEventType> result = new ArrayList<>();
+        switch(this.getPhase()){
+            case INITIALIZATION:
+                // There are no actions to take in the initialization phase.
+                break;
+            case BETTING:
+                if(this.getThisUser().equals( this.getCurrentUser() )){
+                    result.add(BJGameEventType.BET);
+                    result.add(BJGameEventType.PASS);
+                }
+                break;
+            case DEALING:
+                // There are no actions to take in the dealing phase.
+                break;
+            case PLAYING:
+                if(this.getThisUser().equals( this.getCurrentUser() )){
+                    result.add(BJGameEventType.HIT);
+                    result.add(BJGameEventType.STAND);
+                    if( this.getCurrentHand().getCards().size() == 2 ){
+                        result.add(BJGameEventType.DOUBLE_DOWN);
+                        // Check if both cards have the same face
+                        if( BJCards.getBJCard(this.getCurrentHand().getCards().get(0)) == BJCards.getBJCard(this.getCurrentHand().getCards().get(1)) )
+                            result.add(BJGameEventType.SPLIT);
+                    }
+                }
+                break;
+            case CONCLUSION:
+                break;
+            default: throw new Error("Logical Error.  Cannot Recover");
+        }
         return result;
     }
 
