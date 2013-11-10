@@ -116,7 +116,7 @@ public class BJServerGameState implements GameState {
                     default: throw new InvalidGameEventException(event.getType().name());
                 }
                 // If the dealer is up to bet.
-                if( gameState.getCurrentHand() instanceof BJClientGameState.DealerHand)
+                if( gameState.getCurrentHand() instanceof BJDealerHand)
                     this.advanceToDealing();
                 break;
             case DEALING:
@@ -208,7 +208,7 @@ public class BJServerGameState implements GameState {
         gameState.invoke(event);
         gameState.getNetworkHandler().send(result);   // TODO check if i can reuse event
         // If it is the dealer's turn to act. Play as the dealer
-        if(gameState.getCurrentHand() instanceof BJClientGameState.DealerHand)
+        if(gameState.getCurrentHand() instanceof BJDealerHand)
             playDealersHand();
 
     }
@@ -229,7 +229,7 @@ public class BJServerGameState implements GameState {
         gameState.invoke(event);
         gameState.getNetworkHandler().send(result); // TODO check if I can just pass the same event on to all other clients.
         // If it is the dealer's turn to act. Play as the dealer
-        if(gameState.getCurrentHand() instanceof BJClientGameState.DealerHand)
+        if(gameState.getCurrentHand() instanceof BJDealerHand)
             playDealersHand();
     }
 
@@ -243,10 +243,10 @@ public class BJServerGameState implements GameState {
         Integer cardVal = getRandomCard();
         BJDirectedGameEvent directedEvent = new BJDirectedGameEvent();
         BJGameEvent standardEvent = new BJGameEvent();
-        for( BJClientGameState.Hand h : gameState.getHands() ){
+        for( BJHand h : gameState.getHands() ){
             directedEvent.setType(BJGameEventType.SEND_CARD);
             directedEvent.setValue(cardVal);
-            if( !(h instanceof BJClientGameState.DealerHand) ){
+            if( !(h instanceof BJDealerHand) ){
                 directedEvent.setToUser(h.getUsername());
                 gameState.getNetworkHandler().send( directedEvent );
             }
@@ -350,9 +350,9 @@ public class BJServerGameState implements GameState {
      */
     private void playDealersHand() throws InvalidGameEventException {
         // Ensure the dealer is up
-        BJClientGameState.DealerHand d;
-        if( gameState.getCurrentHand() instanceof BJClientGameState.DealerHand )
-            d = (BJClientGameState.DealerHand) gameState.getCurrentHand();
+        BJDealerHand d;
+        if( gameState.getCurrentHand() instanceof BJDealerHand)
+            d = (BJDealerHand) gameState.getCurrentHand();
         else
             throw new Error("Logical error. Cannot recover.");
 
@@ -387,8 +387,8 @@ public class BJServerGameState implements GameState {
                 toSend.setType(BJGameEventType.DEAL_CARD);
                 int card = getRandomCard();
                 // For all hands except the dealer's
-                for(BJClientGameState.Hand h : gameState.getHands()){
-                    if( !(h instanceof BJClientGameState.DealerHand) ){
+                for(BJHand h : gameState.getHands()){
+                    if( !(h instanceof BJDealerHand) ){
                         toSend.setToUser(h.getUsername());
                         // If it is the current hand
                         if( h.getUsername().equals(gameState.getCurrentUser()))
@@ -457,7 +457,7 @@ public class BJServerGameState implements GameState {
     /**
      * @return the phase of the underlying GameState of `this`
      */
-    public BJClientGameState.BJPhases getPhase(){
+    public BJPhases getPhase(){
         return this.gameState.getPhase();
     }
 
