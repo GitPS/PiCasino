@@ -130,30 +130,25 @@ public class BJClientGameState implements GameState {
 
     // The following are collections of the names of which BJGameEvents this can handle in each of its phases.
     // Can be directly access by inheriting implementations because it is final and immutable.
-    protected static final String[] INITIALIZATION_EVENTS = new String[]{"AddPlayer", "RemovePlayer", "AdvanceToBetting"};
-    protected static final String[] BETTING_EVENTS = new String[]{"Bet", "Pass", "AdvanceToDealing"};
-    protected static final String[] DEALING_EVENTS = new String[]{"SendCard","AdvanceToPlaying"};
-    protected static final String[] PLAYING_EVENTS = new String[]{"RequestCard", "SendCard", "Stay", "DoubleDown", "Split","AdvanceToConclusion"};
-    protected static final String[] CONCLUSION_EVENTS = new String[]{"AdvanceToInitialization"};
     private BJPhases phase;
     private LinkedList<BJHand> hands;
     private LinkedList<BJHand> passedList;
-    private NetworkHandler networkHandler;
     private LinkedList<String> eventLog;
+    private NetworkHandler networkHandler;
+    private LinkedList<BJMessage> messages;
     private int logSize;
     private int logCounter;
     private boolean isVerbose; // False by default
-    private LinkedList<BJMessage> messages;
 
     /**
      * Default Constructor.
      */
     public BJClientGameState() {
         this.setPhase(BJPhases.INITIALIZATION);     // Set phase
-        LinkedList<BJHand> h = new LinkedList<BJHand>();   // Build Player List
+        LinkedList<BJHand> h = new LinkedList<>();   // Build Player List
         h.add( new BJDealerHand() );                  // Add a dealer
         this.setHands( h );
-        this.passedList = new LinkedList<BJHand>();   // Create an empty passed list
+        this.passedList = new LinkedList<>();   // Create an empty passed list
         this.setVerbose(false);
     }
 
@@ -293,8 +288,8 @@ public class BJClientGameState implements GameState {
     private void split(){
         // FIXME Behavior unverified
         BJHand toDuplicate = this.getHands().removeFirst();
-        LinkedList<Integer> c1 = new LinkedList<Integer>();
-        LinkedList<Integer> c2 = new LinkedList<Integer>();
+        LinkedList<Integer> c1 = new LinkedList<>();
+        LinkedList<Integer> c2 = new LinkedList<>();
         BJHand h1 = new BJHand( toDuplicate.getUsername(), c1 );
         BJHand h2 = new BJHand( toDuplicate.getUsername(), c2 );
         this.getHands().addFirst( h1 );
@@ -629,7 +624,7 @@ public class BJClientGameState implements GameState {
      */
     public LinkedList<BJHand> getHands() {
         if( this.hands == null ){
-            this.hands = new LinkedList<BJHand>();
+            this.hands = new LinkedList<>();
         }
         return hands;
     }
