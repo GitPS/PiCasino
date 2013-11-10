@@ -48,7 +48,7 @@ public class BJTester {
         while(!quit){step();}
     }
 
-    private synchronized void initialization(){
+    private void initialization(){
         System.out.println("Would you like to add additional players?");
         System.out.println("Yes or No");
         String input = readLine();
@@ -65,15 +65,15 @@ public class BJTester {
         }
     }
 
-    private synchronized BJGameEvent buildEvent(BJGameEventType type, Object value ) {
+    private BJGameEvent buildEvent(BJGameEventType type, Object value ) {
         BJGameEvent result = new BJGameEvent();
         result.setType(type);
         result.setValue(value);
         return result;
     }
 
-    public synchronized boolean step(){
-        if( !BJGameEventType.getValidEvents(client.innards).isEmpty() && !(client.innards.getPhase() == BJClientGameState.BJPhases.INITIALIZATION) ){
+    public boolean step(){
+        if( !client.innards.getValidEvents().isEmpty() && !(client.innards.getPhase() == BJClientGameState.BJPhases.INITIALIZATION) ){
             printOptions();
             String input = readLine();
             if( input.equalsIgnoreCase("status") ){
@@ -130,7 +130,7 @@ public class BJTester {
         return quit;
     }
 
-    private synchronized String readLine(){
+    private String readLine(){
         StringBuilder sb = new StringBuilder();
         try{
             char focus = (char)System.in.read();
@@ -146,22 +146,22 @@ public class BJTester {
         return sb.toString().trim();
     }
 
-    private synchronized boolean isValid(String e){
+    private boolean isValid(String e){
         try{
-            return BJGameEventType.getValidEvents(client.innards).contains(BJGameEventType.valueOf(e.toUpperCase()));
+            return client.innards.getValidEvents().contains(BJGameEventType.valueOf(e.toUpperCase()));
         } catch (IllegalArgumentException exception){
             return false;
         }
     }
 
-    private synchronized void printOptions(){
+    private void printOptions(){
         System.out.println("Available Actions...");
-        for( BJGameEventType str : BJGameEventType.getValidEvents(client.innards)){
+        for( BJGameEventType str : client.innards.getValidEvents()){
             System.out.println( "\t"+str.name() );
         }
     }
 
-    private synchronized void printStatus(){
+    private void printStatus(){
         System.out.println( client.innards.getPhase().name());
         for( BJClientGameState.Hand h : this.client.innards.getHands() ){
             System.out.print(h.getUsername()+'\t'+h.getBet()+"\t[" );
