@@ -634,13 +634,9 @@ public class BJClientGameState implements GameState {
      *
      * @return `this` cloned.
      */
-    public BJClientGameState clone(){
-        try{
-            return (BJClientGameState)super.clone();
-        } catch (CloneNotSupportedException e){
-            e.printStackTrace();
-            return null;
-        }
+    @Override
+    public BJClientGameState clone() throws CloneNotSupportedException {
+        return (BJClientGameState)super.clone();
     }
 
     /**
