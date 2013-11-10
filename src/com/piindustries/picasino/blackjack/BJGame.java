@@ -70,7 +70,7 @@ public class BJGame implements Game {
      * @return a NetworkHandler to be instantiated on the server to handle
      * server-side communications.
      */
-    public NetworkHandler buildServerNetworkHandler(){
+    public BJServerNetworkHandler buildServerNetworkHandler(){
         return new BJServerNetworkHandler();
     }
 
@@ -82,7 +82,7 @@ public class BJGame implements Game {
      * client-side communications.
      *
      */
-    public NetworkHandler buildClientNetworkHandler(){
+    public BJClientNetworkHandler buildClientNetworkHandler(){
         return new BJClientNetworkHandler();
     }
 
