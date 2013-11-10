@@ -23,10 +23,7 @@
 
 package com.piindustries.picasino.blackjack.test;
 
-import com.piindustries.picasino.blackjack.BJCards;
-import com.piindustries.picasino.blackjack.BJClientGameState;
-import com.piindustries.picasino.blackjack.BJGameEvent;
-import com.piindustries.picasino.blackjack.BJGameEventType;
+import com.piindustries.picasino.blackjack.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -73,7 +70,7 @@ public class BJTester {
     }
 
     public boolean step(){
-        if( !client.innards.getValidEvents().isEmpty() && !(client.innards.getPhase() == BJClientGameState.BJPhases.INITIALIZATION) ){
+        if( !client.innards.getValidEvents().isEmpty() && !(client.innards.getPhase() == BJPhases.INITIALIZATION) ){
             printOptions();
             String input = readLine();
             if( input.equalsIgnoreCase("status") ){
@@ -105,7 +102,7 @@ public class BJTester {
                         if( input.equalsIgnoreCase("Hit") ){
                             client.send( buildEvent( BJGameEventType.HIT, null ) );
                         } else if( input.equalsIgnoreCase("Stand") ){
-                            if( client.innards.getCurrentHand() instanceof BJClientGameState.DealerHand)
+                            if( client.innards.getCurrentHand() instanceof BJDealerHand)
                                 server.send( buildEvent( BJGameEventType.STAND, null ));
                             else
                                 client.send( buildEvent( BJGameEventType.STAND, null ) );
@@ -163,7 +160,7 @@ public class BJTester {
 
     private void printStatus(){
         System.out.println( client.innards.getPhase().name());
-        for( BJClientGameState.Hand h : this.client.innards.getHands() ){
+        for( BJHand h : this.client.innards.getHands() ){
             System.out.print(h.getUsername()+'\t'+h.getBet()+"\t[" );
             for( int i : h.getCards() )
                 System.out.print( " " + BJCards.evaluateCardName(i) );
