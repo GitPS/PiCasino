@@ -1,7 +1,15 @@
 /*
- * [Class]
- * [Current Version]
- * [Date last modified]
+ *
+ *       ___ _   ___          _
+ *      / _ (_) / __\__ _ ___(_)_ __   ___
+ *     / /_)/ |/ /  / _` / __| | '_ \ / _ \
+ *    / ___/| / /__| (_| \__ \ | | | | (_) |
+ *    \/    |_\____/\__,_|___/_|_| |_|\___/
+ *
+ *
+ * Class: com.piindustries.picasino.blackjack.BJMessage
+ * Version: 1.0
+ * Date: November 9, 2013
  *
  * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
  *
