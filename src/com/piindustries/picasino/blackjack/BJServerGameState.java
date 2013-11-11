@@ -228,6 +228,16 @@ public class BJServerGameState implements GameState {
         result.setValue(null);
         gameState.invoke(event);
         gameState.getNetworkHandler().send(result); // TODO check if I can just pass the same event on to all other clients.
+        // TODO verify that when a player splits, they are dealt a new card.
+        if(gameState.getCurrentHand().isSplit() && gameState.getCurrentHand().getCards().size() < 2){
+            while(gameState.getCurrentHand().getCards().size() < 2){
+                BJGameEvent toSend = new BJGameEvent();
+                toSend.setType(BJGameEventType.SEND_CARD);
+                toSend.setValue(getRandomCard());
+                gameState.invoke(toSend);
+                this.getNetworkHandler().send(toSend);
+            }
+        }
         // If it is the dealer's turn to act. Play as the dealer
         if(gameState.getCurrentHand() instanceof BJDealerHand)
             playDealersHand();
