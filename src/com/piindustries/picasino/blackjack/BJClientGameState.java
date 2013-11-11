@@ -301,6 +301,8 @@ public class BJClientGameState implements GameState {
         LinkedList<Integer> c2 = new LinkedList<>();
         BJHand h1 = new BJHand( toDuplicate.getUsername(), c1 );
         BJHand h2 = new BJHand( toDuplicate.getUsername(), c2 );
+        h1.setSplit(true);
+        h2.setSplit(true);
         this.getHands().addFirst( h1 );
         this.getHands().addFirst( h2 );
         // Append to log
