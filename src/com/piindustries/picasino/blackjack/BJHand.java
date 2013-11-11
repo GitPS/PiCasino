@@ -40,7 +40,7 @@ public class BJHand implements Serializable {
     private Integer bet;
     private LinkedList<Integer> cards;
     private String username;
-    private boolean isSplit;
+    private boolean isSplit;    // false by default
 
     /**
      * Default constructor.
@@ -50,6 +50,7 @@ public class BJHand implements Serializable {
     public BJHand(String username, LinkedList<Integer> cards) {
         this.setUsername(username);
         this.setCards(cards);
+        this.setSplit(false);
     }
 
     /**
