@@ -127,7 +127,7 @@ public class BJServerGameState implements GameState {
                 switch(event.getType()){
                     case HIT: requestCard(); break;
                     // case SEND_CARD: gameState.invoke(event); break; TODO CHECK IF THIS CAN BE REMOVED
-                    case STAND: this.stay(event); break;
+                    case STAND: this.stand(event); break;
                     case DOUBLE_DOWN: doubleDown(event); break;
                     case SPLIT: split(event); break;
                     case ADVANCE_TO_CONCLUDING: advanceToConclusion(event); break;
@@ -214,7 +214,7 @@ public class BJServerGameState implements GameState {
     }
 
     /**
-     * Informs all players that the current player has elected to stay.
+     * Informs all players that the current player has elected to stand.
      *
      * If the next player is the dealer, `this` will continue to play the
      * dealer's hand.
@@ -222,7 +222,7 @@ public class BJServerGameState implements GameState {
      * @param event a BJGameEvent whose name is "Stay"
      * @throws InvalidGameEventException
      */
-    private void stay(BJGameEvent event) throws InvalidGameEventException {
+    private void stand(BJGameEvent event) throws InvalidGameEventException {
         BJGameEvent result = new BJGameEvent(); // TODO check if i can reuse event
         result.setType(BJGameEventType.STAND);
         result.setValue(null);
@@ -375,7 +375,7 @@ public class BJServerGameState implements GameState {
             gameState.appendLog(gameState.getCurrentUser()+" has been dealt an "+BJCards.evaluateCardName((Integer)toSend.getValue())+".");
             getNetworkHandler().send(toSend);
         }
-        gameState.appendLog(gameState.getCurrentUser()+" must stay.");
+        gameState.appendLog(gameState.getCurrentUser()+" must stand.");
 
         // Advance Phase
         BJGameEvent toSend = new BJGameEvent();
