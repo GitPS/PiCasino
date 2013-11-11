@@ -40,6 +40,7 @@ public class BJHand implements Serializable {
     private Integer bet;
     private LinkedList<Integer> cards;
     private String username;
+    private boolean isSplit;
 
     /**
      * Default constructor.
@@ -151,5 +152,15 @@ public class BJHand implements Serializable {
      */
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    // TODO comment
+    public boolean isSplit() {
+        return isSplit;
+    }
+
+    // TODO comment
+    public void setSplit(boolean split) {
+        isSplit = split;
     }
 }
