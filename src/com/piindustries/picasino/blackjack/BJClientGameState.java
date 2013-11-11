@@ -337,7 +337,6 @@ public class BJClientGameState implements GameState {
      */
     private void doubleDown(){
         // FIXME Behavior unverified
-        // FIXME Behavior unverified
         this.getCurrentHand().setBet(this.getCurrentHand().getBet() * 2);
         this.appendLog(this.getHands().getFirst().getUsername() + " doubled down.");
     }
