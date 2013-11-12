@@ -193,6 +193,15 @@ public class BJServerGameState implements GameState {
         result.setValue(null);
         gameState.invoke(event);
         gameState.getNetworkHandler().send( result );
+        if(gameState.getCurrentHand().isSplit() && gameState.getCurrentHand().getCards().size() < 2){
+            while(gameState.getCurrentHand().getCards().size() < 2){
+                BJGameEvent toSend = new BJGameEvent();
+                toSend.setType(BJGameEventType.SEND_CARD);
+                toSend.setValue(getRandomCard());
+                gameState.invoke(toSend);
+                this.getNetworkHandler().send(toSend);
+            }
+        }
     }
 
     /**
