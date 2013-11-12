@@ -390,44 +390,60 @@ public class BJServerGameState implements GameState {
      * and the dealer have 2 cards.
      */
     private void deal() throws InvalidGameEventException {
-        // While not all players have 2 cards, continue dealing
-        while( gameState.getCurrentHand().getCards().size() < 2 ){
-            // If this is the first card, it need to be hidden to other players
-            if( gameState.getCurrentHand().getCards().size() == 0){
-                BJDirectedGameEvent toSend = new BJDirectedGameEvent();
-                toSend.setType(BJGameEventType.DEAL_CARD);
-                int card = getRandomCard();
-                // For all hands except the dealer's
-                for(BJHand h : gameState.getHands()){
-                    if( !(h instanceof BJDealerHand) ){
-                        toSend.setToUser(h.getUsername());
-                        // If it is the current hand
-                        if( h.getUsername().equals(gameState.getCurrentUser()))
-                            toSend.setValue(card);  // Actual card value
-                        else
-                            toSend.setValue(52);    // Hidden card value
-                        getNetworkHandler().send(toSend);
-                    }
-                }
-
-                // Update the server data
-                BJGameEvent toSend2 = new BJGameEvent();
-                toSend2.setType(BJGameEventType.DEAL_CARD);
-                toSend2.setValue(card);
+        // Check for empty players list due to players passing in betting round.
+        if( gameState.getHands().size() <= 1 ){
+            // Deal the dealer 2 cards to maintain gameState order
+            BJGameEvent toSend2 = new BJGameEvent();
+            toSend2.setType(BJGameEventType.DEAL_CARD);
+            toSend2.setValue(0);
+            for(int i = 0; i < 2; i++){
                 gameState.invoke(toSend2);
-            } else {
-                BJGameEvent toSend = new BJGameEvent();
-                toSend.setType(BJGameEventType.DEAL_CARD);
-                toSend.setValue(getRandomCard());
-                gameState.invoke(toSend);
-                this.getNetworkHandler().send(toSend);
+                this.getNetworkHandler().send(toSend2);
             }
+            BJGameEvent toSend = new BJGameEvent();
+            toSend.setType(BJGameEventType.ADVANCE_TO_PLAYING);
+            this.getNetworkHandler().send(toSend);
+            gameState.invoke(toSend);
+        } else {
+            // While not all players have 2 cards, continue dealing
+            while( gameState.getCurrentHand().getCards().size() < 2 ){
+                // If this is the first card, it need to be hidden to other players
+                if( gameState.getCurrentHand().getCards().size() == 0){
+                    BJDirectedGameEvent toSend = new BJDirectedGameEvent();
+                    toSend.setType(BJGameEventType.DEAL_CARD);
+                    int card = getRandomCard();
+                    // For all hands except the dealer's
+                    for(BJHand h : gameState.getHands()){
+                        if( !(h instanceof BJDealerHand) ){
+                            toSend.setToUser(h.getUsername());
+                            // If it is the current hand
+                            if( h.getUsername().equals(gameState.getCurrentUser()))
+                                toSend.setValue(card);  // Actual card value
+                            else
+                                toSend.setValue(52);    // Hidden card value
+                            getNetworkHandler().send(toSend);
+                        }
+                    }
+
+                    // Update the server data
+                    BJGameEvent toSend2 = new BJGameEvent();
+                    toSend2.setType(BJGameEventType.DEAL_CARD);
+                    toSend2.setValue(card);
+                    gameState.invoke(toSend2);
+                } else {
+                    BJGameEvent toSend = new BJGameEvent();
+                    toSend.setType(BJGameEventType.DEAL_CARD);
+                    toSend.setValue(getRandomCard());
+                    gameState.invoke(toSend);
+                    this.getNetworkHandler().send(toSend);
+                }
+            }
+            // Once every hand has been dealt, Advance Phase
+            BJGameEvent toSend = new BJGameEvent();
+            toSend.setType(BJGameEventType.ADVANCE_TO_PLAYING);
+            this.getNetworkHandler().send(toSend);
+            gameState.invoke(toSend);
         }
-        // Once every hand has been dealt, Advance Phase
-        BJGameEvent toSend = new BJGameEvent();
-        toSend.setType(BJGameEventType.ADVANCE_TO_PLAYING);
-        this.getNetworkHandler().send(toSend);
-        gameState.invoke(toSend);
     }
 
     /**
