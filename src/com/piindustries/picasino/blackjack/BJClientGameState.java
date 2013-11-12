@@ -155,9 +155,7 @@ public class BJClientGameState implements GameState {
 
     // TODO Make sure splitting works as designed
     // TODO Make sure doubling down works as designed
-    // TODO Make sure empty games don't explode
     // TODO Make sure empty games caused by disconnects don't explode
-    // TODO Make sure empty games caused by passes don't explode
 
     /**
      * Invokes a GameEvent on this GameState.
