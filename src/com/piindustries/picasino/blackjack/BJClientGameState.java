@@ -147,7 +147,6 @@ public class BJClientGameState implements GameState {
     public BJClientGameState() {
         this.setPhase(BJPhases.INITIALIZATION);     // Set phase
         LinkedList<BJHand> h = new LinkedList<>();   // Build Player List
-        h.add( new BJDealerHand() );                  // Add a dealer
         this.setHands( h );
         this.passedList = new LinkedList<>();   // Create an empty passed list
         this.setVerbose(false);
@@ -277,6 +276,7 @@ public class BJClientGameState implements GameState {
             h.getCards().clear();
             h.setBet(0);
         }
+        this.getHands().removeFirst();
         this.setPhase(BJPhases.INITIALIZATION);
         this.appendLog("Advancing phase from Concluding to Initialization");
     }
@@ -448,6 +448,7 @@ public class BJClientGameState implements GameState {
         //Append Log
         this.appendLog("Advancing phase from INITIALIZATION to BETTING");
         this.setPhase(BJPhases.BETTING);
+        this.getHands().addLast(new BJDealerHand());
     }
 
     /**
