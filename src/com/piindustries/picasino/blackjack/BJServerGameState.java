@@ -165,6 +165,7 @@ public class BJServerGameState implements GameState {
         gameState.invoke(event);
         getNetworkHandler().send(event);
         startTimer();
+        this.deck = buildDeck();
     }
 
     /**
@@ -400,10 +401,6 @@ public class BJServerGameState implements GameState {
                 gameState.invoke(toSend2);
                 this.getNetworkHandler().send(toSend2);
             }
-            BJGameEvent toSend = new BJGameEvent();
-            toSend.setType(BJGameEventType.ADVANCE_TO_PLAYING);
-            this.getNetworkHandler().send(toSend);
-            gameState.invoke(toSend);
         } else {
             // While not all players have 2 cards, continue dealing
             while( gameState.getCurrentHand().getCards().size() < 2 ){
@@ -438,9 +435,9 @@ public class BJServerGameState implements GameState {
                     this.getNetworkHandler().send(toSend);
                 }
             }
-            // Once every hand has been dealt, Advance Phase
-            advanceToPlaying();
         }
+        // Once every hand has been dealt, Advance Phase
+        advanceToPlaying();
     }
 
     /**
@@ -452,6 +449,12 @@ public class BJServerGameState implements GameState {
         toSend.setType(BJGameEventType.ADVANCE_TO_PLAYING);
         this.getNetworkHandler().send(toSend);
         gameState.invoke(toSend);
+        // If nobody is playing, advance to conclusion
+        if(gameState.getHands().size() <= 1){
+            BJGameEvent conclude = new BJGameEvent();
+            conclude.setType(BJGameEventType.ADVANCE_TO_CONCLUDING);
+            this.advanceToConclusion(conclude);
+        }
     }
 
     /**
