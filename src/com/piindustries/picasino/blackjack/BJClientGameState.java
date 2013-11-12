@@ -219,9 +219,9 @@ public class BJClientGameState implements GameState {
      * otherwise `false`
      */
     private boolean handleGlobalEvent(BJGameEvent event){
-        switch(event.getType()){    // TODO add logic and establish global events
+        switch(event.getType()){
             case MESSAGE:
-                String data = (String)event.getValue(); // TODO out of bounds handling
+                String data = (String)event.getValue();
                 String from = data.substring(0, data.indexOf('|') );
                 String message = data.substring( data.indexOf('|') + 1 );
                 appendMessage(new BJMessage(from, message));
@@ -249,7 +249,7 @@ public class BJClientGameState implements GameState {
      * `false`.
      */
     private boolean isGlobalEvent(BJGameEvent event){
-        return false;   // TODO add logic
+        return false;
     }
 
     /**
