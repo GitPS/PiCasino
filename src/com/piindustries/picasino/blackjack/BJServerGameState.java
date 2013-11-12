@@ -288,13 +288,14 @@ public class BJServerGameState implements GameState {
     /**
      *  Send a Pass event to all players
      */
-    private void pass(){
+    private void pass() throws InvalidGameEventException {
         // FIXME Behavior unverified
         BJGameEvent result = new BJGameEvent();
         result.setType(BJGameEventType.PASS);
         result.setValue(null);
         gameState.getNetworkHandler().send(result);
         // Update the underlying gameState
+        gameState.invoke(result);
     }
 
     /**
