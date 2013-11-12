@@ -304,6 +304,8 @@ public class BJClientGameState implements GameState {
         BJHand h2 = new BJHand( toDuplicate.getUsername(), c2 );
         h1.setSplit(true);
         h2.setSplit(true);
+        h1.getCards().addFirst(toDuplicate.getCards().getFirst());
+        h2.getCards().addFirst(toDuplicate.getCards().getFirst());
         this.getHands().addFirst( h1 );
         this.getHands().addFirst( h2 );
         // Append to log
