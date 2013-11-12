@@ -439,11 +439,19 @@ public class BJServerGameState implements GameState {
                 }
             }
             // Once every hand has been dealt, Advance Phase
-            BJGameEvent toSend = new BJGameEvent();
-            toSend.setType(BJGameEventType.ADVANCE_TO_PLAYING);
-            this.getNetworkHandler().send(toSend);
-            gameState.invoke(toSend);
+            advanceToPlaying();
         }
+    }
+
+    /**
+     * Informs all connected clients to advance their
+     * phase to PLAYING
+     */
+    private void advanceToPlaying() throws InvalidGameEventException {
+        BJGameEvent toSend = new BJGameEvent();
+        toSend.setType(BJGameEventType.ADVANCE_TO_PLAYING);
+        this.getNetworkHandler().send(toSend);
+        gameState.invoke(toSend);
     }
 
     /**
