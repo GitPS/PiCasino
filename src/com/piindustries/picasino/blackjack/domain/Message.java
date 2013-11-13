@@ -32,7 +32,7 @@
 package com.piindustries.picasino.blackjack.domain;
 
 // TODO comment
-class Message {
+public class Message {
     private String from;
     private String message;
 
