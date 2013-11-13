@@ -23,7 +23,8 @@
 
 package com.piindustries.picasino.blackjack.test;
 
-import com.piindustries.picasino.blackjack.*;
+import com.piindustries.picasino.blackjack.Cards;
+import com.piindustries.picasino.blackjack.domain.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -62,15 +63,15 @@ public class BJTester {
         }
     }
 
-    private BJGameEvent buildEvent(BJGameEventType type, Object value ) {
-        BJGameEvent result = new BJGameEvent();
+    private GameEvent buildEvent(GameEventType type, Object value ) {
+        GameEvent result = new GameEvent();
         result.setType(type);
         result.setValue(value);
         return result;
     }
 
     public boolean step(){
-        if( !client.innards.getValidEvents().isEmpty() && !(client.innards.getPhase() == BJPhases.INITIALIZATION) ){
+        if( !client.innards.getValidEvents().isEmpty() && !(client.innards.getPhase() == Phase.INITIALIZATION) ){
             printOptions();
             String input = readLine();
             if( input.equalsIgnoreCase("status") ){
@@ -87,9 +88,9 @@ public class BJTester {
                     case BETTING:
                         if( input.equalsIgnoreCase("Bet") ){
                             System.out.println("How Much?");
-                            client.send( buildEvent( BJGameEventType.BET, Integer.valueOf(readLine()) ) );
+                            client.send( buildEvent( GameEventType.BET, Integer.valueOf(readLine()) ) );
                         } else if( input.equalsIgnoreCase("Pass") ){
-                            client.send( buildEvent( BJGameEventType.PASS, null ) );
+                            client.send( buildEvent( GameEventType.PASS, null ) );
                         } else {
                             System.out.println("Invalid input, try again.");
                             step();
@@ -100,16 +101,16 @@ public class BJTester {
                         break;
                     case PLAYING:
                         if( input.equalsIgnoreCase("Hit") ){
-                            client.send( buildEvent( BJGameEventType.HIT, null ) );
+                            client.send( buildEvent( GameEventType.HIT, null ) );
                         } else if( input.equalsIgnoreCase("Stand") ){
-                            if( client.innards.getCurrentHand() instanceof BJDealerHand)
-                                server.send( buildEvent( BJGameEventType.STAND, null ));
+                            if( client.innards.getCurrentHand() instanceof DealerHand)
+                                server.send( buildEvent( GameEventType.STAND, null ));
                             else
-                                client.send( buildEvent( BJGameEventType.STAND, null ) );
+                                client.send( buildEvent( GameEventType.STAND, null ) );
                         } else if( input.equalsIgnoreCase("DoubleDown") ){
-                            client.send( buildEvent( BJGameEventType.DOUBLE_DOWN, null ) );
+                            client.send( buildEvent( GameEventType.DOUBLE_DOWN, null ) );
                         } else if( input.equalsIgnoreCase("Split") ){
-                            client.send( buildEvent( BJGameEventType.SPLIT, null ) );
+                            client.send( buildEvent( GameEventType.SPLIT, null ) );
                         } else {
                             System.out.println("Invalid input, try again.");
                             step();
@@ -145,7 +146,7 @@ public class BJTester {
 
     private boolean isValid(String e){
         try{
-            return client.innards.getValidEvents().contains(BJGameEventType.valueOf(e.toUpperCase()));
+            return client.innards.getValidEvents().contains(GameEventType.valueOf(e.toUpperCase()));
         } catch (IllegalArgumentException exception){
             return false;
         }
@@ -153,17 +154,17 @@ public class BJTester {
 
     private void printOptions(){
         System.out.println("Available Actions...");
-        for( BJGameEventType str : client.innards.getValidEvents()){
+        for( GameEventType str : client.innards.getValidEvents()){
             System.out.println( "\t"+str.name() );
         }
     }
 
     private void printStatus(){
         System.out.println( client.innards.getPhase().name());
-        for( BJHand h : this.client.innards.getHands() ){
+        for( Hand h : this.client.innards.getHands() ){
             System.out.print(h.getUsername()+'\t'+h.getBet()+"\t[" );
             for( int i : h.getCards() )
-                System.out.print( " " + BJCards.evaluateCardName(i) );
+                System.out.print( " " + Cards.evaluateCardName(i) );
             System.out.print(" ]\n" );
         }
     }
