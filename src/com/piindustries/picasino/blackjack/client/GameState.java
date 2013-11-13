@@ -33,7 +33,6 @@ package com.piindustries.picasino.blackjack.client;
 
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
-import com.piindustries.picasino.blackjack.Cards;
 import com.piindustries.picasino.blackjack.domain.*;
 
 import java.util.ArrayList;
@@ -135,7 +134,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     private LinkedList<Hand> passedList;
     private LinkedList<String> eventLog;
     private NetworkHandler networkHandler;
-    private LinkedList<BJMessage> messages;
+    private LinkedList<Message> messages;
     private String thisUser;
     private int logSize;
     private int logCounter;
@@ -224,7 +223,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
                 String data = (String)event.getValue();
                 String from = data.substring(0, data.indexOf('|') );
                 String message = data.substring( data.indexOf('|') + 1 );
-                appendMessage(new BJMessage(from, message));
+                appendMessage(new Message(from, message));
                 return true;
             default: return false;
         }
@@ -239,7 +238,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     }
 
     // TODO comment
-    private void appendMessage(BJMessage m){
+    private void appendMessage(Message m){
         this.getMessages().addLast(m);
     }
 
@@ -493,7 +492,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
      *
      * @param s a {@link String} to append to the end of <code>this</code> log.
      */
-    protected synchronized void appendLog(String s){
+    public synchronized void appendLog(String s){
         if(this.isVerbose)
             System.out.println(s);
         this.getEventLog().addFirst(s);
@@ -595,14 +594,14 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     }
 
     // TODO comment
-    private LinkedList<BJMessage> getMessages() {
+    private LinkedList<Message> getMessages() {
         if( this.messages == null )
-            this.setMessages(new LinkedList<BJMessage>());
+            this.setMessages(new LinkedList<Message>());
         return messages;
     }
 
     // TODO comment
-    private void setMessages(LinkedList<BJMessage> messages) {
+    private void setMessages(LinkedList<Message> messages) {
         this.messages = messages;
     }
 
