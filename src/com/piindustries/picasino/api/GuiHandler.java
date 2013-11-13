@@ -45,4 +45,16 @@ public interface GuiHandler {
      * given its current GameState.
      */
     public void updateGui();
+
+    /**
+     * @param toSet the {@link GameState} to set as the
+     *              primary GameState of `this`.
+     */
+    public void setGameState(GameState toSet);
+
+    /**
+     * @param toSet the {@link NetworkHandler} to set as the
+     *              primary NetworkHandler of `this`.
+     */
+    public void setNetworkHandler(NetworkHandler toSet);
 }
