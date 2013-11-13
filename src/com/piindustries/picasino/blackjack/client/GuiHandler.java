@@ -31,8 +31,6 @@
 
 package com.piindustries.picasino.blackjack.client;
 
-import com.piindustries.picasino.api.GuiHandler;
-
 /**
  * BlackJack GuiHandler
  *
