@@ -29,7 +29,7 @@
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.piindustries.picasino.blackjack.server;
+package com.piindustries.picasino.blackjack.domain;
 
 // TODO comment
 class Message {
