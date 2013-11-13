@@ -23,32 +23,31 @@
 
 package com.piindustries.picasino.blackjack.test;
 
-import com.piindustries.picasino.api.GameEvent;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
-import com.piindustries.picasino.blackjack.BJDirectedGameEvent;
-import com.piindustries.picasino.blackjack.BJGameEvent;
-import com.piindustries.picasino.blackjack.BJServerGameState;
+import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
+import com.piindustries.picasino.blackjack.domain.GameEvent;
+import com.piindustries.picasino.blackjack.server.GameState;
 
 import java.util.HashMap;
 
 public class ServerTesterServer implements NetworkHandler {
-    BJServerGameState innards;
+    GameState innards;
     HashMap<String,ClientTesterServer> sockets;
 
     public ServerTesterServer(){
-        innards  = new BJServerGameState();
+        innards  = new GameState();
         innards.setNetworkHandler(this);
     }
 
-    public void send(GameEvent e){
-        if( e instanceof BJDirectedGameEvent){
-            BJDirectedGameEvent event = (BJDirectedGameEvent)e;
-            BJGameEvent toSend = new BJGameEvent();
+    public void send(com.piindustries.picasino.api.GameEvent e){
+        if( e instanceof DirectedGameEvent){
+            DirectedGameEvent event = (DirectedGameEvent)e;
+            GameEvent toSend = new GameEvent();
             toSend.setType(event.getType());
             toSend.setValue(event.getValue());
             this.sockets.get(event.getToUser()).receive(toSend);
-        } else if (e instanceof BJGameEvent ) {
+        } else if (e instanceof GameEvent) {
             for(String s : this.sockets.keySet()){
                 sockets.get(s).receive(e);
             }
@@ -60,9 +59,9 @@ public class ServerTesterServer implements NetworkHandler {
      *
      * @param toReceive the GameEvent to receive/handle
      */
-    public void receive(GameEvent toReceive){
-        if (toReceive instanceof BJGameEvent ) {
-            BJGameEvent event = (BJGameEvent)toReceive;
+    public void receive(com.piindustries.picasino.api.GameEvent toReceive){
+        if (toReceive instanceof GameEvent) {
+            GameEvent event = (GameEvent)toReceive;
             try {
                 innards.invoke( toReceive);
             } catch (InvalidGameEventException e) {
