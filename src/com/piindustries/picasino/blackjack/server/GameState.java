@@ -32,7 +32,7 @@
 package com.piindustries.picasino.blackjack.server;
 
 import com.piindustries.picasino.api.InvalidGameEventException;
-import com.piindustries.picasino.blackjack.Cards;
+import com.piindustries.picasino.blackjack.domain.Cards;
 import com.piindustries.picasino.blackjack.domain.Hand;
 import com.piindustries.picasino.blackjack.domain.Phase;
 import com.piindustries.picasino.blackjack.domain.DealerHand;
