@@ -31,8 +31,12 @@
 
 package com.piindustries.picasino.blackjack.server;
 
+import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
+import com.piindustries.picasino.blackjack.test.ClientTesterServer;
+
+import java.util.HashMap;
 
 /**
  * A server network handler.
@@ -42,26 +46,25 @@ import com.piindustries.picasino.blackjack.domain.GameEvent;
  * @version 1.0
  */
 public class NetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
+    GameState innards;
+    HashMap<String,ClientTesterServer> sockets;
 
-    /**
-     * Transmit and handle an GameEvent.
-     *
-     * @param toSend the GameEvent to transmit.
-     */
-    public void send(com.piindustries.picasino.api.GameEvent toSend){
+    public NetworkHandler(){
+        innards  = new GameState();
+        innards.setNetworkHandler(this);
+    }
 
-        if( toSend instanceof DirectedGameEvent){
-            // TODO HANDLE AS A SERVER GAME EVENT
-            // Server events need to be sent to specific players denoted by toSend.getToUser()
-
-            DirectedGameEvent event = (DirectedGameEvent)toSend;
-
-
-        } else if (toSend instanceof GameEvent) {
-            // TODO HANDLE AS A NORMAL EVENT
-            //BJGameEvents need to be sent to all connected players
-
-            GameEvent event = (GameEvent)toSend;
+    public void send(com.piindustries.picasino.api.GameEvent e){
+        if( e instanceof DirectedGameEvent){
+            DirectedGameEvent event = (DirectedGameEvent)e;
+            GameEvent toSend = new GameEvent();
+            toSend.setType(event.getType());
+            toSend.setValue(event.getValue());
+            this.sockets.get(event.getToUser()).receive(toSend);
+        } else if (e instanceof GameEvent) {
+            for(String s : this.sockets.keySet()){
+                sockets.get(s).receive(e);
+            }
         }
     }
 
@@ -72,8 +75,18 @@ public class NetworkHandler implements com.piindustries.picasino.api.NetworkHand
      */
     public void receive(com.piindustries.picasino.api.GameEvent toReceive){
         if (toReceive instanceof GameEvent) {
-            // TODO HANDLE AS A NORMAL EVENT
             GameEvent event = (GameEvent)toReceive;
+            try {
+                innards.invoke( toReceive);
+            } catch (InvalidGameEventException e) {
+                System.err.println("InvalidGameEvent has been caught.");
+            }
         }
+    }
+
+
+    public void establishConnection(String username, ClientTesterServer client){
+        sockets.put(username, client);
+        innards.addPlayerToWaitingList(username);
     }
 }
