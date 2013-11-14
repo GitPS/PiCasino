@@ -207,6 +207,12 @@ public class GameState implements com.piindustries.picasino.api.GameState {
         }
     }
 
+    public int getLogSize() {
+        return logSize;
+    }
+
+
+
     /**
      * If `event` is a global event that `this` can handle
      * `#handleGlobalEvent` will handle it and return `true`.
