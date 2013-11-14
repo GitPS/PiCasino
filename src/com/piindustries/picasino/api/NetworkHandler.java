@@ -51,11 +51,4 @@ public interface NetworkHandler {
      * @param toSend the GameEvent to transmit.
      */
     public void send(GameEvent toSend);
-
-    /**
-     * Receive and handle an GameEvent.
-     *
-     * @param toReceive the GameEvent to receive/handle
-     */
-    public void receive(GameEvent toReceive);
 }
