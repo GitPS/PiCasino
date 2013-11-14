@@ -59,4 +59,9 @@ public interface GameState extends Serializable, Cloneable {
      * `this` in its current state.
      */
     public void invoke(GameEvent toInvoke) throws InvalidGameEventException;
+
+    /**
+     * @param toSet sets the {@link NetworkHandler} that `this` is bound to.
+     */
+    public void setNetworkHandler(NetworkHandler toSet);
 }
