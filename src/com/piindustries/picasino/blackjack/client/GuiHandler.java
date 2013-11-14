@@ -31,6 +31,8 @@
 
 package com.piindustries.picasino.blackjack.client;
 
+import com.piindustries.picasino.api.GameState;
+
 /**
  * BlackJack GuiHandler
  *
@@ -42,6 +44,16 @@ public class GuiHandler implements com.piindustries.picasino.api.GuiHandler {
     public void updateGui(){
         System.out.println( "Unimplemented Method" );
         throw new Error("Unimplemented Method");
+    }
+
+    @Override
+    public void setGameState(GameState toSet) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void setNetworkHandler(com.piindustries.picasino.api.NetworkHandler toSet) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
 }
