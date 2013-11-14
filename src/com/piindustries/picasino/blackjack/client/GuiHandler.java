@@ -41,6 +41,7 @@ import com.piindustries.picasino.api.GameState;
  */
 public class GuiHandler implements com.piindustries.picasino.api.GuiHandler {
 
+    @Override
     public void updateGui(){
         System.out.println( "Unimplemented Method" );
         throw new Error("Unimplemented Method");
