@@ -32,8 +32,8 @@ import com.piindustries.picasino.blackjack.server.GameState;
 import java.util.HashMap;
 
 public class ServerTesterServer implements NetworkHandler {
-    GameState innards;
-    HashMap<String,ClientTesterServer> sockets;
+    public GameState innards;
+    public HashMap<String,ClientTesterServer> sockets;
 
     public ServerTesterServer(){
         innards  = new GameState();
