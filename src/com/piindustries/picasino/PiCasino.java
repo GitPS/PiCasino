@@ -40,11 +40,11 @@ public class PiCasino {
         /* Check for valid game type */
         if (args[0].equalsIgnoreCase("blackjack")) {
             if (args[1].equalsIgnoreCase("client")) {
-                if(args.length >= 3){
-                    pi.buildClientBlackJack(args[2]);
-                      /* Debug start */
-                      Invoker i = new Invoker((ClientGameState)pi.getGameState());
-                      /* Debug end */
+                if(args.length >= 4){
+                    pi.buildClientBlackJack(args[2], args[3]);
+                    /* Debug start */
+                    Invoker i = new Invoker((ClientGameState)pi.getGameState());
+                    /* Debug end */
                 } else{
                     LOGGER.severe(invalidArgsMsg);
                 }
@@ -68,9 +68,9 @@ public class PiCasino {
         networkHandler = new ServerNetworkHandler(this);
     }
 
-    private void buildClientBlackJack(String host) {
+    private void buildClientBlackJack(String host, String userName) {
         /* We should only ever assign the GameState once. */
-        gameState = new ClientGameState(this);
+        gameState = new ClientGameState(this, userName);
         networkHandler = new ClientNetworkHandler(this, host);
     }
 
