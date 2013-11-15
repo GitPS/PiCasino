@@ -23,38 +23,14 @@
 
 package com.piindustries.picasino.blackjack.test;
 
-import com.piindustries.picasino.api.InvalidGameEventException;
-import com.piindustries.picasino.api.NetworkHandler;
-import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.client.GameState;
 
-public class ClientTesterServer implements NetworkHandler {
+public class ClientTesterServer extends com.piindustries.picasino.blackjack.server.NetworkHandler {
     GameState innards;
-    NetworkHandler server;
+    com.piindustries.picasino.blackjack.server.NetworkHandler server;
 
     public ClientTesterServer(){
         innards = new GameState();
         innards.setNetworkHandler(this);
-    }
-
-    public void send(com.piindustries.picasino.api.GameEvent e){
-        if (e instanceof GameEvent) {
-            server.receive(e);
-        }
-    }
-
-    /**
-     * Receive and handle an GameEvent.
-     *
-     * @param toReceive the GameEvent to receive/handle
-     */
-    public void receive(com.piindustries.picasino.api.GameEvent toReceive){
-        if (toReceive instanceof GameEvent) {
-            try {
-                innards.invoke(toReceive);
-            } catch (InvalidGameEventException e) {
-                System.err.println("InvalidGameEvent has been caught.");
-            }
-        }
     }
 }
