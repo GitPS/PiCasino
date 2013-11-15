@@ -51,8 +51,7 @@ import java.io.IOException;
 public class ClientNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
     private Client client;
 
-    public ClientNetworkHandler(PiCasino p, String host) {
-        final PiCasino pi = p;
+    public ClientNetworkHandler(final PiCasino pi, String host) {
         client = new Client();
         client.start();
 
