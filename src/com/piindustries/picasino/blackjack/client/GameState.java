@@ -145,10 +145,10 @@ public class GameState implements com.piindustries.picasino.api.GameState {
      */
     public GameState() {
         this.setPhase(Phase.INITIALIZATION);     // Set phase
-        LinkedList<Hand> h = new LinkedList<>();   // Build Player List
+        LinkedList<Hand> h = new LinkedList<Hand>();   // Build Player List
         h.add(new DealerHand());  // Add a dealer hand
         this.setHands( h );
-        this.passedList = new LinkedList<>();   // Create an empty passed list
+        this.passedList = new LinkedList<Hand>();   // Create an empty passed list
         this.setVerbose(false);
     }
 
@@ -297,8 +297,8 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     private void split(){
         // FIXME Behavior unverified
         Hand toDuplicate = this.getHands().removeFirst();
-        LinkedList<Integer> c1 = new LinkedList<>();
-        LinkedList<Integer> c2 = new LinkedList<>();
+        LinkedList<Integer> c1 = new LinkedList<Integer>();
+        LinkedList<Integer> c2 = new LinkedList<Integer>();
         Hand h1 = new Hand( toDuplicate.getUsername(), c1 );
         Hand h2 = new Hand( toDuplicate.getUsername(), c2 );
         h1.setSplit(true);
@@ -632,7 +632,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
      */
     public LinkedList<Hand> getHands() {
         if( this.hands == null ){
-            this.hands = new LinkedList<>();
+            this.hands = new LinkedList<Hand>();
         }
         return hands;
     }
@@ -657,7 +657,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     }
 
     public ArrayList<GameEventType> getValidEvents(){
-        ArrayList<GameEventType> result = new ArrayList<>();
+        ArrayList<GameEventType> result = new ArrayList<GameEventType>();
         switch(this.getPhase()){
             case INITIALIZATION:
                 result.add(GameEventType.ADD_PLAYER);
@@ -700,7 +700,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
      * @return a list of actions a client can invoke.
      */
     public ArrayList<GameEventType> getAvailableActions(){
-        ArrayList<GameEventType> result = new ArrayList<>();
+        ArrayList<GameEventType> result = new ArrayList<GameEventType>();
         switch(this.getPhase()){
             case INITIALIZATION:
                 // There are no actions to take in the initialization phase.

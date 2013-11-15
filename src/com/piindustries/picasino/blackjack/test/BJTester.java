@@ -37,7 +37,7 @@ public class BJTester {
         client = new ClientTesterServer();
         server = new ServerTesterServer();
         client.server = this.server;
-        server.sockets = new HashMap<>();
+        server.sockets = new HashMap<String,ClientTesterServer>();
         server.establishConnection("Test_User",client);
         initialization();
         server.innards.setVerbose(true);
