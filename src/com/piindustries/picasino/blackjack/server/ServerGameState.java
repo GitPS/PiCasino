@@ -31,15 +31,10 @@
 
 package com.piindustries.picasino.blackjack.server;
 
+import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
-import com.piindustries.picasino.blackjack.domain.Cards;
-import com.piindustries.picasino.blackjack.domain.Hand;
-import com.piindustries.picasino.blackjack.domain.Phase;
-import com.piindustries.picasino.blackjack.domain.DealerHand;
-import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
-import com.piindustries.picasino.blackjack.domain.GameEvent;
-import com.piindustries.picasino.blackjack.domain.GameEventType;
+import com.piindustries.picasino.blackjack.domain.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -84,8 +79,9 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * Resets its ClientNetworkHandler to a new ClientNetworkHandler and
      * instantiates a deck of cards.
      */
-    public ServerGameState(){
-        this.gameState  = new ClientGameState();
+    public ServerGameState(PiCasino pi){
+        this.gameState  = new ClientGameState(pi, "$Server");
+        this.setNetworkHandler(pi.getNetworkHandler());
         this.deck = buildDeck();
         this.gameTimer = new Timer(1000, new Listener() );
         this.gameState.appendLog("Server Game State Constructed");
