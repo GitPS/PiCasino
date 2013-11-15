@@ -19,28 +19,29 @@ public class PiCasino {
 
     /* Error messages */
     private static final String invalidArgsMsg = "Invalid or missing command line arguments.";
-    private static final String invalidModeMsg = "Invalid or missing flag for launch mode.  Valid flags are 'client' or 'server'.";
+    private static final String invalidModeMsg = "Invalid or missing flag for launch mode.  Valid flags are 'client' " +
+            "or 'server'.";
 
-    public static void main(String[] args){
-        if(args.length < 2){
+    public static void main(String[] args) {
+        if (args.length < 2) {
             LOGGER.severe(invalidArgsMsg);
             /* Nothing else we can do so we exit */
             System.exit(0);
         }
         /* Check for valid game type */
-        if(args[0].equalsIgnoreCase("blackjack")){
-            if(args[1].equalsIgnoreCase("client")){
+        if (args[0].equalsIgnoreCase("blackjack")) {
+            if (args[1].equalsIgnoreCase("client")) {
                 buildClientBlackJack();
-            } else if (args[1].equalsIgnoreCase("server")){
+            } else if (args[1].equalsIgnoreCase("server")) {
                 buildServerBlackJack();
-            } else{
+            } else {
                 LOGGER.severe(invalidModeMsg);
                 /* Nothing else we can do here so we exit */
                 System.exit(0);
             }
         }
         /* Any other game mode should follow in the same format as above */
-        else{
+        else {
             LOGGER.severe(invalidArgsMsg);
         }
     }
@@ -55,7 +56,7 @@ public class PiCasino {
         gameState = new ClientGameState();
     }
 
-    public static GameState getGameState(){
+    public static GameState getGameState() {
         return gameState;
     }
 
