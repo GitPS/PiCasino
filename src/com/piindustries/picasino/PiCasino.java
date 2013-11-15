@@ -11,7 +11,9 @@ import com.piindustries.picasino.blackjack.server.ServerGameState;
 
 public class PiCasino {
 
-    private static GameState gameState;
+    private static GameState gameState = null;
+
+    /* Error messages */
     private static final String invalidArgsMsg = "Error: Invalid or missing command line arguments.";
     private static final String invalidModeMsg = "Error: Invalid or missing flag for launch mode.  Valid flags are 'client' or 'server'.";
 
