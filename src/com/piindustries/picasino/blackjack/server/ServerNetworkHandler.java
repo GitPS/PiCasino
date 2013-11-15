@@ -49,7 +49,8 @@ import com.piindustries.picasino.blackjack.test.Network;
 public class ServerNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
     Server server;
 
-    public ServerNetworkHandler() {
+    public ServerNetworkHandler(PiCasino p) {
+        final PiCasino pi = p;
         server = new Server();
         server.start();
 
@@ -66,7 +67,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     GameEvent event = (GameEvent) object;
                     // TODO
                     try {
-                        PiCasino.getGameState().invoke(event);
+                        pi.getGameState().invoke(event);
                     } catch (InvalidGameEventException e) {
                         e.printStackTrace();
                         // TODO
