@@ -36,7 +36,6 @@ public class Tester {
     public Tester() {
         client = new ClientTesterServer();
         server = new ServerTesterServer();
-        client.server = this.server;
         server.sockets = new HashMap<>();
         server.establishConnection("Test_User",client);
         initialization();
