@@ -16,7 +16,7 @@ public class PiCasino {
     public static void main(String[] args){
         // TODO Check if this is client or server
         if(args.length < 2){
-            System.err.println("Error: No or too few command line arguments found.");
+            System.err.println("Error: Invalid or missing command line arguments.");
             /* Nothing else we can do so we exit */
             System.exit(0);
         }
@@ -27,7 +27,7 @@ public class PiCasino {
             } else if (args[0].equalsIgnoreCase("server")){
                 buildServerBlackJack();
             } else{
-                System.err.println("Error: Invalid flag for mode.  Should be 'client' or 'server'.");
+                System.err.println("Error: Invalid or missing flag for launch mode.  Valid flags are 'client' or 'server'.");
                 /* Nothing else we can do here so we exit */
                 System.exit(0);
             }
