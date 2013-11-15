@@ -37,7 +37,7 @@ public class PiCasino {
         /* Check for valid game type */
         if (args[0].equalsIgnoreCase("blackjack")) {
             if (args[1].equalsIgnoreCase("client")) {
-                if(args.length < 3){
+                if(args.length >= 3){
                     pi.buildClientBlackJack(args[2]);
                 } else{
                     LOGGER.severe(invalidArgsMsg);
