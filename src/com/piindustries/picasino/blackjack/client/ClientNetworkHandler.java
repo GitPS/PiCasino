@@ -89,6 +89,13 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
             ex.printStackTrace();
             System.exit(1);
         }
+        /* DEBUG START */
+        if(client.isConnected()){
+            PiCasino.LOGGER.info("Client has successfully connected to a server...");
+        } else{
+            PiCasino.LOGGER.info("Client is not connected to a server...");
+        }
+        /* DEBUG END */
     }
 
 
