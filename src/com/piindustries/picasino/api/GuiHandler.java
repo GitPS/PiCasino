@@ -45,4 +45,14 @@ public interface GuiHandler {
      * given its current ClientGameState.
      */
     public void updateGui();
+
+    /**
+     * @param toSet Sets the {@link GameState} bound to `this`.
+     */
+    public void setGameState(GameState toSet);
+
+    /**
+     * @param toSet Sets the {@link NetworkHandler} bound to `this`.
+     */
+    public void setNetworkHandler(NetworkHandler toSet);
 }
