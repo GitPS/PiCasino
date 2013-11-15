@@ -18,8 +18,8 @@ public class PiCasino {
     private static GameState gameState = null;
 
     /* Error messages */
-    private static final String invalidArgsMsg = "Error: Invalid or missing command line arguments.";
-    private static final String invalidModeMsg = "Error: Invalid or missing flag for launch mode.  Valid flags are 'client' or 'server'.";
+    private static final String invalidArgsMsg = "Invalid or missing command line arguments.";
+    private static final String invalidModeMsg = "Invalid or missing flag for launch mode.  Valid flags are 'client' or 'server'.";
 
     public static void main(String[] args){
         if(args.length < 2){
