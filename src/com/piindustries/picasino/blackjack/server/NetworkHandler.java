@@ -46,8 +46,8 @@ import java.util.HashMap;
  * @version 1.0
  */
 public class NetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
-    GameState innards;
-    HashMap<String,ClientTesterServer> sockets;
+    public GameState innards;
+    public HashMap<String,ClientTesterServer> sockets;
 
     public NetworkHandler(){
         innards  = new GameState();
