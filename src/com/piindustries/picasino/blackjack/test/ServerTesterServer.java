@@ -24,7 +24,7 @@
 package com.piindustries.picasino.blackjack.test;
 
 import com.piindustries.picasino.api.InvalidGameEventException;
-import com.piindustries.picasino.api.NetworkHandler;
+import com.piindustries.picasino.blackjack.client.NetworkHandler;
 import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.server.GameState;
@@ -68,10 +68,5 @@ public class ServerTesterServer implements NetworkHandler {
                 System.err.println("InvalidGameEvent has been caught.");
             }
         }
-    }
-
-    public void establishConnection(String username, ClientTesterServer client){
-        sockets.put(username, client);
-        innards.addPlayerToWaitingList(username);
     }
 }
