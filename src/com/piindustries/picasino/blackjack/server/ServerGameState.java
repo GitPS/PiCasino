@@ -73,6 +73,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     // number of seconds between games
     private int intermissionTime = 5;
 
+    private ServerNetworkHandler networkHandler;
+
 
     /**
      * Default constructor.  Builds the underlying ClientGameState,
@@ -82,6 +84,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     public ServerGameState(PiCasino pi){
         this.gameState  = new ClientGameState(pi, "$Server");
         this.setNetworkHandler(pi.getNetworkHandler());
+
         this.deck = buildDeck();
         this.gameTimer = new Timer(1000, new Listener() );
         this.gameState.appendLog("Server Game State Constructed");
@@ -192,7 +195,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         result.setType(GameEventType.SPLIT);
         result.setValue(null);
         gameState.invoke(event);
-        gameState.getNetworkHandler().send( result );
+        this.getNetworkHandler().send( result );
         if(gameState.getCurrentHand().isSplit() && gameState.getCurrentHand().getCards().size() < 2){
             while(gameState.getCurrentHand().getCards().size() < 2){
                 GameEvent toSend = new GameEvent();
@@ -216,7 +219,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         result.setType(GameEventType.DOUBLE_DOWN);
         result.setValue(null);
         gameState.invoke(event);
-        gameState.getNetworkHandler().send(result);   // TODO check if i can reuse event
+        this.getNetworkHandler().send(result);   // TODO check if i can reuse event
         // If it is the dealer's turn to act. Play as the dealer
         if(gameState.getCurrentHand() instanceof DealerHand)
             playDealersHand();
@@ -237,7 +240,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         result.setType(GameEventType.STAND);
         result.setValue(null);
         gameState.invoke(event);
-        gameState.getNetworkHandler().send(result); // TODO check if I can just pass the same event on to all other clients.
+        this.getNetworkHandler().send(result); // TODO check if I can just pass the same event on to all other clients.
         // TODO verify that when a player splits, they are dealt a new card.
         if(gameState.getCurrentHand().isSplit() && gameState.getCurrentHand().getCards().size() < 2){
             while(gameState.getCurrentHand().getCards().size() < 2){
@@ -268,7 +271,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
             directedEvent.setValue(cardVal);
             if( !(h instanceof DealerHand) ){
                 directedEvent.setToUser(h.getUsername());
-                gameState.getNetworkHandler().send( directedEvent );
+                this.getNetworkHandler().send( directedEvent );
             }
         }
         // Update the underlying gameState
@@ -303,7 +306,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         GameEvent result = new GameEvent();
         result.setType(GameEventType.PASS);
         result.setValue(null);
-        gameState.getNetworkHandler().send(result);
+        this.getNetworkHandler().send(result);
         // Update the underlying gameState
         gameState.invoke(result);
     }
@@ -317,7 +320,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         GameEvent result = new GameEvent();
         result.setType(GameEventType.BET);
         result.setValue( event.getValue() );
-        gameState.getNetworkHandler().send(result);
+        this.getNetworkHandler().send(result);
         // Update the underlying gameState
         gameState.invoke(result);
     }
@@ -489,7 +492,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
 
     /** @return `this` network handler */
     public com.piindustries.picasino.api.NetworkHandler getNetworkHandler(){
-        return this.gameState.getNetworkHandler();
+        return this.networkHandler;
     }
 
     /**
@@ -498,7 +501,9 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @param toSet the value to set `this.networkHandler` to.
      */
     public void setNetworkHandler(com.piindustries.picasino.api.NetworkHandler toSet){
-        this.gameState.setNetworkHandler(toSet);
+        if( toSet instanceof ServerNetworkHandler )
+            this.networkHandler = (ServerNetworkHandler)toSet;
+        else throw new Error("Invalid Network Handler");
     }
 
     /**
