@@ -34,6 +34,8 @@ package com.piindustries.picasino.blackjack.client;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.piindustries.picasino.PiCasino;
+import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.test.Network;
 
@@ -62,7 +64,14 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
             public void received(Connection connection, Object object) {
                 if (object instanceof GameEvent) {
                     GameEvent event = (GameEvent) object;
-                    // TODO
+                    // TODO get the GameState and call invoke()
+                    try{
+                        PiCasino.getGameState().invoke(event);
+                    } catch(InvalidGameEventException e){
+                        e.printStackTrace();
+                        // TODO
+                    }
+
                 }
             }
 
