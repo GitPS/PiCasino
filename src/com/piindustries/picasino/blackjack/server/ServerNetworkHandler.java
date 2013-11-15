@@ -59,11 +59,12 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
 
         server.addListener(new Listener() {
             public void received(Connection connection, Object object) {
-                /* DEBUG START */
-                PiCasino.LOGGER.info("Received an object from a client.");
-                /* DEBUG END */
                 if (object instanceof GameEvent) {
                     GameEvent event = (GameEvent) object;
+                    /* DEBUG START */
+                    PiCasino.LOGGER.info("Received a game event from a client.");
+                    PiCasino.LOGGER.info("Game Event Data: " + event.getType().name());
+                    /* DEBUG END */
                     // TODO
                     try {
                         pi.getGameState().invoke(event);
