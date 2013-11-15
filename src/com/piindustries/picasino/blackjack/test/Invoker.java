@@ -117,9 +117,4 @@ public class Invoker {
         }
         return result.toString();
     }
-
-    public static void main(String[] args){
-        new Invoker(new ClientGameState());
-    }
-
 }
