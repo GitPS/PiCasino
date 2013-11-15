@@ -25,9 +25,9 @@ public class PiCasino {
         }
         /* Check for valid game type */
         if(args[0].equalsIgnoreCase("blackjack")){
-            if(args[0].equalsIgnoreCase("client")){
+            if(args[1].equalsIgnoreCase("client")){
                 buildClientBlackJack();
-            } else if (args[0].equalsIgnoreCase("server")){
+            } else if (args[1].equalsIgnoreCase("server")){
                 buildServerBlackJack();
             } else{
                 System.err.println(invalidModeMsg);
