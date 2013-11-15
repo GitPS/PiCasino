@@ -36,18 +36,15 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.api.InvalidGameEventException;
-import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.test.Network;
-
-import java.util.logging.Logger;
 
 /**
  * A server network handler.
  *
- * @see com.piindustries.picasino.api.NetworkHandler
  * @author A. Jensen
  * @version 1.0
+ * @see com.piindustries.picasino.api.NetworkHandler
  */
 public class ServerNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
     Server server;
@@ -68,9 +65,9 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                 if (object instanceof GameEvent) {
                     GameEvent event = (GameEvent) object;
                     // TODO
-                    try{
+                    try {
                         PiCasino.getGameState().invoke(event);
-                    } catch(InvalidGameEventException e){
+                    } catch (InvalidGameEventException e) {
                         e.printStackTrace();
                         // TODO
                     }
@@ -95,7 +92,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
     /**
      * Transmit and handle an GameEvent for one specific user.
      *
-     * @param toSend the GameEvent to transmit.
+     * @param toSend   the GameEvent to transmit.
      * @param userName to send the to.
      */
     public void send(com.piindustries.picasino.api.GameEvent toSend, String userName) {
