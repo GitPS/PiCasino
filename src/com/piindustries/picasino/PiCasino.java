@@ -4,6 +4,8 @@ import com.piindustries.picasino.api.GameState;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
 
+import java.util.logging.Logger;
+
 /**
  * Date: 9/20/13
  * Time: 1:18 PM
@@ -13,13 +15,15 @@ public class PiCasino {
 
     private static GameState gameState = null;
 
+    private static Logger LOGGER = Logger.getLogger("PiCasino");
+
     /* Error messages */
     private static final String invalidArgsMsg = "Error: Invalid or missing command line arguments.";
     private static final String invalidModeMsg = "Error: Invalid or missing flag for launch mode.  Valid flags are 'client' or 'server'.";
 
     public static void main(String[] args){
         if(args.length < 2){
-            System.err.println(invalidArgsMsg);
+            LOGGER.severe(invalidArgsMsg);
             /* Nothing else we can do so we exit */
             System.exit(0);
         }
@@ -30,14 +34,14 @@ public class PiCasino {
             } else if (args[1].equalsIgnoreCase("server")){
                 buildServerBlackJack();
             } else{
-                System.err.println(invalidModeMsg);
+                LOGGER.severe(invalidModeMsg);
                 /* Nothing else we can do here so we exit */
                 System.exit(0);
             }
         }
         /* Any other game mode should follow in the same format as above */
         else{
-            System.err.println(invalidArgsMsg);
+            LOGGER.severe(invalidArgsMsg);
         }
     }
 
