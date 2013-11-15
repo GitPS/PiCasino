@@ -41,15 +41,13 @@ public class PiCasino {
     }
 
     private static void buildServerBlackJack() {
+        /* We should only ever assign the GameState once. */
         gameState = new ServerGameState();
     }
 
     private static void buildClientBlackJack() {
+        /* We should only ever assign the GameState once. */
         gameState = new ClientGameState();
-    }
-
-    public static void setGameState(GameState gs){
-        gameState = gs;
     }
 
     public static GameState getGameState(){
