@@ -23,19 +23,20 @@
 
 package com.piindustries.picasino.blackjack.test;
 
+import com.piindustries.picasino.blackjack.client.NetworkHandler;
 import com.piindustries.picasino.blackjack.domain.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 
 public class Tester {
-    ClientTesterServer client;
-    ServerTesterServer server;
+    NetworkHandler client;
+    com.piindustries.picasino.blackjack.server.NetworkHandler server;
     boolean quit = false;
 
     public Tester() {
-        client = new ClientTesterServer();
-        server = new ServerTesterServer();
+        client = new NetworkHandler();
+        server = new com.piindustries.picasino.blackjack.server.NetworkHandler();
         server.sockets = new HashMap<>();
         server.establishConnection("Test_User",client);
         initialization();
