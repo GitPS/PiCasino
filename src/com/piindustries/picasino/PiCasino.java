@@ -66,14 +66,14 @@ public class PiCasino {
 
     private void buildServerBlackJack() {
         /* We should only ever assign the GameState once. */
-        gameState = new ServerGameState(this);
         networkHandler = new ServerNetworkHandler(this);
+        gameState = new ServerGameState(this);
     }
 
     private void buildClientBlackJack(String host, String userName) {
         /* We should only ever assign the GameState once. */
-        gameState = new ClientGameState(this, userName);
         networkHandler = new ClientNetworkHandler(this, host);
+        gameState = new ClientGameState(this, userName);
     }
 
     public GameState getGameState() {
