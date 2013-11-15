@@ -40,6 +40,8 @@ import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.test.Network;
 
+import java.util.logging.Logger;
+
 /**
  * A server network handler.
  *
@@ -53,6 +55,10 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
     public ServerNetworkHandler() {
         server = new Server();
         server.start();
+
+        /* Notify console that the server started and is waiting for connections */
+        // TODO This should be done with the logger eventually.
+        System.out.println("Server is running and waiting for connections...");
 
         /* Register any classes that will be sent over the network */
         Network.register(server);
