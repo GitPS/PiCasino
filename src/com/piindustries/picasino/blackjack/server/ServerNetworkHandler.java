@@ -83,22 +83,18 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
      * @param toSend the GameEvent to transmit.
      */
     public void send(com.piindustries.picasino.api.GameEvent toSend) {
+        server.sendToAllTCP(toSend);
+    }
 
-        if (toSend instanceof DirectedGameEvent) {
-            // TODO HANDLE AS A SERVER GAME EVENT
-            // Server events need to be sent to specific players denoted by toSend.getToUser()
-
-            DirectedGameEvent event = (DirectedGameEvent) toSend;
-            // TODO Change this to the client number we want to send the event to
-            server.sendToTCP(1, event);
-
-        } else if (toSend instanceof GameEvent) {
-            // TODO HANDLE AS A NORMAL EVENT
-            //BJGameEvents need to be sent to all connected players
-
-            GameEvent event = (GameEvent) toSend;
-            server.sendToAllTCP(event);
-        }
+    /**
+     * Transmit and handle an GameEvent for one specific user.
+     *
+     * @param toSend the GameEvent to transmit.
+     * @param userName to send the to.
+     */
+    public void send(com.piindustries.picasino.api.GameEvent toSend, String userName) {
+        // TODO Change this to the client number we want to send the event to
+        server.sendToTCP(1, toSend);
     }
 
 
