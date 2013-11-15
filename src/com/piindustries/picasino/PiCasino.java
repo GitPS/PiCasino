@@ -16,7 +16,6 @@ public class PiCasino {
     private static final String invalidModeMsg = "Error: Invalid or missing flag for launch mode.  Valid flags are 'client' or 'server'.";
 
     public static void main(String[] args){
-        // TODO Check if this is client or server
         if(args.length < 2){
             System.err.println(invalidArgsMsg);
             /* Nothing else we can do so we exit */
