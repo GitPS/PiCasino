@@ -45,6 +45,7 @@ public class PiCasino {
                     /* Debug start */
                     Invoker i = new Invoker((ClientGameState)pi.getGameState());
                     i.getInnards().setNetworkHandler( pi.getNetworkHandler() );
+                    i.step();
                     /* Debug end */
                 } else{
                     LOGGER.severe(invalidArgsMsg);

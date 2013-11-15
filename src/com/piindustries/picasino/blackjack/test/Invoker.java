@@ -19,7 +19,6 @@ public class Invoker {
         this.setInnards(toSet);
         System.out.println("What action?");
         printActions();
-        step();
     }
 
     public ClientGameState getInnards() {
@@ -35,7 +34,7 @@ public class Invoker {
             System.out.println( '\t' + s.name());
     }
 
-    private synchronized void step(){
+    public synchronized void step(){
         String[] input = readLine().trim().split("[ ]");
         String type = input[0].toLowerCase();
         GameEvent toInvoke = new GameEvent();
