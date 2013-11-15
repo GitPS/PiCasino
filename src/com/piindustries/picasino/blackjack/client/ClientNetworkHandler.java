@@ -88,8 +88,6 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
      * @param toSend the GameEvent to transmit.
      */
     public void send(com.piindustries.picasino.api.GameEvent toSend) {
-        if (toSend instanceof GameEvent) {
-            client.sendTCP(toSend);
-        }
+        client.sendTCP(toSend);
     }
 }
