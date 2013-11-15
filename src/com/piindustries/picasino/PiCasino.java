@@ -44,6 +44,7 @@ public class PiCasino {
                     pi.buildClientBlackJack(args[2], args[3]);
                     /* Debug start */
                     Invoker i = new Invoker((ClientGameState)pi.getGameState());
+                    i.getInnards().setNetworkHandler( pi.getNetworkHandler() );
                     /* Debug end */
                 } else{
                     LOGGER.severe(invalidArgsMsg);
