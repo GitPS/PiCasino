@@ -31,6 +31,8 @@
 
 package com.piindustries.picasino.api;
 
+import com.piindustries.picasino.PiCasino;
+
 /**
  * A game can build all the components necessary to run a PiCasino game.
  *
@@ -45,7 +47,7 @@ public interface Game {
      *
      * @return a ClientGameState
      */
-    public GameState buildClientGameState();
+    public GameState buildClientGameState(PiCasino pi, String username);
 
     /**
      * Builds and returns an object conforming to type ClientGameState
@@ -53,7 +55,7 @@ public interface Game {
      *
      * @return a ClientGameState
      */
-    public GameState buildServerGameState();
+    public GameState buildServerGameState(PiCasino pi);
 
     /**
      * Builds and returns an object conforming to type GuiHandler to
