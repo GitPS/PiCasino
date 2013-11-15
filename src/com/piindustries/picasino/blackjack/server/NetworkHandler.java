@@ -31,8 +31,12 @@
 
 package com.piindustries.picasino.blackjack.server;
 
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Server;
 import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
+import com.piindustries.picasino.blackjack.test.Network;
 
 /**
  * A server network handler.
@@ -42,38 +46,50 @@ import com.piindustries.picasino.blackjack.domain.GameEvent;
  * @version 1.0
  */
 public class NetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
+    Server server;
+
+    public NetworkHandler() {
+        server = new Server();
+        server.start();
+
+        /* Register any classes that will be sent over the network */
+        Network.register(server);
+
+        server.addListener(new Listener() {
+            public void received(Connection connection, Object object) {
+                if (object instanceof GameEvent) {
+                    GameEvent event = (GameEvent) object;
+                    // TODO
+                }
+            }
+
+            public void disconnected(Connection connection) {
+                System.exit(0);
+            }
+        });
+    }
 
     /**
      * Transmit and handle an GameEvent.
      *
      * @param toSend the GameEvent to transmit.
      */
-    public void send(com.piindustries.picasino.api.GameEvent toSend){
+    public void send(com.piindustries.picasino.api.GameEvent toSend) {
 
-        if( toSend instanceof DirectedGameEvent){
+        if (toSend instanceof DirectedGameEvent) {
             // TODO HANDLE AS A SERVER GAME EVENT
             // Server events need to be sent to specific players denoted by toSend.getToUser()
 
-            DirectedGameEvent event = (DirectedGameEvent)toSend;
-
+            DirectedGameEvent event = (DirectedGameEvent) toSend;
+            // TODO Change this to the client number we want to send the event to
+            server.sendToTCP(1, event);
 
         } else if (toSend instanceof GameEvent) {
             // TODO HANDLE AS A NORMAL EVENT
             //BJGameEvents need to be sent to all connected players
 
-            GameEvent event = (GameEvent)toSend;
-        }
-    }
-
-    /**
-     * Receive and handle an GameEvent.
-     *
-     * @param toReceive the GameEvent to receive/handle
-     */
-    public void receive(com.piindustries.picasino.api.GameEvent toReceive){
-        if (toReceive instanceof GameEvent) {
-            // TODO HANDLE AS A NORMAL EVENT
-            GameEvent event = (GameEvent)toReceive;
+            GameEvent event = (GameEvent) toSend;
+            server.sendToAllTCP(event);
         }
     }
 }

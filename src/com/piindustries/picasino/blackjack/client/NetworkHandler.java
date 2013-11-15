@@ -31,7 +31,11 @@
 
 package com.piindustries.picasino.blackjack.client;
 
+import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
+import com.piindustries.picasino.blackjack.test.Network;
 
 /**
  * A ClientNetworkHandler.
@@ -41,32 +45,42 @@ import com.piindustries.picasino.blackjack.domain.GameEvent;
  * @version 1.0
  */
 public class NetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
+    Client client;
+
+    public NetworkHandler() {
+        client = new Client();
+        client.start();
+
+        /* Register any classes that will be sent over the network */
+        Network.register(client);
+
+        /* Create a threaded listener */
+        client.addListener(new Listener.ThreadedListener(new Listener() {
+            public void connected(Connection connection) {
+            }
+
+            public void received(Connection connection, Object object) {
+                if (object instanceof GameEvent) {
+                    GameEvent event = (GameEvent) object;
+                    // TODO
+                }
+            }
+
+            public void disconnected(Connection connection) {
+                System.exit(0);
+            }
+        }));
+    }
+
 
     /**
      * Transmit and handle an GameEvent.
      *
      * @param toSend the GameEvent to transmit.
      */
-    public void send(com.piindustries.picasino.api.GameEvent toSend){
-        // TODO
-        if(toSend instanceof GameEvent){
-            GameEvent event = (GameEvent)toSend;
+    public void send(com.piindustries.picasino.api.GameEvent toSend) {
+        if (toSend instanceof GameEvent) {
+            client.sendTCP(toSend);
         }
-
-        throw new Error("Unimplemented Method NetworkHandler.send()");
-    }
-
-    /**
-     * Receive and handle an GameEvent.
-     *
-     * @param toReceive the GameEvent to receive/handle
-     */
-    public void receive(com.piindustries.picasino.api.GameEvent toReceive){
-        // TODO
-        if(toReceive instanceof GameEvent){
-            GameEvent event = (GameEvent)toReceive;
-        }
-
-        throw new Error("Unimplemented Method NetworkHandler.send()");
     }
 }

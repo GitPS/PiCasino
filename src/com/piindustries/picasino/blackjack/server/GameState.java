@@ -543,7 +543,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
      * @return a deck containing all 52 cards.
      */
     private ArrayList<Integer> buildDeck(){
-        ArrayList<Integer> result = new ArrayList<>();
+        ArrayList<Integer> result = new ArrayList<Integer>();
         for( int i = 0; i < 52; i++ )
             result.add(i);
         return result;
