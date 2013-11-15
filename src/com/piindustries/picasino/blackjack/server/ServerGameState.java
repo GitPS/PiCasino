@@ -264,14 +264,12 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      */
     private void requestCard() throws InvalidGameEventException {
         Integer cardVal = getRandomCard();
-        DirectedGameEvent directedEvent = new DirectedGameEvent();
         GameEvent standardEvent = new GameEvent();
         for( Hand h : gameState.getHands() ){
-            directedEvent.setType(GameEventType.SEND_CARD);
-            directedEvent.setValue(cardVal);
+            standardEvent.setType(GameEventType.SEND_CARD);
+            standardEvent.setValue(cardVal);
             if( !(h instanceof DealerHand) ){
-                directedEvent.setToUser(h.getUsername());
-                this.getNetworkHandler().send( directedEvent );
+                this.getNetworkHandler().send( standardEvent, h.getUsername() );
             }
         }
         // Update the underlying gameState
@@ -418,22 +416,20 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
             while( gameState.getCurrentHand().getCards().size() < 2 ){
                 // If this is the first card, it need to be hidden to other players
                 if( gameState.getCurrentHand().getCards().size() == 0){
-                    DirectedGameEvent toSend = new DirectedGameEvent();
+                    GameEvent toSend = new GameEvent();
                     toSend.setType(GameEventType.DEAL_CARD);
                     int card = getRandomCard();
                     // For all hands except the dealer's
                     for(Hand h : gameState.getHands()){
                         if( !(h instanceof DealerHand) ){
-                            toSend.setToUser(h.getUsername());
                             // If it is the current hand
                             if( h.getUsername().equals(gameState.getCurrentUser()))
                                 toSend.setValue(card);  // Actual card value
                             else
                                 toSend.setValue(52);    // Hidden card value
-                            getNetworkHandler().send(toSend);
+                            getNetworkHandler().send(toSend, h.getUsername());
                         }
                     }
-
                     // Update the server data
                     GameEvent toSend2 = new GameEvent();
                     toSend2.setType(GameEventType.DEAL_CARD);
@@ -491,7 +487,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     }
 
     /** @return `this` network handler */
-    public com.piindustries.picasino.api.NetworkHandler getNetworkHandler(){
+    public ServerNetworkHandler getNetworkHandler(){
         return this.networkHandler;
     }
 
