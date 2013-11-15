@@ -34,7 +34,7 @@ public class PiCasino {
                 System.exit(0);
             }
         }
-        /* Each other game mode should follow in the same format as above */
+        /* Any other game mode should follow in the same format as above */
         else{
             System.err.println(invalidArgsMsg);
         }
