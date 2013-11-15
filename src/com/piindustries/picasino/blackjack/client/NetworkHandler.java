@@ -31,6 +31,7 @@
 
 package com.piindustries.picasino.blackjack.client;
 
+import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
 
 /**
@@ -41,6 +42,8 @@ import com.piindustries.picasino.blackjack.domain.GameEvent;
  * @version 1.0
  */
 public class NetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
+    public GameState innards;
+    public com.piindustries.picasino.blackjack.server.NetworkHandler server;
 
     /**
      * Transmit and handle an GameEvent.
@@ -48,12 +51,10 @@ public class NetworkHandler implements com.piindustries.picasino.api.NetworkHand
      * @param toSend the GameEvent to transmit.
      */
     public void send(com.piindustries.picasino.api.GameEvent toSend){
-        // TODO
         if(toSend instanceof GameEvent){
             GameEvent event = (GameEvent)toSend;
+            this.server.receive(event);
         }
-
-        throw new Error("Unimplemented Method NetworkHandler.send()");
     }
 
     /**
@@ -62,11 +63,13 @@ public class NetworkHandler implements com.piindustries.picasino.api.NetworkHand
      * @param toReceive the GameEvent to receive/handle
      */
     public void receive(com.piindustries.picasino.api.GameEvent toReceive){
-        // TODO
-        if(toReceive instanceof GameEvent){
+        if (toReceive instanceof GameEvent) {
             GameEvent event = (GameEvent)toReceive;
+            try {
+                innards.invoke( toReceive);
+            } catch (InvalidGameEventException e) {
+                System.err.println("InvalidGameEvent has been caught.");
+            }
         }
-
-        throw new Error("Unimplemented Method NetworkHandler.send()");
     }
 }
