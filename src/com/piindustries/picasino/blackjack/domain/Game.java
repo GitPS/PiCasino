@@ -31,6 +31,7 @@
 
 package com.piindustries.picasino.blackjack.domain;
 
+import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
 import com.piindustries.picasino.blackjack.client.GuiHandler;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
@@ -50,8 +51,8 @@ public class Game implements com.piindustries.picasino.api.Game {
      *
      * @return a ClientGameState
      */
-    public ClientGameState buildClientGameState(){
-        return new ClientGameState();
+    public ClientGameState buildClientGameState(PiCasino pi, String username){
+        return new ClientGameState(pi, username);
     }
 
     /**
@@ -60,8 +61,8 @@ public class Game implements com.piindustries.picasino.api.Game {
      *
      * @return a ClientGameState
      */
-    public ServerGameState buildServerGameState(){
-        return new ServerGameState();
+    public ServerGameState buildServerGameState(PiCasino pi){
+        return new ServerGameState(pi);
     }
 
     /**
