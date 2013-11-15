@@ -39,11 +39,11 @@ import java.io.Serializable;
  * vary slightly, but they must progress through the logic and phases of the
  * game at the same rate.
  *
- * For instance, a server GameState may hold all of
- * cards of all of the players, where a client GameState will only hold the
+ * For instance, a server ClientGameState may hold all of
+ * cards of all of the players, where a client ClientGameState will only hold the
  * cards of that player.
  *
- * When a GameState invokes an GameEvent it progresses to its the next state.
+ * When a ClientGameState invokes an GameEvent it progresses to its the next state.
  *
  * @author A. Jensen
  * @version 1.0

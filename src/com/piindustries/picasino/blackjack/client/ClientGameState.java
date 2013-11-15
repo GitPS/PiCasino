@@ -42,20 +42,20 @@ import java.util.NoSuchElementException;
 /**
  * A Client-Side {@link com.piindustries.picasino.api.GameState}. For blackjack.
  * <p>
- * A {@link GameState} will strictly and exclusively manage all data needed
- * to determine the state of a Blackjack game.  A {@link GameState} will
+ * A {@link ClientGameState} will strictly and exclusively manage all data needed
+ * to determine the state of a Blackjack game.  A {@link ClientGameState} will
  * also manage micro-transitions between states within a given phase of the game.
- * A {@link GameState} will operate in tandem with a {@link com.piindustries.picasino.blackjack.server.GameState}
+ * A {@link ClientGameState} will operate in tandem with a {@link com.piindustries.picasino.blackjack.server.ServerGameState}
  * to determine when to transition between phases of a blackjack game.
  * </p>
  * <p>
- * A {@link GameState} can be and must be in exactly one {@link com.piindustries.picasino.blackjack.domain.Phase} at a
- * given time.  What a {@link GameState} can handle during any of the specified
+ * A {@link ClientGameState} can be and must be in exactly one {@link com.piindustries.picasino.blackjack.domain.Phase} at a
+ * given time.  What a {@link ClientGameState} can handle during any of the specified
  * phases will be described in detail below.
  * </p>
  *
  * <pre>{{{
- *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#INITIALIZATION} phase, a {@link GameState} can
+ *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#INITIALIZATION} phase, a {@link ClientGameState} can
  *     receive the following {@link com.piindustries.picasino.blackjack.domain.GameEvent}s.
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "AddPlayer" and whose value is of type
  *         {@link String}.  The value should be the username of the player to be added.
@@ -64,12 +64,12 @@ import java.util.NoSuchElementException;
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "RemovePlayer" and whose value is of type
  *         {@link String}.  The value should be the username of the player to be removed.
  *         When "RemovePlayer" is invoked during this phase, Any hand mapped to the specified
- *         username will be removed from this {@link GameState}.
+ *         username will be removed from this {@link ClientGameState}.
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "AdvanceToBetting" and whose value is of any
  *         type.  When "AdvanceToBetting" is invoked during this phase, the phase of
  *         <code>this</code> will be changed from {@link com.piindustries.picasino.blackjack.domain.Phase#INITIALIZATION} to
  *         {@link com.piindustries.picasino.blackjack.domain.Phase#BETTING}.
- *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#BETTING} phase, a {@link GameState} can
+ *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#BETTING} phase, a {@link ClientGameState} can
  *     receive the following {@link com.piindustries.picasino.blackjack.domain.GameEvent}s.
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "Bet" and whose value is of type
  *         {@link Integer}.  The value should be the value of the bet that the currently
@@ -84,7 +84,7 @@ import java.util.NoSuchElementException;
  *         type.  When "AdvanceToDealing" is invoked during this phase, the phase of
  *         <code>this</code> will be changed from {@link com.piindustries.picasino.blackjack.domain.Phase#BETTING} to
  *         {@link com.piindustries.picasino.blackjack.domain.Phase#DEALING}.
- *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#DEALING} phase, a {@link GameState} can
+ *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#DEALING} phase, a {@link ClientGameState} can
  *     receive the following {@link com.piindustries.picasino.blackjack.domain.GameEvent}s.
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "SendCard" and whose value is of type
  *         {@link Integer}.  The value should represent the card that was sent to the player.
@@ -94,7 +94,7 @@ import java.util.NoSuchElementException;
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "AdvanceToPlaying" and whose value is of any type.
  *         When "AdvanceToPlaying" is invoked during this phase, the phase of <code>this</code>
  *         will be changed from {@link com.piindustries.picasino.blackjack.domain.Phase#DEALING} to {@link com.piindustries.picasino.blackjack.domain.Phase#PLAYING}.
- *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#PLAYING} phase, a {@link GameState} can
+ *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#PLAYING} phase, a {@link ClientGameState} can
  *     receive the following {@link com.piindustries.picasino.blackjack.domain.GameEvent}s.
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "SendCard" and whose value is of type
  *         {@link Integer}.  The value should represent the card that was sent to the player.
@@ -111,7 +111,7 @@ import java.util.NoSuchElementException;
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "AdvanceToConclusion" and whose value is of any type.
  *         When "AdvanceToConclusion" is invoked during this phase, the phase of <code>this</code>
  *         will be changed from {@link com.piindustries.picasino.blackjack.domain.Phase#PLAYING} to {@link com.piindustries.picasino.blackjack.domain.Phase#CONCLUSION}.
- *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#CONCLUSION} phase, a {@link GameState} can
+ *     During the {@link com.piindustries.picasino.blackjack.domain.Phase#CONCLUSION} phase, a {@link ClientGameState} can
  *     receive the following {@link com.piindustries.picasino.blackjack.domain.GameEvent}s.
  *       - A {@link com.piindustries.picasino.blackjack.domain.GameEvent} whose name is "AdvanceToInitialization" and whose value is of any type.
  *         When "AdvanceToInitialization" is invoked during this phase, the phase of <code>this</code>
@@ -125,7 +125,7 @@ import java.util.NoSuchElementException;
  * @version 1.0
  * @see com.piindustries.picasino.api.GameState
  */
-public class GameState implements com.piindustries.picasino.api.GameState {
+public class ClientGameState implements com.piindustries.picasino.api.GameState {
 
     // The following are collections of the names of which BJGameEvents this can handle in each of its phases.
     // Can be directly access by inheriting implementations because it is final and immutable.
@@ -143,7 +143,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     /**
      * Default Constructor.
      */
-    public GameState() {
+    public ClientGameState() {
         this.setPhase(Phase.INITIALIZATION);     // Set phase
         LinkedList<Hand> h = new LinkedList<Hand>();   // Build Player List
         h.add(new DealerHand());  // Add a dealer hand
@@ -157,7 +157,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     // TODO Make sure empty games caused by disconnects don't explode
 
     /**
-     * Invokes a GameEvent on this GameState.
+     * Invokes a GameEvent on this ClientGameState.
      *
      * @param e the GameEvent to invoke on `this`.
      * @throws InvalidGameEventException if `this` cannot handle `event` in its
@@ -545,7 +545,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     }
 
     /**
-     * @return the NetworkHandler of `this`
+     * @return the ClientNetworkHandler of `this`
      */
     public NetworkHandler getNetworkHandler() {
         if( this.networkHandler == null )
@@ -554,7 +554,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     }
 
     /**
-     * Sets the NetworkHandler of `this`.
+     * Sets the ClientNetworkHandler of `this`.
      *
      * @param networkHandler the Network Handler of `this`.
      */
@@ -652,8 +652,8 @@ public class GameState implements com.piindustries.picasino.api.GameState {
      * @return `this` cloned.
      */
     @Override
-    public GameState clone() throws CloneNotSupportedException {
-        return (GameState)super.clone();
+    public ClientGameState clone() throws CloneNotSupportedException {
+        return (ClientGameState)super.clone();
     }
 
     public ArrayList<GameEventType> getValidEvents(){

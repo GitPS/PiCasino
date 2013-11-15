@@ -33,7 +33,7 @@ package com.piindustries.picasino.api;
 
 /**
  * A throwable exception.  An InvalidGameEventException should be thrown
- * if a GameState invokes an GameEvent that cannot be invoked in its current
+ * if a ClientGameState invokes an GameEvent that cannot be invoked in its current
  * state.
  *
  * @author A. Jensen

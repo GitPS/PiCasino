@@ -33,7 +33,7 @@ package com.piindustries.picasino.api;
 
 /**
  * Sends and receives GameEvents.  It can handle upper-level
- * GameEvents or relay them to the appropriate GameState as
+ * GameEvents or relay them to the appropriate ClientGameState as
  * needed.
  *
  * Server-side NetworkHandlers and Client-side

@@ -45,10 +45,10 @@ import com.piindustries.picasino.blackjack.test.Network;
  * @author A. Jensen
  * @version 1.0
  */
-public class NetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
+public class ServerNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
     Server server;
 
-    public NetworkHandler() {
+    public ServerNetworkHandler() {
         server = new Server();
         server.start();
 
@@ -92,4 +92,6 @@ public class NetworkHandler implements com.piindustries.picasino.api.NetworkHand
             server.sendToAllTCP(event);
         }
     }
+
+
 }

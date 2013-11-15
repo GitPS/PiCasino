@@ -27,16 +27,16 @@ import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
 import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
-import com.piindustries.picasino.blackjack.server.GameState;
+import com.piindustries.picasino.blackjack.server.ServerGameState;
 
 import java.util.HashMap;
 
 public class ServerTesterServer implements NetworkHandler {
-    GameState innards;
+    ServerGameState innards;
     HashMap<String,ClientTesterServer> sockets;
 
     public ServerTesterServer(){
-        innards  = new GameState();
+        innards  = new ServerGameState();
         innards.setNetworkHandler(this);
     }
 

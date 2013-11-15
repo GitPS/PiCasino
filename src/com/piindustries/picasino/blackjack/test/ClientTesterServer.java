@@ -25,15 +25,15 @@ package com.piindustries.picasino.blackjack.test;
 
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
+import com.piindustries.picasino.blackjack.client.ClientGameState;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
-import com.piindustries.picasino.blackjack.client.GameState;
 
 public class ClientTesterServer implements NetworkHandler {
-    GameState innards;
+    ClientGameState innards;
     NetworkHandler server;
 
     public ClientTesterServer(){
-        innards = new GameState();
+        innards = new ClientGameState();
         innards.setNetworkHandler(this);
     }
 

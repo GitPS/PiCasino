@@ -42,7 +42,7 @@ public interface GuiHandler {
 
     /**
      * Updates the Graphical Interface of this game
-     * given its current GameState.
+     * given its current ClientGameState.
      */
     public void updateGui();
 }

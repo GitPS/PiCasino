@@ -31,9 +31,11 @@
 
 package com.piindustries.picasino.blackjack.domain;
 
-import com.piindustries.picasino.blackjack.server.GameState;
+import com.piindustries.picasino.blackjack.client.ClientGameState;
+import com.piindustries.picasino.blackjack.client.ClientNetworkHandler;
+import com.piindustries.picasino.blackjack.server.ServerGameState;
 import com.piindustries.picasino.blackjack.client.GuiHandler;
-import com.piindustries.picasino.blackjack.server.NetworkHandler;
+import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
 
 
 /**
@@ -45,45 +47,45 @@ import com.piindustries.picasino.blackjack.server.NetworkHandler;
 public class Game implements com.piindustries.picasino.api.Game {
 
     /**
-     * Builds and returns an object conforming to type GameState
+     * Builds and returns an object conforming to type ClientGameState
      * to be constructed on the client-side;
      *
-     * @return a GameState
+     * @return a ClientGameState
      */
-    public com.piindustries.picasino.blackjack.client.GameState buildClientGameState(){
-        return new com.piindustries.picasino.blackjack.client.GameState();
+    public ClientGameState buildClientGameState(){
+        return new ClientGameState();
     }
 
     /**
-     * Builds and returns an object conforming to type GameState
+     * Builds and returns an object conforming to type ClientGameState
      * to be constructed on the server-side;
      *
-     * @return a GameState
+     * @return a ClientGameState
      */
-    public GameState buildServerGameState(){
-        return new GameState();
+    public ServerGameState buildServerGameState(){
+        return new ServerGameState();
     }
 
     /**
-     * Builds and returns an object conforming to type NetworkHandler
+     * Builds and returns an object conforming to type ClientNetworkHandler
      *
-     * @return a NetworkHandler to be instantiated on the server to handle
+     * @return a ClientNetworkHandler to be instantiated on the server to handle
      * server-side communications.
      */
-    public NetworkHandler buildServerNetworkHandler(){
-        return new NetworkHandler();
+    public ServerNetworkHandler buildServerNetworkHandler(){
+        return new ServerNetworkHandler();
     }
 
 
     /**
-     * Builds and returns an object conforming to type NetworkHandler
+     * Builds and returns an object conforming to type ClientNetworkHandler
      *
-     * @return a NetworkHandler to be instantiated on the client to handle
+     * @return a ClientNetworkHandler to be instantiated on the client to handle
      * client-side communications.
      *
      */
-    public com.piindustries.picasino.blackjack.client.NetworkHandler buildClientNetworkHandler(){
-        return new com.piindustries.picasino.blackjack.client.NetworkHandler();
+    public ClientNetworkHandler buildClientNetworkHandler(){
+        return new ClientNetworkHandler();
     }
 
     /**

@@ -32,6 +32,7 @@
 package com.piindustries.picasino.blackjack.server;
 
 import com.piindustries.picasino.api.InvalidGameEventException;
+import com.piindustries.picasino.blackjack.client.ClientGameState;
 import com.piindustries.picasino.blackjack.domain.Cards;
 import com.piindustries.picasino.blackjack.domain.Hand;
 import com.piindustries.picasino.blackjack.domain.Phase;
@@ -48,22 +49,22 @@ import java.util.Date;
 import java.util.LinkedList;
 
 /**
- * A GameState implements GameState.
+ * A ClientGameState implements ClientGameState.
  *
- * It has an underlying GameState that manages the logic of the
+ * It has an underlying ClientGameState that manages the logic of the
  * game exactly as if were a client.
  *
- * On top of the GameState if broadcasts BJGameEvents to the
+ * On top of the ClientGameState if broadcasts BJGameEvents to the
  * appropriate clients when required.
  *
  * @see com.piindustries.picasino.api.GameState
  * @author A. Jensen
  * @version 1.0
  */
-public class GameState implements com.piindustries.picasino.api.GameState {
+public class ServerGameState implements com.piindustries.picasino.api.GameState {
 
     // The underlying gameState
-    private com.piindustries.picasino.blackjack.client.GameState gameState;
+    private ClientGameState gameState;
 
     // A managed a universal deck of cards
     private ArrayList<Integer> deck;
@@ -79,13 +80,13 @@ public class GameState implements com.piindustries.picasino.api.GameState {
 
 
     /**
-     * Default constructor.  Builds the underlying GameState,
-     * Resets its NetworkHandler to a new NetworkHandler and
+     * Default constructor.  Builds the underlying ClientGameState,
+     * Resets its ClientNetworkHandler to a new ClientNetworkHandler and
      * instantiates a deck of cards.
      */
-    public GameState(){
-        this.gameState  = new com.piindustries.picasino.blackjack.client.GameState();
-        this.gameState.setNetworkHandler( new NetworkHandler() );
+    public ServerGameState(){
+        this.gameState  = new ClientGameState();
+        this.gameState.setNetworkHandler( new ServerNetworkHandler() );
         this.deck = buildDeck();
         this.gameTimer = new Timer(1000, new Listener() );
         this.gameState.appendLog("Server Game State Constructed");
@@ -99,7 +100,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
 
     /**
      * Invokes GameEvents.  First calls the invoke method
-     * on its underlying GameState so the logic of
+     * on its underlying ClientGameState so the logic of
      * the game progresses as it should.
      *
      * Then, handles the event its own manner.
@@ -487,8 +488,8 @@ public class GameState implements com.piindustries.picasino.api.GameState {
      * @throws CloneNotSupportedException
      * @see java.lang.Object#clone()
      */
-    public GameState clone() throws CloneNotSupportedException {
-        return (GameState)super.clone();
+    public ServerGameState clone() throws CloneNotSupportedException {
+        return (ServerGameState)super.clone();
     }
 
     /** @return `this` network handler */
@@ -506,7 +507,7 @@ public class GameState implements com.piindustries.picasino.api.GameState {
     }
 
     /**
-     * @return the phase of the underlying GameState of `this`
+     * @return the phase of the underlying ClientGameState of `this`
      */
     public Phase getPhase(){
         return this.gameState.getPhase();
