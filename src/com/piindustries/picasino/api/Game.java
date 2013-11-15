@@ -56,24 +56,6 @@ public interface Game {
     public GameState buildServerGameState();
 
     /**
-     * Builds and returns an object conforming to type ClientNetworkHandler
-     *
-     * @return a ClientNetworkHandler to be instantiated on the server to handle
-     * server-side communications.
-     */
-    public NetworkHandler buildServerNetworkHandler();
-
-
-    /**
-     * Builds and returns an object conforming to type ClientNetworkHandler
-     *
-     * @return a ClientNetworkHandler to be instantiated on the client to handle
-     * client-side communications.
-     *
-     */
-    public NetworkHandler buildClientNetworkHandler();
-
-    /**
      * Builds and returns an object conforming to type GuiHandler to
      * handle graphics on the client side.
      *
