@@ -2,8 +2,8 @@ package com.piindustries.picasino.blackjack.test;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
-import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
+import com.piindustries.picasino.blackjack.domain.GameEventType;
 
 /**
  * ___ _   ___          _
@@ -42,5 +42,6 @@ public class Network {
     static public void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
         kryo.register(GameEvent.class);
+        kryo.register(GameEventType.class);
     }
 }
