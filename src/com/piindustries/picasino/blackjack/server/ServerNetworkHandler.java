@@ -58,7 +58,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
 
         /* Notify console that the server started and is waiting for connections */
         // TODO This should be done with the logger eventually.
-        System.out.println("Server is running and waiting for connections...");
+        PiCasino.LOGGER.info("Server is running and waiting for connections...");
 
         /* Register any classes that will be sent over the network */
         Network.register(server);
