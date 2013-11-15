@@ -39,6 +39,8 @@ import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.test.Network;
 
+import java.io.IOException;
+
 /**
  * A server network handler.
  *
@@ -49,13 +51,8 @@ import com.piindustries.picasino.blackjack.test.Network;
 public class ServerNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
     Server server;
 
-    public ServerNetworkHandler() {
+    public ServerNetworkHandler(final PiCasino pi) {
         server = new Server();
-        server.start();
-
-        /* Notify console that the server started and is waiting for connections */
-        // TODO This should be done with the logger eventually.
-        PiCasino.LOGGER.info("Server is running and waiting for connections...");
 
         /* Register any classes that will be sent over the network */
         Network.register(server);
@@ -66,7 +63,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     GameEvent event = (GameEvent) object;
                     // TODO
                     try {
-                        PiCasino.getGameState().invoke(event);
+                        pi.getGameState().invoke(event);
                     } catch (InvalidGameEventException e) {
                         e.printStackTrace();
                         // TODO
@@ -78,6 +75,19 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                 System.exit(0);
             }
         });
+
+        try {
+            server.bind(Network.port);
+        } catch (IOException e) {
+            PiCasino.LOGGER.severe("Failed to bind to port " + Network.port + "!");
+            PiCasino.LOGGER.severe(e.getMessage());
+            /* If we can't bind to our port we can't do anything so exit */
+            System.exit(1);
+        }
+        server.start();
+
+        /* Notify console that the server started and is waiting for connections */
+        PiCasino.LOGGER.info("Server is running and waiting for connections...");
     }
 
     /**

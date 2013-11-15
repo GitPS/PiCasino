@@ -1,8 +1,11 @@
 package com.piindustries.picasino;
 
 import com.piindustries.picasino.api.GameState;
+import com.piindustries.picasino.api.NetworkHandler;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
+import com.piindustries.picasino.blackjack.client.ClientNetworkHandler;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
+import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
 
 import java.util.logging.Logger;
 
@@ -15,7 +18,8 @@ public class PiCasino {
 
     public static Logger LOGGER = Logger.getLogger("PiCasino");
 
-    private static GameState gameState = null;
+    private GameState gameState = null;
+    private NetworkHandler networkHandler = null;
 
     /* Error messages */
     private static final String invalidArgsMsg = "Invalid or missing command line arguments.";
@@ -23,6 +27,8 @@ public class PiCasino {
             "or 'server'.";
 
     public static void main(String[] args) {
+        PiCasino pi = new PiCasino();
+        String host;
         if (args.length < 2) {
             LOGGER.severe(invalidArgsMsg);
             /* Nothing else we can do so we exit */
@@ -31,9 +37,13 @@ public class PiCasino {
         /* Check for valid game type */
         if (args[0].equalsIgnoreCase("blackjack")) {
             if (args[1].equalsIgnoreCase("client")) {
-                buildClientBlackJack();
+                if(args.length < 3){
+                    pi.buildClientBlackJack(args[2]);
+                } else{
+                    LOGGER.severe(invalidArgsMsg);
+                }
             } else if (args[1].equalsIgnoreCase("server")) {
-                buildServerBlackJack();
+                pi.buildServerBlackJack();
             } else {
                 LOGGER.severe(invalidModeMsg);
                 /* Nothing else we can do here so we exit */
@@ -46,18 +56,24 @@ public class PiCasino {
         }
     }
 
-    private static void buildServerBlackJack() {
+    private void buildServerBlackJack() {
         /* We should only ever assign the GameState once. */
         gameState = new ServerGameState();
+        networkHandler = new ServerNetworkHandler(this);
     }
 
-    private static void buildClientBlackJack() {
+    private void buildClientBlackJack(String host) {
         /* We should only ever assign the GameState once. */
         gameState = new ClientGameState();
+        networkHandler = new ClientNetworkHandler(this, host);
     }
 
-    public static GameState getGameState() {
+    public GameState getGameState() {
         return gameState;
+    }
+
+    public NetworkHandler getNetworkHandler(){
+        return networkHandler;
     }
 
 }

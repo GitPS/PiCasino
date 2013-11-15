@@ -39,6 +39,8 @@ import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.test.Network;
 
+import java.io.IOException;
+
 /**
  * A ClientNetworkHandler.
  *
@@ -47,9 +49,9 @@ import com.piindustries.picasino.blackjack.test.Network;
  * @see com.piindustries.picasino.api.NetworkHandler
  */
 public class ClientNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
-    Client client;
+    private Client client;
 
-    public ClientNetworkHandler() {
+    public ClientNetworkHandler(final PiCasino pi, String host) {
         client = new Client();
         client.start();
 
@@ -66,7 +68,7 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
                     GameEvent event = (GameEvent) object;
                     // TODO get the GameState and call invoke()
                     try {
-                        PiCasino.getGameState().invoke(event);
+                        pi.getGameState().invoke(event);
                     } catch (InvalidGameEventException e) {
                         e.printStackTrace();
                         // TODO
@@ -79,6 +81,21 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
                 System.exit(0);
             }
         }));
+
+        try {
+            client.connect(5000, host, Network.port);
+            // Server communication after connection can go here, or in Listener#connected().
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            System.exit(1);
+        }
+        /* DEBUG START */
+        if(client.isConnected()){
+            PiCasino.LOGGER.info("Client has successfully connected to a server...");
+        } else{
+            PiCasino.LOGGER.info("Client is not connected to a server...");
+        }
+        /* DEBUG END */
     }
 
 
