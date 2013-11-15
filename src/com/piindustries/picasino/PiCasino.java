@@ -6,6 +6,7 @@ import com.piindustries.picasino.blackjack.client.ClientGameState;
 import com.piindustries.picasino.blackjack.client.ClientNetworkHandler;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
 import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
+import com.piindustries.picasino.blackjack.test.Invoker;
 
 import java.util.logging.Logger;
 
@@ -28,6 +29,8 @@ public class PiCasino {
 
     public static void main(String[] args) {
         PiCasino pi = new PiCasino();
+        for(String s : args)
+            System.out.println(s);
         String host;
         if (args.length < 2) {
             LOGGER.severe(invalidArgsMsg);
@@ -39,6 +42,9 @@ public class PiCasino {
             if (args[1].equalsIgnoreCase("client")) {
                 if(args.length >= 3){
                     pi.buildClientBlackJack(args[2]);
+                      /* Debug start */
+                      Invoker i = new Invoker((ClientGameState)pi.getGameState());
+                      /* Debug end */
                 } else{
                     LOGGER.severe(invalidArgsMsg);
                 }
