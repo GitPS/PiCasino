@@ -32,10 +32,8 @@
 package com.piindustries.picasino.blackjack.domain;
 
 import com.piindustries.picasino.blackjack.client.ClientGameState;
-import com.piindustries.picasino.blackjack.client.ClientNetworkHandler;
-import com.piindustries.picasino.blackjack.server.ServerGameState;
 import com.piindustries.picasino.blackjack.client.GuiHandler;
-import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
+import com.piindustries.picasino.blackjack.server.ServerGameState;
 
 
 /**
@@ -64,28 +62,6 @@ public class Game implements com.piindustries.picasino.api.Game {
      */
     public ServerGameState buildServerGameState(){
         return new ServerGameState();
-    }
-
-    /**
-     * Builds and returns an object conforming to type ClientNetworkHandler
-     *
-     * @return a ClientNetworkHandler to be instantiated on the server to handle
-     * server-side communications.
-     */
-    public ServerNetworkHandler buildServerNetworkHandler(){
-        return new ServerNetworkHandler();
-    }
-
-
-    /**
-     * Builds and returns an object conforming to type ClientNetworkHandler
-     *
-     * @return a ClientNetworkHandler to be instantiated on the client to handle
-     * client-side communications.
-     *
-     */
-    public ClientNetworkHandler buildClientNetworkHandler(){
-        return new ClientNetworkHandler();
     }
 
     /**
