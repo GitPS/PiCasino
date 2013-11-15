@@ -31,6 +31,7 @@
 
 package com.piindustries.picasino.blackjack.client;
 
+import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
 import com.piindustries.picasino.blackjack.domain.*;
@@ -143,12 +144,14 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     /**
      * Default Constructor.
      */
-    public ClientGameState() {
+    public ClientGameState(PiCasino pi, String username) {
         this.setPhase(Phase.INITIALIZATION);     // Set phase
-        LinkedList<Hand> h = new LinkedList<Hand>();   // Build Player List
+        LinkedList<Hand> h = new LinkedList<>();   // Build Player List
         h.add(new DealerHand());  // Add a dealer hand
         this.setHands( h );
-        this.passedList = new LinkedList<Hand>();   // Create an empty passed list
+        this.setNetworkHandler(pi.getNetworkHandler());
+        this.setThisUser(username);
+        this.passedList = new LinkedList<>();   // Create an empty passed list
         this.setVerbose(false);
     }
 
