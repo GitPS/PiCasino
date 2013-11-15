@@ -34,7 +34,6 @@ package com.piindustries.picasino.blackjack.server;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.DirectedGameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
-import com.piindustries.picasino.blackjack.test.ClientTesterServer;
 
 import java.util.HashMap;
 
@@ -47,7 +46,7 @@ import java.util.HashMap;
  */
 public class NetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
     public GameState innards;
-    public HashMap<String,ClientTesterServer> sockets;
+    public HashMap<String,com.piindustries.picasino.blackjack.client.NetworkHandler> sockets;
 
     public NetworkHandler(){
         innards  = new GameState();
@@ -77,7 +76,7 @@ public class NetworkHandler implements com.piindustries.picasino.api.NetworkHand
         if (toReceive instanceof GameEvent) {
             GameEvent event = (GameEvent)toReceive;
             try {
-                innards.invoke( toReceive);
+                innards.invoke( event );
             } catch (InvalidGameEventException e) {
                 System.err.println("InvalidGameEvent has been caught.");
             }
@@ -85,7 +84,7 @@ public class NetworkHandler implements com.piindustries.picasino.api.NetworkHand
     }
 
 
-    public void establishConnection(String username, ClientTesterServer client){
+    public void establishConnection(String username, com.piindustries.picasino.blackjack.client.NetworkHandler client){
         sockets.put(username, client);
         innards.addPlayerToWaitingList(username);
     }

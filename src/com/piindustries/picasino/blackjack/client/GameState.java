@@ -211,7 +211,9 @@ public class GameState implements com.piindustries.picasino.api.GameState {
         return logSize;
     }
 
-
+    public void setNetworkHander(com.piindustries.picasino.blackjack.client.NetworkHandler toSet){
+        this.networkHandler = toSet;
+    }
 
     /**
      * If `event` is a global event that `this` can handle
@@ -558,6 +560,8 @@ public class GameState implements com.piindustries.picasino.api.GameState {
             throw new Error("Network handler not set.  Cannot Recover"); // Further specifies null point exception.  Network handler must be constructed.
         return networkHandler;
     }
+
+
 
     /**
      * Sets the NetworkHandler of `this`.

@@ -23,6 +23,7 @@
 
 package com.piindustries.picasino.blackjack.test;
 
+import com.piindustries.picasino.blackjack.client.GameState;
 import com.piindustries.picasino.blackjack.client.NetworkHandler;
 import com.piindustries.picasino.blackjack.domain.*;
 
@@ -38,6 +39,10 @@ public class Tester {
         client = new NetworkHandler();
         server = new com.piindustries.picasino.blackjack.server.NetworkHandler();
         server.sockets = new HashMap<>();
+        server.innards = new com.piindustries.picasino.blackjack.server.GameState();
+        client.innards = new GameState();
+        client.innards.setNetworkHander( client );
+        server.innards.setNetworkHandler(server);
         server.establishConnection("Test_User",client);
         initialization();
         server.innards.setVerbose(true);
@@ -52,7 +57,7 @@ public class Tester {
         if( input.equalsIgnoreCase("Yes") ){
             System.out.println("Username?");
             input = readLine();
-            ClientTesterServer toAdd = new ClientTesterServer();
+            NetworkHandler toAdd = new NetworkHandler();
             toAdd.server = this.server;
             server.establishConnection(input, toAdd );
             System.out.println(client.innards.getMostRecentLog());
