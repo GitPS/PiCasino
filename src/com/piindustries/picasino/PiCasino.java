@@ -13,9 +13,9 @@ import java.util.logging.Logger;
 
 public class PiCasino {
 
-    private static GameState gameState = null;
+    public static Logger LOGGER = Logger.getLogger("PiCasino");
 
-    private static Logger LOGGER = Logger.getLogger("PiCasino");
+    private static GameState gameState = null;
 
     /* Error messages */
     private static final String invalidArgsMsg = "Error: Invalid or missing command line arguments.";
@@ -58,6 +58,5 @@ public class PiCasino {
     public static GameState getGameState(){
         return gameState;
     }
-
 
 }
