@@ -113,7 +113,6 @@ public class Invoker {
             System.out.println("Invalid");
         }
         this.getInnards().getNetworkHandler().send(toInvoke);
-        System.out.println(this.getInnards().getMostRecentLog());
         step();
     }
 
