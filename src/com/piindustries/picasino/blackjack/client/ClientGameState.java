@@ -215,6 +215,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     private boolean handleGlobalEvent(GameEvent event){
         // TODO design global event handler
+        return false;
     }
 
     public String getThisUser() {
