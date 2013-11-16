@@ -69,8 +69,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     try {
                         pi.getGameState().invoke(event);
                     } catch (InvalidGameEventException e) {
-                        e.printStackTrace();
-                        // TODO
+                        PiCasino.LOGGER.severe(e.getMessage());
                     }
                 }
             }
