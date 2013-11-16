@@ -40,6 +40,7 @@ import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.domain.Network;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * A ClientNetworkHandler.
@@ -92,6 +93,9 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
         try {
             client.connect(5000, host, Network.port);
             // Server communication after connection can go here, or in Listener#connected().
+        } catch (SocketTimeoutException e){
+            PiCasino.LOGGER.severe(e.getMessage());
+            System.exit(1);
         } catch (IOException e) {
             PiCasino.LOGGER.severe(e.getMessage());
             System.exit(1);
