@@ -370,11 +370,9 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
 
         // Play dealers hand
         while(d.mustHit()){
-            GameEvent toSend = new GameEvent();
-            toSend.setType(GameEventType.SEND_CARD);
-            toSend.setValue(getRandomCard());
-            gameState.invoke(toSend);
+            GameEvent toSend = new GameEvent(GameEventType.SEND_CARD,getRandomCard());
             PiCasino.LOGGER.info(gameState.getCurrentUser()+" has been dealt an "+ Cards.evaluateCardName((Integer) toSend.getValue())+".");
+            gameState.invoke(toSend);
             getNetworkHandler().send(toSend);
         }
         PiCasino.LOGGER.info(gameState.getCurrentUser()+" must stand.");
