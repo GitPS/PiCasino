@@ -107,7 +107,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      *
      * @throws InvalidGameEventException
      */
-    public void invoke(com.piindustries.picasino.api.GameEvent e) throws InvalidGameEventException {
+    public synchronized void invoke(com.piindustries.picasino.api.GameEvent e) throws InvalidGameEventException {
         GameEvent event = (GameEvent)e;
         switch( gameState.getPhase() ){
             case INITIALIZATION:
