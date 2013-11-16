@@ -472,14 +472,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     }
 
     /**
-     * @return True if `this` is set to log event verbosely,
-     * otherwise false.
-     */
-    public boolean isVerbose() {
-        return isVerbose;
-    }
-
-    /**
      * @param verbose a boolean.  If true, this game state will
      *                print all new log events to the standard
      *                output console, otherwise logging will take
@@ -496,8 +488,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * @param s a {@link String} to append to the end of <code>this</code> log.
      */
     public synchronized void appendLog(String s){
-        if(this.isVerbose)
-            System.out.println(s);
         this.getEventLog().addFirst(s);
         System.out.flush();
     }
