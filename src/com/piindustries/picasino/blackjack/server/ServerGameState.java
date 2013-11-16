@@ -458,15 +458,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         this.gameState.invoke(event);
     }
 
-    /**
-     * @return a clone of this
-     * @throws CloneNotSupportedException
-     * @see java.lang.Object#clone()
-     */
-    public ServerGameState clone() throws CloneNotSupportedException {
-        return (ServerGameState)super.clone();
-    }
-
     /** @return `this` network handler */
     public ServerNetworkHandler getNetworkHandler(){
         return this.networkHandler;
