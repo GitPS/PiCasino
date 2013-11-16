@@ -80,6 +80,9 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     } catch (InvalidGameEventException e) {
                         PiCasino.LOGGER.severe(e.getMessage());
                     }
+                } else if (object instanceof String) {
+                    String username = (String)object;
+                    addConnectedUser(username, connection.getID());
                 }
             }
 
@@ -133,6 +136,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
         /* Only add it to the map if it doesn't already exist */
         if (!connectedUsers.containsKey(name)) {
             connectedUsers.put(name, id);
+            PiCasino.LOGGER.info("Added username: " + name + " with ID: " + id);
         }
     }
 
