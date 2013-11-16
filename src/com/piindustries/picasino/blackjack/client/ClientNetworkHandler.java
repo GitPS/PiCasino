@@ -60,9 +60,13 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
 
         /* Create a threaded listener */
         client.addListener(new Listener.ThreadedListener(new Listener() {
+            /* Connection with a server is established. */
             public void connected(Connection connection) {
+                PiCasino.LOGGER.severe("Connection with server established.");
+                //TODO Send username to the server
             }
 
+            /* GameEvent received from the server. */
             public void received(Connection connection, Object object) {
                 if (object instanceof GameEvent) {
                     GameEvent event = (GameEvent) object;
@@ -80,7 +84,9 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
                 }
             }
 
+            /* Connection with a server is lost. */
             public void disconnected(Connection connection) {
+                PiCasino.LOGGER.severe("Connection with server lost.  Program will exit.");
                 System.exit(0);
             }
         }));
@@ -92,13 +98,6 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
             PiCasino.LOGGER.severe(e.getMessage());
             System.exit(1);
         }
-        /* DEBUG START */
-        if(client.isConnected()){
-            PiCasino.LOGGER.info("Client has successfully connected to a server...");
-        } else{
-            PiCasino.LOGGER.info("Client is not connected to a server...");
-        }
-        /* DEBUG END */
     }
 
 
