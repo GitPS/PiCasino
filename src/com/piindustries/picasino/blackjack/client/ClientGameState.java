@@ -484,11 +484,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.networkHandler = networkHandler;
     }
 
-    // TODO comment
-    private void setMessages(LinkedList<Message> messages) {
-        this.messages = messages;
-    }
-
     /**
      * Provides read access to `this.phase` to inheriting implementations.
      *
