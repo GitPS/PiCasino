@@ -38,7 +38,6 @@ import com.piindustries.picasino.blackjack.domain.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 /**
  * A Client-Side {@link com.piindustries.picasino.api.GameState}. For blackjack.
@@ -147,7 +146,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.setPhase(Phase.INITIALIZATION);     // Set phase
         LinkedList<Hand> h = new LinkedList<>();   // Build Player List
         h.add(new DealerHand());  // Add a dealer hand
-        this.setHands( h );
+        this.setHands(h);
         this.setNetworkHandler(pi.getNetworkHandler());
         this.setThisUser(username);
         this.passedList = new LinkedList<>();   // Create an empty passed list
@@ -539,7 +538,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     public LinkedList<Hand> getHands() {
         if( this.hands == null ){
-            this.hands = new LinkedList<Hand>();
+            this.hands = new LinkedList<>();
         }
         return hands;
     }
@@ -564,7 +563,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     }
 
     public ArrayList<GameEventType> getValidEvents(){
-        ArrayList<GameEventType> result = new ArrayList<GameEventType>();
+        ArrayList<GameEventType> result = new ArrayList<>();
         switch(this.getPhase()){
             case INITIALIZATION:
                 result.add(GameEventType.ADD_PLAYER);
