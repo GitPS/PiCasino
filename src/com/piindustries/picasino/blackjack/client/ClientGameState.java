@@ -132,12 +132,9 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private Phase phase;
     private LinkedList<Hand> hands;
     private LinkedList<Hand> passedList;
-    private LinkedList<String> eventLog;
     private NetworkHandler networkHandler;
     private LinkedList<Message> messages;
     private String thisUser;
-    private int logSize;
-    private int logCounter;
 
     /**
      * Default Constructor.
