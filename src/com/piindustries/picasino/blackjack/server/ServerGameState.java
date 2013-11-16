@@ -574,14 +574,14 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                     addPlayersFromWaitingListToGame();
                     beginGame();
                 } catch (InvalidGameEventException e1) {
-                    System.err.println("InvalidGameEventException caught at game timer event");
+                    PiCasino.LOGGER.severe("InvalidGameEventException caught at game timer event");
                 }
             } else if( counter % 10 == 0 ) {
-                System.out.println("Game will begin in "+counter+" seconds.");
+                PiCasino.LOGGER.info("Game will begin in "+counter+" seconds.");
                 try {
                     addPlayersFromWaitingListToGame();
                 } catch (InvalidGameEventException e1) {
-                    System.err.println("InvalidGameEventException caught at game timer event");
+                    PiCasino.LOGGER.severe("InvalidGameEventException caught at game timer event");
                 }
             }
             counter--;
