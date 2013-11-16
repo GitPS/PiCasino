@@ -483,22 +483,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     }
 
     /**
-     * @return Lazily returns this.eventLog
-     */
-    public LinkedList<String> getEventLog() {
-        if (this.eventLog == null)
-            this.setEventLog(new LinkedList<String>());
-        return this.eventLog;
-    }
-
-    /**
-     * @param s value to set event log to
-     */
-    private void setEventLog(LinkedList<String> s){
-        this.eventLog = s;
-    }
-
-    /**
      * @return the ClientNetworkHandler of `this`
      */
     public NetworkHandler getNetworkHandler() {
@@ -514,17 +498,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     public void setNetworkHandler(NetworkHandler networkHandler) {
         this.networkHandler = networkHandler;
-    }
-
-    /**
-     * @return the most recent log.
-     */
-    public String getMostRecentLog() {
-        try {
-            return this.getEventLog().getFirst();
-        } catch (NoSuchElementException e){
-            return "No log history.";
-        }
     }
 
     // TODO comment
