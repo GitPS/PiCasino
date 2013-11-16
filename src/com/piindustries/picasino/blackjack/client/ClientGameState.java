@@ -225,11 +225,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.thisUser = thisUser;
     }
 
-    // TODO comment
-    private void appendMessage(Message m){
-        this.getMessages().addLast(m);
-    }
-
     /**
      * @param event Any {@link com.piindustries.picasino.blackjack.domain.GameEvent}
      * @return `True` if this is a global event, otherwise
