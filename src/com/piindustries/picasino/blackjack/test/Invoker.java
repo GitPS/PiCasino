@@ -2,8 +2,10 @@ package com.piindustries.picasino.blackjack.test;
 
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
+import com.piindustries.picasino.blackjack.domain.Cards;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEventType;
+import com.piindustries.picasino.blackjack.domain.Hand;
 
 import java.io.IOException;
 
@@ -40,6 +42,15 @@ public class Invoker {
         GameEvent toInvoke = new GameEvent();
         try{
             switch(type){
+                case "status":
+                    System.out.println("Phase : " + this.getInnards().getPhase().name());
+                    for( Hand h : this.getInnards().getHands() ){
+                        System.out.print( h.getUsername() + " " );
+                        for( int c : h.getCards() )
+                            System.out.print(Cards.evaluateCardName(c) + " ");
+                        System.out.print('\n');
+                    }
+                    break;
                 case "addplayer":
                     toInvoke.setType(GameEventType.ADD_PLAYER);
                     toInvoke.setValue( input[1] );
