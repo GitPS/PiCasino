@@ -48,6 +48,10 @@ public class GameEvent implements com.piindustries.picasino.api.GameEvent {
         this.value = value;
     }
 
+    public GameEvent(GameEventType type){
+        this.type = type;
+    }
+
     public GameEventType getType() {
         return type;
     }
