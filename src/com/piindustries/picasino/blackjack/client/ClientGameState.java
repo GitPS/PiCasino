@@ -407,7 +407,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.getHands().getFirst().setBet(value);
 
         // Append Log
-        this.appendLog(this.getCurrentUser()+" has bet "+value+".");
+        PiCasino.LOGGER.info(this.getCurrentUser()+" has bet "+value+".");
         this.firstHandToBack();
     }
 
