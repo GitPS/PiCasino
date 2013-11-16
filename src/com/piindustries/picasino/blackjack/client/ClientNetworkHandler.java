@@ -51,7 +51,7 @@ import java.io.IOException;
 public class ClientNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
     private Client client;
 
-    public ClientNetworkHandler(final PiCasino pi, String host) {
+    public ClientNetworkHandler(final PiCasino pi, String host, final String username) {
         client = new Client();
         client.start();
 
@@ -63,7 +63,7 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
             /* Connection with a server is established. */
             public void connected(Connection connection) {
                 PiCasino.LOGGER.severe("Connection with server established.");
-                //TODO Send username to the server
+                client.sendTCP(username);
             }
 
             /* Object received from the server. */
