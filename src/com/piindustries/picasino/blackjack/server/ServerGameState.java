@@ -448,7 +448,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         if(gameState.getHands().size() <= 1){
             GameEvent conclude = new GameEvent();
             conclude.setType(GameEventType.ADVANCE_TO_CONCLUDING);
-            this.advanceToConclusion(conclude);
+            this.advanceToConclusion();
         }
     }
 
