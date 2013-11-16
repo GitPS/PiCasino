@@ -341,9 +341,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     /** Starts the intermission game timer */
     public void startTimer(){
         PiCasino.LOGGER.info("Initializing a new game.");
-        System.out.println("A new game will begin in " + intermissionTime + " seconds.");
-        System.out.println("Available Heap Space = "+Runtime.getRuntime().totalMemory()/1048576.0 +" megabytes."); // 1 megabyte = 1 048 576 bytes
-        System.out.flush();
+        PiCasino.LOGGER.info("A new game will begin in " + intermissionTime + " seconds.");
+        PiCasino.LOGGER.info("Available Heap Space = "+Runtime.getRuntime().totalMemory()/1048576.0 +" megabytes.");
         gameTimer.start();
     }
 
