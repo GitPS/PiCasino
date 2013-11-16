@@ -151,7 +151,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.setNetworkHandler(pi.getNetworkHandler());
         this.setThisUser(username);
         this.passedList = new LinkedList<>();   // Create an empty passed list
-        this.setVerbose(false);
     }
 
     // TODO Make sure splitting works as designed
