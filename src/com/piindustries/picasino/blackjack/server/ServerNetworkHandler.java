@@ -74,7 +74,6 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     PiCasino.LOGGER.info("Received a game event from a client.");
                     PiCasino.LOGGER.info("Game Event Data: " + event.getType().name());
                     /* DEBUG END */
-                    // TODO
                     try {
                         pi.getGameState().invoke(event);
                     } catch (InvalidGameEventException e) {
