@@ -10,11 +10,6 @@ import com.piindustries.picasino.blackjack.test.Invoker;
 
 import java.util.logging.Logger;
 
-/**
- * Date: 9/20/13
- * Time: 1:18 PM
- */
-
 public class PiCasino {
 
     public static Logger LOGGER = Logger.getLogger("PiCasino");

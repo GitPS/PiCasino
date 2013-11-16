@@ -45,7 +45,6 @@ import java.util.HashMap;
 /**
  * A server network handler.
  *
- * @author A. Jensen
  * @version 1.0
  * @see com.piindustries.picasino.api.NetworkHandler
  */

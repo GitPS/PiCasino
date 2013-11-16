@@ -44,7 +44,6 @@ import java.io.IOException;
 /**
  * A ClientNetworkHandler.
  *
- * @author A. Jensen
  * @version 1.0
  * @see com.piindustries.picasino.api.NetworkHandler
  */
