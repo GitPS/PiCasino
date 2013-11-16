@@ -335,14 +335,14 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         GameEvent result = new GameEvent();
         result.setType(GameEventType.ADVANCE_TO_INITIALIZATION);
         result.setValue(null);
-        this.invoke( result );
+        this.invoke(result);
     }
 
     /** Starts the intermission game timer */
     public void startTimer(){
         PiCasino.LOGGER.info("Initializing a new game.");
         PiCasino.LOGGER.info("A new game will begin in " + intermissionTime + " seconds.");
-        PiCasino.LOGGER.info("Available Heap Space = "+Runtime.getRuntime().totalMemory()/1048576.0 +" megabytes.");
+        PiCasino.LOGGER.info("Available Heap Space = " + Runtime.getRuntime().totalMemory() / 1048576.0 + " megabytes.");
         gameTimer.start();
     }
 
@@ -511,7 +511,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @return a deck containing all 52 cards.
      */
     private ArrayList<Integer> buildDeck(){
-        ArrayList<Integer> result = new ArrayList<Integer>();
+        ArrayList<Integer> result = new ArrayList<>();
         for( int i = 0; i < 52; i++ )
             result.add(i);
         return result;
