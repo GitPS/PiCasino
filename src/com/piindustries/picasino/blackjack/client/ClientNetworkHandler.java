@@ -62,7 +62,7 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
         client.addListener(new Listener.ThreadedListener(new Listener() {
             /* Connection with a server is established. */
             public void connected(Connection connection) {
-                PiCasino.LOGGER.severe("Connection with server established.");
+                PiCasino.LOGGER.info("Connection with server established.");
                 client.sendTCP(username);
             }
 
