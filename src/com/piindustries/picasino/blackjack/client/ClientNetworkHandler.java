@@ -74,8 +74,7 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
                     try {
                         pi.getGameState().invoke(event);
                     } catch (InvalidGameEventException e) {
-                        e.printStackTrace();
-                        // TODO
+                        PiCasino.LOGGER.severe(e.getMessage());
                     }
 
                 }
@@ -89,8 +88,8 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
         try {
             client.connect(5000, host, Network.port);
             // Server communication after connection can go here, or in Listener#connected().
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            PiCasino.LOGGER.severe(e.getMessage());
             System.exit(1);
         }
         /* DEBUG START */
