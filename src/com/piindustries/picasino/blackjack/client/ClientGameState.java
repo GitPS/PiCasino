@@ -133,7 +133,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private LinkedList<Hand> hands;
     private LinkedList<Hand> passedList;
     private NetworkHandler networkHandler;
-    private LinkedList<Message> messages;
     private String thisUser;
 
     /**
