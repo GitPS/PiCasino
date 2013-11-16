@@ -50,7 +50,10 @@ public class Invoker {
                             System.out.print(Cards.evaluateCardName(c) + " ");
                         System.out.print('\n');
                     }
-                    break;
+                    step();
+                    return;
+                case "quit":
+                    return;
                 case "addplayer":
                     toInvoke.setType(GameEventType.ADD_PLAYER);
                     toInvoke.setValue( input[1] );
