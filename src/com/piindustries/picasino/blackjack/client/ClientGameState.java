@@ -139,7 +139,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private String thisUser;
     private int logSize;
     private int logCounter;
-    private boolean isVerbose; // False by default
 
     /**
      * Default Constructor.
@@ -280,7 +279,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.getHands().addLast(this.getHands().removeFirst());
         // Advance phase
         this.setPhase(Phase.INITIALIZATION);
-        this.appendLog("Advancing phase from Concluding to Initialization");
+        PiCasino.LOGGER.info("Advancing phase from Concluding to Initialization");
     }
 
     /**
@@ -289,7 +288,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     private void advanceToConclusion(){
         this.setPhase(Phase.CONCLUSION);
-        this.appendLog("Advancing phase from Playing to Concluding");
+        PiCasino.LOGGER.info("Advancing phase from Playing to Concluding");
     }
 
     /**
@@ -310,7 +309,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.getHands().addFirst( h1 );
         this.getHands().addFirst( h2 );
         // Append to log
-        this.appendLog(this.getHands().getFirst().getUsername() + " split their hand.");
+        PiCasino.LOGGER.info(this.getHands().getFirst().getUsername() + " split their hand.");
     }
 
     /**
@@ -323,7 +322,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         Integer card = (Integer)event.getValue();
         this.getCurrentHand().getCards().addLast(card);
         // Log Event
-        this.appendLog( this.getCurrentUser() + " has been dealt a "+ Cards.evaluateCardName((Integer) event.getValue()) );
+        PiCasino.LOGGER.info(this.getCurrentUser() + " has been dealt a " + Cards.evaluateCardName((Integer) event.getValue()));
         // Move to back
         this.firstHandToBack();
     }
@@ -333,7 +332,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * and logs it.
      */
     private void advanceToPlaying(){
-        this.appendLog("Advancing phase from Dealing to Playing");
+        PiCasino.LOGGER.info("Advancing phase from Dealing to Playing");
         this.setPhase(Phase.PLAYING);
     }
 
@@ -344,7 +343,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private void doubleDown(){
         // FIXME Behavior unverified
         this.getCurrentHand().setBet(this.getCurrentHand().getBet() * 2);
-        this.appendLog(this.getHands().getFirst().getUsername() + " doubled down.");
+        PiCasino.LOGGER.info(this.getHands().getFirst().getUsername() + " doubled down.");
+
     }
 
     /**
@@ -352,7 +352,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     private void stand(){
         // Append to the log
-        this.appendLog(this.getCurrentUser() + " has elected to stand.");
+        PiCasino.LOGGER.info(this.getCurrentUser() + " has elected to stand.");
         // Move player to back
         this.firstHandToBack();
     }
@@ -366,7 +366,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         Integer card = (Integer)event.getValue();
         this.getCurrentHand().getCards().addLast(card);
         // Log event
-        this.appendLog(this.getHands().getFirst().getUsername() + " was dealt a " + Cards.evaluateCardName(card));
+        PiCasino.LOGGER.info(this.getHands().getFirst().getUsername() + " was dealt a " + Cards.evaluateCardName(card));
     }
 
     // TODO Test adding 2 players with the same username.
@@ -431,10 +431,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         }
 
         // Append to the log appropriately
-        if( removed )
-            this.appendLog( toRemove +" has been removed from the game." );
-        else
-            this.appendLog( toRemove +" could not be removed from the game." );
+        if( removed ) PiCasino.LOGGER.info(toRemove +" has been removed from the game.");
+        else PiCasino.LOGGER.info(toRemove +" could not be removed from the game.");
     }
 
     /**
@@ -442,7 +440,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     private void pass(){
         // FIXME Behavior unverified
-        this.appendLog( this.getCurrentUser() + " has elected to pass this round." );
+        PiCasino.LOGGER.info(this.getCurrentUser() + " has elected to pass this round.");
         this.passedList.add(this.getHands().removeFirst());
     }
 
@@ -451,7 +449,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     private void advanceToBetting(){
         //Append Log
-        this.appendLog("Advancing phase from INITIALIZATION to BETTING");
+        PiCasino.LOGGER.info("Advancing phase from INITIALIZATION to BETTING");
         this.setPhase(Phase.BETTING);
     }
 
@@ -467,37 +465,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * Advances the phase of `this.phase` to DEALING
      */
     private void advanceToDealing(){
-        this.appendLog("Advancing phase from BETTING to DEALING");
+        PiCasino.LOGGER.info("Advancing phase from BETTING to DEALING");
         this.setPhase(Phase.DEALING);
-    }
-
-    /**
-     * @param verbose a boolean.  If true, this game state will
-     *                print all new log events to the standard
-     *                output console, otherwise logging will take
-     *                place silently.
-     */
-    public void setVerbose(boolean verbose) {
-        isVerbose = verbose;
-    }
-
-    /**
-     * Appends a string to the event log, and if `this.isVerbose` == `true`, than
-     * `s` will be printed to the standard output console.
-     *
-     * @param s a {@link String} to append to the end of <code>this</code> log.
-     */
-    public synchronized void appendLog(String s){
-        this.getEventLog().addFirst(s);
-        System.out.flush();
-    }
-
-    /**
-     * @param logSize the number of events to store in this log. A negative
-     *                denotes an unbounded size.
-     */
-    public void setLogSize(int logSize) {
-        this.logSize = logSize;
     }
 
     /**
@@ -512,13 +481,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     public String getCurrentUser(){
         return getCurrentHand().getUsername();
-    }
-
-    /**
-     * @return the value of the log counter.
-     */
-    public int getLogCount() {
-        return this.logCounter;
     }
 
     /**
@@ -556,19 +518,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     }
 
     /**
-     * @return a log of everything that has occurred in this game.
-     */
-    public String getLog() {
-        int count = this.getLogCount() - 1;
-        StringBuilder sb = new StringBuilder();
-        for (String s : this.getEventLog()){
-            sb.append(count).append(":\t").append(s).append('\n');
-            count--;
-        }
-        return sb.toString();
-    }
-
-    /**
      * @return the most recent log.
      */
     public String getMostRecentLog() {
@@ -577,13 +526,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         } catch (NoSuchElementException e){
             return "No log history.";
         }
-    }
-
-    /**
-     * @param value the value to set `this.logCounter` to.
-     */
-    private void setLogCounter(int value) {
-        this.logCounter = value;
     }
 
     // TODO comment
@@ -693,7 +635,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * @return a list of actions a client can invoke.
      */
     public ArrayList<GameEventType> getAvailableActions(){
-        ArrayList<GameEventType> result = new ArrayList<GameEventType>();
+        ArrayList<GameEventType> result = new ArrayList<>();
         switch(this.getPhase()){
             case INITIALIZATION:
                 // There are no actions to take in the initialization phase.
