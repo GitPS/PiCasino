@@ -87,7 +87,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
 
         this.deck = buildDeck();
         this.gameTimer = new Timer(1000, new Listener() );
-        this.gameState.appendLog("Server Game State Constructed");
+        PiCasino.LOGGER.info("Server Game State Constructed");
     }
 
     // TODO Make sure splitting works as designed
@@ -331,7 +331,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      */
     public void conclude() throws InvalidGameEventException {
         // TODO concluding tasks
-        gameState.appendLog("Writing back data to database.");
+        PiCasino.LOGGER.info("Writing back data to database.");
         GameEvent result = new GameEvent();
         result.setType(GameEventType.ADVANCE_TO_INITIALIZATION);
         result.setValue(null);
@@ -340,7 +340,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
 
     /** Starts the intermission game timer */
     public void startTimer(){
-        gameState.appendLog("Initializing a new game.");
+        PiCasino.LOGGER.info("Initializing a new game.");
         System.out.println("A new game will begin in " + intermissionTime + " seconds.");
         System.out.println("Available Heap Space = "+Runtime.getRuntime().totalMemory()/1048576.0 +" megabytes."); // 1 megabyte = 1 048 576 bytes
         System.out.flush();
@@ -366,15 +366,15 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
             toSend.setType(GameEventType.SEND_CARD);
             toSend.setValue(getRandomCard());
             gameState.invoke(toSend);
-            gameState.appendLog(gameState.getCurrentUser()+" has been dealt an "+ Cards.evaluateCardName((Integer) toSend.getValue())+".");
+            PiCasino.LOGGER.info(gameState.getCurrentUser()+" has been dealt an "+ Cards.evaluateCardName((Integer) toSend.getValue())+".");
             getNetworkHandler().send(toSend);
         }
-        gameState.appendLog(gameState.getCurrentUser()+" must stand.");
+        PiCasino.LOGGER.info(gameState.getCurrentUser()+" must stand.");
 
         // Advance Phase
         GameEvent toSend = new GameEvent();
         toSend.setType(GameEventType.ADVANCE_TO_CONCLUDING);
-        gameState.appendLog("Advancing phase from PLAYING to CONCLUSION.");
+        PiCasino.LOGGER.info("Advancing phase from PLAYING to CONCLUSION.");
         this.invoke(toSend);
     }
 
@@ -452,7 +452,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      */
     private void beginGame() throws InvalidGameEventException {
         // Advance all client phases
-        this.gameState.appendLog("Game Started at "+new Date());
+        PiCasino.LOGGER.info("Game Started at "+new Date());
         GameEvent event = new GameEvent();
         event.setType(GameEventType.ADVANCE_TO_BETTING);
         this.getNetworkHandler().send(event);
@@ -498,10 +498,9 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @param username the username of the player to add to the list.
      */
     public void addPlayerToWaitingList(String username){
-        if( !getWaitingList().contains(username)){
+        if( !getWaitingList().contains(username))
             this.getWaitingList().add(username);
-        }
-        this.gameState.appendLog(username + " has been added to the waiting list.");
+        PiCasino.LOGGER.info(username + " has been added to the waiting list.");
     }
 
     /**
