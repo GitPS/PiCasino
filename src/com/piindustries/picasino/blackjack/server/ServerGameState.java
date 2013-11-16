@@ -283,12 +283,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @throws InvalidGameEventException
      */
     private void advanceToDealing() throws InvalidGameEventException {
-        GameEvent result = new GameEvent();
-        result.setType(GameEventType.BET);
-        result.setValue(0);
-        this.gameState.invoke(result);
-        this.getNetworkHandler().send(result);
-        result.setType(GameEventType.ADVANCE_TO_DEALING);
+        GameEvent result = new GameEvent(GameEventType.ADVANCE_TO_DEALING);
         this.gameState.invoke(result);
         this.getNetworkHandler().send(result);
         deal();
@@ -306,8 +301,13 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         // Update the underlying gameState
         gameState.invoke(result);
         // If the dealer is up to bet.
-        if( gameState.getCurrentHand() instanceof DealerHand)
+        if( gameState.getCurrentHand() instanceof DealerHand){
+            result.setType(GameEventType.BET);
+            result.setValue(0);
+            this.gameState.invoke(result);
+            this.getNetworkHandler().send(result);
             this.advanceToDealing();
+        }
     }
 
     /**
@@ -323,8 +323,13 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         // Update the underlying gameState
         gameState.invoke(result);
         // If the dealer is up to bet.
-        if( gameState.getCurrentHand() instanceof DealerHand)
+        if( gameState.getCurrentHand() instanceof DealerHand){
+            result.setType(GameEventType.BET);
+            result.setValue(0);
+            this.gameState.invoke(result);
+            this.getNetworkHandler().send(result);
             this.advanceToDealing();
+        }
     }
 
     /**
