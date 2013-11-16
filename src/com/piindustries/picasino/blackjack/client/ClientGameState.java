@@ -369,6 +369,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.appendLog(this.getHands().getFirst().getUsername() + " was dealt a " + Cards.evaluateCardName(card));
     }
 
+    // TODO Test adding 2 players with the same username.
     /**
      * Adds a player to the current game if a player by the specified username does
      * not already exist.
