@@ -61,13 +61,11 @@ public class PiCasino {
     }
 
     private void buildServerBlackJack() {
-        /* We should only ever assign the GameState once. */
         networkHandler = new ServerNetworkHandler(this);
         gameState = new ServerGameState(this);
     }
 
     private void buildClientBlackJack(String host, String userName) {
-        /* We should only ever assign the GameState once. */
         networkHandler = new ClientNetworkHandler(this, host, userName);
         /* Pause for 2 seconds while the client establishes a connection. */
         try {
@@ -76,7 +74,6 @@ public class PiCasino {
             LOGGER.severe("Sleep was interrupted!");
             LOGGER.severe(e.getMessage());
         }
-
         gameState = new ClientGameState(this, userName);
     }
 
