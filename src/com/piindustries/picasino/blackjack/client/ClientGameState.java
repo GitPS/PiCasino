@@ -485,13 +485,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     }
 
     // TODO comment
-    private LinkedList<Message> getMessages() {
-        if( this.messages == null )
-            this.setMessages(new LinkedList<Message>());
-        return messages;
-    }
-
-    // TODO comment
     private void setMessages(LinkedList<Message> messages) {
         this.messages = messages;
     }
