@@ -61,10 +61,12 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
         Network.register(server);
 
         server.addListener(new Listener() {
+            /* Connection with a client is made. */
             public void connected(Connection connection){
                 PiCasino.LOGGER.info("Client connected with ID: " + connection.getID());
             }
 
+            /* Object received from a client. */
             public void received(Connection connection, Object object) {
                 if (object instanceof GameEvent) {
                     GameEvent event = (GameEvent) object;
@@ -81,8 +83,9 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                 }
             }
 
+            /* Connection with a client is lost. */
             public void disconnected(Connection connection) {
-                System.exit(0);
+                PiCasino.LOGGER.info("Client disconnected with ID: " + connection.getID());
             }
         });
 
