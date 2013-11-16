@@ -24,9 +24,10 @@ public class PiCasino {
 
     public static void main(String[] args) {
         PiCasino pi = new PiCasino();
+        /* Debug Start */
         for(String s : args)
-            System.out.println(s);
-        String host;
+            LOGGER.info(s);
+        /* Debug End */
         if (args.length < 2) {
             LOGGER.severe(invalidArgsMsg);
             /* Nothing else we can do so we exit */
