@@ -107,7 +107,7 @@ public class Invoker {
         } catch (IndexOutOfBoundsException e){
             System.out.println("Not enough arguments for "+type);
         }
-        try{
+        try{    // FIXME double invoked
             this.getInnards().invoke(toInvoke);
         } catch(InvalidGameEventException e) {
             System.out.println("Invalid");
