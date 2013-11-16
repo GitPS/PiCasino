@@ -40,6 +40,7 @@ import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.domain.Network;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * A server network handler.
@@ -49,10 +50,12 @@ import java.io.IOException;
  * @see com.piindustries.picasino.api.NetworkHandler
  */
 public class ServerNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
-    Server server;
+    private Server server;
+    private HashMap<String, Integer> connectedUsers;
 
     public ServerNetworkHandler(final PiCasino pi) {
         server = new Server();
+        connectedUsers = new HashMap<>();
 
         /* Register any classes that will be sent over the network */
         Network.register(server);
@@ -109,8 +112,21 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
      * @param userName to send the to.
      */
     public void send(com.piindustries.picasino.api.GameEvent toSend, String userName) {
-        // TODO Change this to the client number we want to send the event to
-        server.sendToTCP(1, toSend);
+        userName = userName.toLowerCase();
+        if (connectedUsers.containsKey(userName)) {
+            server.sendToTCP(connectedUsers.get(userName), toSend);
+        } else {
+            PiCasino.LOGGER.severe("Attempted to send a GameEvent to an untracked user with ID: " + connectedUsers
+                    .get(userName) + " and name " + userName + ".");
+        }
+    }
+
+    public void addConnectedUser(String name, int id) {
+        name = name.toLowerCase();
+        /* Only add it to the map if it doesn't already exist */
+        if (!connectedUsers.containsKey(name)) {
+            connectedUsers.put(name, id);
+        }
     }
 
 
