@@ -280,8 +280,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private void split(){
         // FIXME Behavior unverified
         Hand toDuplicate = this.getHands().removeFirst();
-        LinkedList<Integer> c1 = new LinkedList<Integer>();
-        LinkedList<Integer> c2 = new LinkedList<Integer>();
+        LinkedList<Integer> c1 = new LinkedList<>();
+        LinkedList<Integer> c2 = new LinkedList<>();
         Hand h1 = new Hand( toDuplicate.getUsername(), c1 );
         Hand h2 = new Hand( toDuplicate.getUsername(), c2 );
         h1.setSplit(true);
