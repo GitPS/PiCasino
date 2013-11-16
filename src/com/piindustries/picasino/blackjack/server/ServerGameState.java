@@ -130,7 +130,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                     case STAND: this.stand(event); break;
                     case DOUBLE_DOWN: this.doubleDown(event); break;
                     case SPLIT: this.split(event); break;
-                    case ADVANCE_TO_CONCLUDING: this.advanceToConclusion(event); break;
+                    // case ADVANCE_TO_CONCLUDING: this.advanceToConclusion(); break;  Should be called internally
                     default: throw new InvalidGameEventException(event.getType().name());
                 } break;
             case CONCLUSION:
