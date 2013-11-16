@@ -61,6 +61,10 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
         Network.register(server);
 
         server.addListener(new Listener() {
+            public void connected(Connection connection){
+                PiCasino.LOGGER.info("Client connected with ID: " + connection.getID());
+            }
+
             public void received(Connection connection, Object object) {
                 if (object instanceof GameEvent) {
                     GameEvent event = (GameEvent) object;
