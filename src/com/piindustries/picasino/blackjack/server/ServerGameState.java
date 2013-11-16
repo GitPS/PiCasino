@@ -118,9 +118,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                     case PASS: pass(); break;
                     default: throw new InvalidGameEventException(event.getType().name());
                 }
-                // If the dealer is up to bet.
-                if( gameState.getCurrentHand() instanceof DealerHand)
-                    this.advanceToDealing();
                 break;
             case DEALING:
                 // No actions should ever be received by this during the dealing phase
@@ -307,6 +304,9 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         this.getNetworkHandler().send(result);
         // Update the underlying gameState
         gameState.invoke(result);
+        // If the dealer is up to bet.
+        if( gameState.getCurrentHand() instanceof DealerHand)
+            this.advanceToDealing();
     }
 
     /**
@@ -321,6 +321,9 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         this.getNetworkHandler().send(result);
         // Update the underlying gameState
         gameState.invoke(result);
+        // If the dealer is up to bet.
+        if( gameState.getCurrentHand() instanceof DealerHand)
+            this.advanceToDealing();
     }
 
     /**
