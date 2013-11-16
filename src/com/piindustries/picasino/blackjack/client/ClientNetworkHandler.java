@@ -37,7 +37,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
-import com.piindustries.picasino.blackjack.test.Network;
+import com.piindustries.picasino.blackjack.domain.Network;
 
 import java.io.IOException;
 
