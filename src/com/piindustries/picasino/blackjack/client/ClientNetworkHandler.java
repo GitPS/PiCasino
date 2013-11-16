@@ -66,7 +66,7 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
                 //TODO Send username to the server
             }
 
-            /* GameEvent received from the server. */
+            /* Object received from the server. */
             public void received(Connection connection, Object object) {
                 if (object instanceof GameEvent) {
                     GameEvent event = (GameEvent) object;
