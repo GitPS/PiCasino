@@ -37,6 +37,7 @@ import com.esotericsoftware.kryonet.Server;
 import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
+import com.piindustries.picasino.blackjack.domain.GameEventType;
 import com.piindustries.picasino.blackjack.domain.Network;
 
 import java.io.IOException;
@@ -58,6 +59,8 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
 
         /* Register any classes that will be sent over the network */
         Network.register(server);
+        server.getKryo().register(GameEvent.class);
+        server.getKryo().register(GameEventType.class);
 
         server.addListener(new Listener() {
             /* Connection with a client is established. */
