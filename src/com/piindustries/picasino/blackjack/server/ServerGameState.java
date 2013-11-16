@@ -175,9 +175,10 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @param event a GameEvent whose name "AdvanceToConclusion".
      * @throws InvalidGameEventException
      */
-    private void advanceToConclusion(GameEvent event) throws InvalidGameEventException {
-        gameState.invoke(event);
-        getNetworkHandler().send(event);
+    private void advanceToConclusion() throws InvalidGameEventException {
+        GameEvent result = new GameEvent(GameEventType.ADVANCE_TO_CONCLUDING);
+        gameState.invoke(result);
+        getNetworkHandler().send(result);
         conclude();
     }
 
@@ -371,17 +372,15 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         // Play dealers hand
         while(d.mustHit()){
             GameEvent toSend = new GameEvent(GameEventType.SEND_CARD,getRandomCard());
-            PiCasino.LOGGER.info(gameState.getCurrentUser()+" has been dealt an "+ Cards.evaluateCardName((Integer) toSend.getValue())+".");
+            PiCasino.LOGGER.info(gameState.getCurrentUser() + " has been dealt an " + Cards.evaluateCardName((Integer) toSend.getValue()) + ".");
             gameState.invoke(toSend);
             getNetworkHandler().send(toSend);
         }
         PiCasino.LOGGER.info(gameState.getCurrentUser()+" must stand.");
 
         // Advance Phase
-        GameEvent toSend = new GameEvent();
-        toSend.setType(GameEventType.ADVANCE_TO_CONCLUDING);
+        this.advanceToConclusion();
         PiCasino.LOGGER.info("Advancing phase from PLAYING to CONCLUSION.");
-        this.invoke(toSend);
     }
 
     /**
@@ -584,7 +583,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                     PiCasino.LOGGER.severe("InvalidGameEventException caught at game timer event");
                 }
             } else if( counter % 10 == 0 ) {
-                PiCasino.LOGGER.info("Game will begin in "+counter+" seconds.");
+                PiCasino.LOGGER.info("Game will begin in " + counter + " seconds.");
                 try {
                     addPlayersFromWaitingListToGame();
                 } catch (InvalidGameEventException e1) {
