@@ -214,15 +214,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * otherwise `false`
      */
     private boolean handleGlobalEvent(GameEvent event){
-        switch(event.getType()){
-            case MESSAGE:
-                String data = (String)event.getValue();
-                String from = data.substring(0, data.indexOf('|') );
-                String message = data.substring( data.indexOf('|') + 1 );
-                appendMessage(new Message(from, message));
-                return true;
-            default: return false;
-        }
+        // TODO design global event handler
     }
 
     public String getThisUser() {
