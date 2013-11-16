@@ -348,24 +348,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     }
 
     /**
-     * @return `true` if `this` is set to behave verbosely,
-     * otherwise `false`.
-     */
-    public boolean isVerbose(){
-        return this.gameState.isVerbose();
-    }
-
-    /**
-     * @param toSet a boolean.  If true, this game state will
-     *                print all new log events to the standard
-     *                output console, otherwise logging will take
-     *                place silently.
-     */
-    public void setVerbose(boolean toSet){
-        this.gameState.setVerbose(toSet);
-    }
-
-    /**
      * Plays through the dealers hand.
      *
      * @throws InvalidGameEventException
