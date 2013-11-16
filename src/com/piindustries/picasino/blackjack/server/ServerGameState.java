@@ -153,6 +153,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         if( !gameState.getValidEvents().contains(event.getType()))
             throw new InvalidGameEventException(event.getType().name());
         gameState.invoke(event);
+        // FIXME do i need to broadcase initialization events?
     }
 
     /**
