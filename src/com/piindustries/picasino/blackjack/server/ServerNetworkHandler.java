@@ -51,10 +51,8 @@ import java.util.HashMap;
 public class ServerNetworkHandler implements com.piindustries.picasino.api.NetworkHandler {
     private Server server;
     private HashMap<String, Integer> connectedUsers;
-    private ServerGameState serverGameState;
 
-    public ServerNetworkHandler(PiCasino pi) {
-        serverGameState = (ServerGameState)pi.getGameState();
+    public ServerNetworkHandler(final PiCasino pi) {
         server = new Server();
         connectedUsers = new HashMap<>();
 
@@ -76,15 +74,13 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     PiCasino.LOGGER.info("Game Event Data: " + event.getType().name());
                     /* DEBUG END */
                     try {
-                        serverGameState.invoke(event);
+                        pi.getGameState().invoke(event);
                     } catch (InvalidGameEventException e) {
                         PiCasino.LOGGER.severe(e.getMessage());
                     }
                 } else if (object instanceof String) {
                     String username = (String)object;
                     addConnectedUser(username, connection.getID());
-                    /* Add player to waiting list */
-                    serverGameState.addPlayerToWaitingList(username);
                 }
             }
 
