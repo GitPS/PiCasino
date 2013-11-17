@@ -63,6 +63,7 @@ public class PiCasino {
     private void buildServerBlackJack() {
         networkHandler = new ServerNetworkHandler(this);
         gameState = new ServerGameState(this);
+        ((ServerGameState)gameState).startTimer();
     }
 
     private void buildClientBlackJack(String host, String userName) {
