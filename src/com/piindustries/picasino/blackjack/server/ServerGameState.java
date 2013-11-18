@@ -109,9 +109,11 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      */
     public synchronized void invoke(com.piindustries.picasino.api.GameEvent e) throws InvalidGameEventException {
         GameEvent event = (GameEvent)e;
+        if( handleGlobalEvent(event) )
+            return;
         switch( gameState.getPhase() ){
             case INITIALIZATION:
-                handleInitializationEvent(event); break;
+                throw new InvalidGameEventException(event.getType().name());
             case BETTING:
                 switch(event.getType()){
                     case BET: bet(event); break;
@@ -144,16 +146,31 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
 
     // TODO more descriptive comment
     /**
-     * Handles any event received during the initialization phase
+     * Handles any global event
      *
      * @param event the event to handle
-     * @throws InvalidGameEventException
+     * @return `true` if a global game event is handled, otherwise `false`.
      */
-    private void handleInitializationEvent(GameEvent event) throws InvalidGameEventException {
-        if( !gameState.getValidEvents().contains(event.getType()))
-            throw new InvalidGameEventException(event.getType().name());
-        gameState.invoke(event);
-        // FIXME do i need to broadcase initialization events?
+    private boolean handleGlobalEvent(GameEvent event) {
+        switch(event.getType()){
+            case ADD_PLAYER_TO_WAITING_LIST:
+                if( event.getValue() instanceof String )
+                    addPlayerToWaitingList( (String)event.getValue() );
+                else
+                    PiCasino.LOGGER.severe("Player could not be added to the waiting list. Reason: Value does not conform to type String");
+                return true;
+            case START_TIMER:
+                this.startTimer();
+                return true;
+            case SET_NETWORK_HANDLER:
+                if( event.getValue() instanceof ServerNetworkHandler ) {
+                    this.setNetworkHandler( (ServerNetworkHandler)event.getValue());
+                    PiCasino.LOGGER.info("Server GameState's network handler has been set.");
+                } else
+                    PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
+                return true;
+            default: return false;
+        }
     }
 
     /**
@@ -172,7 +189,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     /**
      * Informs all clients to that they should advance to the CONCLUSION phase.
      *
-     * @param event a GameEvent whose name "AdvanceToConclusion".
      * @throws InvalidGameEventException
      */
     private void advanceToConclusion() throws InvalidGameEventException {
@@ -494,9 +510,11 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @param username the username of the player to add to the list.
      */
     public void addPlayerToWaitingList(String username){
-        if( !getWaitingList().contains(username))
+        if( !getWaitingList().contains(username)){
             this.getWaitingList().add(username);
-        PiCasino.LOGGER.info(username + " has been added to the waiting list.");
+            PiCasino.LOGGER.info(username + " has been added to the waiting list.");
+        } else
+            PiCasino.LOGGER.warning("Player "+username+" could not be added to the waiting list.  Reason: A player by that name already exists");
     }
 
     /**
