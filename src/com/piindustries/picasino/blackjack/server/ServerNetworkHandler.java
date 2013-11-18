@@ -81,7 +81,6 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                 } else if (object instanceof String) {
                     String username = (String)object;
                     addConnectedUser(username, connection.getID());
-                    ((ServerGameState)pi.getGameState()).addPlayerToWaitingList(username);
                 }
             }
 
