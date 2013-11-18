@@ -40,5 +40,6 @@ public class Network {
     static public void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
         kryo.register(GameEvent.class);
+        kryo.register(GameEventType.class);
     }
 }
