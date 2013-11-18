@@ -66,6 +66,18 @@ public class PiCasino {
     private void buildServerBlackJack() {
         networkHandler = new ServerNetworkHandler(this);
         gameState = new ServerGameState(this);
+        GameEvent gameEvent = new GameEvent(GameEventType.SET_NETWORK_HANDLER);
+        gameEvent.setValue(networkHandler);
+
+        /* Set NetworkHandler in GameState */
+        try{
+            gameState.invoke(gameEvent);
+        } catch (InvalidGameEventException e) {
+            LOGGER.severe("Failed to bind NetworkHandler to GameState!");
+            LOGGER.severe(e.getMessage());
+        }
+
+        /* Start timer in GameStates */
         try{
             gameState.invoke(new GameEvent(GameEventType.START_TIMER));
         } catch (InvalidGameEventException e) {
