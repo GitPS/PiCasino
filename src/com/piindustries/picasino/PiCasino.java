@@ -69,6 +69,7 @@ public class PiCasino {
         try{
             gameState.invoke(new GameEvent(GameEventType.START_TIMER));
         } catch (InvalidGameEventException e) {
+            LOGGER.severe("Failed to start timer!");
             LOGGER.severe(e.getMessage());
         }
     }

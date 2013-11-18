@@ -88,6 +88,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     try {
                         pi.getGameState().invoke(gameEvent);
                     } catch (InvalidGameEventException e) {
+                        PiCasino.LOGGER.severe("Failed to add player to waiting list!");
                         PiCasino.LOGGER.severe(e.getMessage());
                     }
                 }
