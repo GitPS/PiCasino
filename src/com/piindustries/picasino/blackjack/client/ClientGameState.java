@@ -236,15 +236,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     }
 
     /**
-     * @param event Any {@link com.piindustries.picasino.blackjack.domain.GameEvent}
-     * @return `True` if this is a global event, otherwise
-     * `false`.
-     */
-    private boolean isGlobalEvent(GameEvent event){
-        return false;
-    }
-
-    /**
      * Resets all hands, adds players from passedList back into the
      * game.  Removes duplicate hands cause by splits.  Resets Bets.
      * And advances the phase of `this` to INITIALIZATION.
