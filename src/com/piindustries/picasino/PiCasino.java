@@ -1,9 +1,12 @@
 package com.piindustries.picasino;
 
 import com.piindustries.picasino.api.GameState;
+import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
 import com.piindustries.picasino.blackjack.client.ClientNetworkHandler;
+import com.piindustries.picasino.blackjack.domain.GameEvent;
+import com.piindustries.picasino.blackjack.domain.GameEventType;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
 import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
 import com.piindustries.picasino.blackjack.test.Invoker;
@@ -63,7 +66,24 @@ public class PiCasino {
     private void buildServerBlackJack() {
         networkHandler = new ServerNetworkHandler(this);
         gameState = new ServerGameState(this);
-        ((ServerGameState)gameState).startTimer();
+        GameEvent gameEvent = new GameEvent(GameEventType.SET_NETWORK_HANDLER);
+        gameEvent.setValue(networkHandler);
+
+        /* Set NetworkHandler in GameState */
+        try{
+            gameState.invoke(gameEvent);
+        } catch (InvalidGameEventException e) {
+            LOGGER.severe("Failed to bind NetworkHandler to GameState!");
+            LOGGER.severe(e.getMessage());
+        }
+
+        /* Start timer in GameStates */
+        try{
+            gameState.invoke(new GameEvent(GameEventType.START_TIMER));
+        } catch (InvalidGameEventException e) {
+            LOGGER.severe("Failed to start timer!");
+            LOGGER.severe(e.getMessage());
+        }
     }
 
     private void buildClientBlackJack(String host, String userName) {

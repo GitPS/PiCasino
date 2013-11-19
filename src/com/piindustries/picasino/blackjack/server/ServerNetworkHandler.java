@@ -37,6 +37,7 @@ import com.esotericsoftware.kryonet.Server;
 import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
+import com.piindustries.picasino.blackjack.domain.GameEventType;
 import com.piindustries.picasino.blackjack.domain.Network;
 
 import java.io.IOException;
@@ -81,7 +82,15 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                 } else if (object instanceof String) {
                     String username = (String)object;
                     addConnectedUser(username, connection.getID());
-                    ((ServerGameState)pi.getGameState()).addPlayerToWaitingList(username);
+                    /* Add the user to the server waiting list */
+                    GameEvent gameEvent = new GameEvent(GameEventType.ADD_PLAYER_TO_WAITING_LIST);
+                    gameEvent.setValue(username);
+                    try {
+                        pi.getGameState().invoke(gameEvent);
+                    } catch (InvalidGameEventException e) {
+                        PiCasino.LOGGER.severe("Failed to add player to waiting list!");
+                        PiCasino.LOGGER.severe(e.getMessage());
+                    }
                 }
             }
 
