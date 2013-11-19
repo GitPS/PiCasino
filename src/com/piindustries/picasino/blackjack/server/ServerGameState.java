@@ -110,7 +110,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     public synchronized void invoke(com.piindustries.picasino.api.GameEvent e) throws InvalidGameEventException {
         GameEvent event = (GameEvent)e;
         if( handleGlobalEvent(event) )
-            return;
+            return; // If a global event is handled, than there is no need to continue.
         switch( gameState.getPhase() ){
             case INITIALIZATION:
                 throw new InvalidGameEventException(event.getType().name());
