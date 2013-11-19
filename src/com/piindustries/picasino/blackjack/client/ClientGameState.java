@@ -213,8 +213,16 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * otherwise `false`
      */
     private boolean handleGlobalEvent(GameEvent event){
-        // TODO design global event handler
-        return false;
+        switch(event.getType()){
+            case SET_NETWORK_HANDLER:
+                if( event.getValue() instanceof ClientNetworkHandler ){
+                    setNetworkHandler( (ClientNetworkHandler) event.getValue() );
+                    PiCasino.LOGGER.info("Client GameState's network handler has been set.");
+                } else
+                    PiCasino.LOGGER.severe("Client GameState's network handler could not be set. Reason: Value does not conform to type ClientNetworkHandler.");
+                return true;
+            default: return false;
+        }
     }
 
     public String getThisUser() {
