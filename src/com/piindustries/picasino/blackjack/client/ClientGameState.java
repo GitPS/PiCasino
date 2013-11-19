@@ -602,4 +602,52 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         return result;
     }
 
+    // FIXME this DEFINITELY needs to be tested...
+    GuiData getGuiData(){
+        LinkedList<Hand> tmpHands = (LinkedList<Hand>) getHands().clone();
+        Player[] tmpData = new Player[9];
+        GuiData result = new GuiData();
+        int dealerIndex = 0;
+        // Queue first player to front.
+        while( !(tmpHands.getLast() instanceof DealerHand) )
+            tmpHands.addLast( tmpHands.removeFirst() );
+        int index = 0;
+        for( Hand focus: tmpHands ){
+            Player.Builder builder = Player.builder();
+
+            // Populate know info
+            builder.username(focus.getUsername())
+                   .bet(focus.getBet())
+                   .handValue(focus.getBestHandValue())
+                   .split( focus.isSplit() )
+                   .busted( focus.getBestHandValue() > 21 );    // TODO verify
+
+            // Generate a hand for each hand assigned to this player
+            LinkedList<LinkedList<Integer>> toAddHands = new LinkedList<>();
+            for( Hand hands: tmpHands ){
+                if( hands.getUsername().equals(focus.getUsername()) ){
+                    toAddHands.add(hands.getCards());
+                }
+            }
+            builder.hands(toAddHands);
+            if( focus instanceof DealerHand ){
+                // Assign the dealers hand to the dealers position
+                tmpData[8] = builder.result();
+                return buildGuiDataFromArray(tmpData);
+            } else {
+                // Assign player data to position
+                tmpData[index] = builder.result();
+                // Progress
+                index += 1;
+            }
+        }
+        throw new Error("Unreachable code.  Method should have ended upon evaluation of dealer's hand.");
+    }
+
+    private GuiData buildGuiDataFromArray(Player[] data){
+        GuiData result = new GuiData();
+        for(int i = 0; i < 9; i++ )
+            result.setPlayer( i+1, data[0] );
+        return result;
+    }
 }
