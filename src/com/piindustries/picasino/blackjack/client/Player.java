@@ -21,7 +21,9 @@
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.piindustries.picasino.blackjack.domain;
+package com.piindustries.picasino.blackjack.client;
+
+import com.piindustries.picasino.blackjack.domain.Hand;
 
 import java.util.List;
 
