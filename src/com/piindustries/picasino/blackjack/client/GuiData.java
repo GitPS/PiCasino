@@ -21,7 +21,7 @@
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.piindustries.picasino.blackjack.domain;
+package com.piindustries.picasino.blackjack.client;
 
 public class GuiData {
     private Player player1;
