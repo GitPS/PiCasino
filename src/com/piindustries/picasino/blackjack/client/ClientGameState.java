@@ -525,16 +525,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.hands = hands;
     }
 
-    /**
-     * @see java.lang.Object#clone()
-     *
-     * @return `this` cloned.
-     */
-    @Override
-    public ClientGameState clone() throws CloneNotSupportedException {
-        return (ClientGameState)super.clone();
-    }
-
     public ArrayList<GameEventType> getValidEvents(){
         ArrayList<GameEventType> result = new ArrayList<>();
         switch(this.getPhase()){
