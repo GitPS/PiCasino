@@ -535,11 +535,10 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     }
 
     // FIXME this DEFINITELY needs to be tested...
+    // TODO comment
     GuiData getGuiData(){
         LinkedList<Hand> tmpHands = (LinkedList<Hand>) getHands().clone();
         Player[] tmpData = new Player[9];
-        GuiData result = new GuiData();
-        int dealerIndex = 0;
         // Queue first player to front.
         while( !(tmpHands.getLast() instanceof DealerHand) )
             tmpHands.addLast( tmpHands.removeFirst() );
@@ -576,6 +575,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         throw new Error("Unreachable code.  Method should have ended upon evaluation of dealer's hand.");
     }
 
+    // TODO comment
     private GuiData buildGuiDataFromArray(Player[] data){
         GuiData result = new GuiData();
         for(int i = 0; i < 9; i++ )
