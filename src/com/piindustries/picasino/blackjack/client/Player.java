@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Player {
     String username;
-    List<Hand> hands;
+    List<Integer> hands;
     int value;
     int bet;
     boolean hasSplit;
@@ -37,8 +37,12 @@ public class Player {
     boolean isUpToAct;
     int handValue;
 
+    public static Builder builder(){
+        return new Builder();
+    }
+
     private Player(String username,
-                   List<Hand> hands,
+                   List<Integer> hands,
                    int value,
                    int bet,
                    boolean hasSplit,
@@ -63,11 +67,11 @@ public class Player {
         this.username = username;
     }
 
-    public List<Hand> getHands() {
+    public List<Integer> getHands() {
         return hands;
     }
 
-    public void setHands(List<Hand> hands) {
+    public void setHands(List<Integer> hands) {
         this.hands = hands;
     }
 
@@ -119,7 +123,7 @@ public class Player {
         this.handValue = handValue;
     }
 
-    public class Builder {
+    public static class Builder {
         String username;
         List<Hand> hands;
         int value;
@@ -128,6 +132,8 @@ public class Player {
         boolean hasBusted;
         boolean isUpToAct;
         int handValue;
+
+        private Builder(){}
 
         public Builder username(String username){
             this.username = username;
