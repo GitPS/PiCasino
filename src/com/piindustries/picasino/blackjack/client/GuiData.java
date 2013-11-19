@@ -36,20 +36,20 @@ public class GuiData {
 
     public Player getPlayer(int index){
         switch(index){
-            case 1: return player1; break;
-            case 2: return player2; break;
-            case 3: return player3; break;
-            case 4: return player4; break;
-            case 5: return player5; break;
-            case 6: return player6; break;
-            case 7: return player7; break;
-            case 8: return player8; break;
-            case 0: return dealer; break;
+            case 1: return player1;
+            case 2: return player2;
+            case 3: return player3;
+            case 4: return player4;
+            case 5: return player5;
+            case 6: return player6;
+            case 7: return player7;
+            case 8: return player8;
+            case 0: return dealer;
             default: throw new IllegalArgumentException("Player not defined at index "+index+ '.');
         }
     }
 
-    public Player setPlayer(int index, Player toSet){
+    public void setPlayer(int index, Player toSet){
         switch(index){
             case 1: player1 = toSet; break;
             case 2: player2 = toSet; break;
