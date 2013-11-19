@@ -496,6 +496,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     }
 
     /**
+     * In beta
+     *
      * Returns a list of actions a client can invoke.
      *
      * @return a list of actions a client can invoke.
@@ -536,6 +538,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
 
     // FIXME this DEFINITELY needs to be tested...
     // TODO comment
+    // In Beta
     GuiData getGuiData(){
         LinkedList<Hand> tmpHands = (LinkedList<Hand>) getHands().clone();
         Player[] tmpData = new Player[9];
