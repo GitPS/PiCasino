@@ -163,6 +163,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         if (!(e instanceof GameEvent))        // If the GameEvent is not a Blackjack game event, throw exception
             throw new InvalidGameEventException(e.toString());
         GameEvent event = (GameEvent) e;    // Case event to type correct type.
+        if( handleGlobalEvent(event) )
+            return; // If a global event is handled, there is no need to continue.
         switch (this.getPhase()) {
             case INITIALIZATION:
                 switch( event.getType() ){
