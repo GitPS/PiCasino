@@ -4,6 +4,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
 
+import java.util.LinkedList;
+
 /**
  * ___ _   ___          _
  * / _ (_) / __\__ _ ___(_)_ __   ___
@@ -43,5 +45,8 @@ public class Network {
         kryo.register(GameEvent.class);
         kryo.register(GameEventType.class);
         kryo.register(ClientGameState.class);
+        kryo.register(LinkedList.class);
+        kryo.register(Phase.class);
+        kryo.register(Hand.class);
     }
 }
