@@ -67,7 +67,7 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
             }
 
             /* Object received from the server. */
-            public void received(Connection connection, Object object) {
+            public synchronized void received(Connection connection, Object object) {
                 if (object instanceof GameEvent) {
                     GameEvent event = (GameEvent) object;
                     /* DEBUG START */
