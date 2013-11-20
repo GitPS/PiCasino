@@ -63,6 +63,11 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
             /* Connection with a server is established. */
             public void connected(Connection connection) {
                 PiCasino.LOGGER.info("Connection with server established.");
+                try {
+                    client.update(5000);
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 client.sendTCP(username);
             }
 
@@ -90,7 +95,7 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
         }));
 
         try {
-            client.connect(5000, host, Network.port);
+            client.connect(10000, host, Network.port);
             // Server communication after connection can go here, or in Listener#connected().
         } catch (SocketTimeoutException e){
             PiCasino.LOGGER.severe(e.getMessage());
