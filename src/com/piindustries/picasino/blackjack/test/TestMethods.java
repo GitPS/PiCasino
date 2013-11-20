@@ -10,14 +10,14 @@ public class TestMethods {
 
     public static void defaultSetup(ClientGameState e){
         String[] names = new String[]{ "Aaron", "Lyndsay", "Phil", "Mike", "Andrew" };
-        for( String s: names ){
+        for( String s: names ) {
             try {
                 GameEvent event = new GameEvent();
                 event.setType(GameEventType.ADD_PLAYER);
                 event.setValue(s);
                 e.invoke(event);
-            } catch (InvalidGameEventException e){
-                System.out.println( "Invalid Game Event Caught" );
+            } catch (InvalidGameEventException exception) {
+                System.out.println("Invalid Game Event Caught");
                 System.out.flush();
             }
         }
