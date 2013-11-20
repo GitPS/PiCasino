@@ -63,7 +63,7 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
             /* Connection with a server is established. */
             public void connected(Connection connection) {
                 PiCasino.LOGGER.info("Connection with server established.");
-                client.sendTCP(username);
+                //client.sendTCP(username);
             }
 
             /* Object received from the server. */
