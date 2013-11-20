@@ -46,5 +46,6 @@ public class Network {
         kryo.register(LinkedList.class);
         kryo.register(Hand.class);
         kryo.register(Phase.class);
+        kryo.register(DealerHand.class);
     }
 }
