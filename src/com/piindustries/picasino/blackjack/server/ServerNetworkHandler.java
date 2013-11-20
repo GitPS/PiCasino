@@ -162,6 +162,13 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
         }
     }
 
+    /**
+     * Adds a connected user to a HashMap for internal use by the network handler.  This map
+     * will allow individual messages to be sent based on the user's client ID.
+     *
+     * @param name of user.
+     * @param id assigned on connection.
+     */
     public void addConnectedUser(String name, int id) {
         name = name.toLowerCase();
         /* Only add it to the map if it doesn't already exist */
