@@ -463,44 +463,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.hands = hands;
     }
 
-    public ArrayList<GameEventType> getValidEvents(){
-        ArrayList<GameEventType> result = new ArrayList<>();
-        switch(this.getPhase()){
-            case INITIALIZATION:
-                result.add(GameEventType.ADD_PLAYER);
-                result.add(GameEventType.REMOVE_PLAYER);
-                result.add(GameEventType.ADVANCE_TO_BETTING);
-                break;
-            case BETTING:
-                result.add(GameEventType.BET);
-                result.add(GameEventType.PASS);
-                result.add(GameEventType.ADVANCE_TO_DEALING);
-                break;
-            case DEALING:
-                result.add(GameEventType.DEAL_CARD);
-                result.add(GameEventType.ADVANCE_TO_PLAYING);
-                break;
-            case PLAYING:
-                result.add(GameEventType.HIT);
-                result.add(GameEventType.SEND_CARD);
-                result.add(GameEventType.STAND);
-                result.add(GameEventType.SPLIT);
-                result.add(GameEventType.DOUBLE_DOWN);
-                result.add(GameEventType.ADVANCE_TO_CONCLUDING);
-                break;
-            case CONCLUSION:
-                result.add(GameEventType.ADVANCE_TO_INITIALIZATION);
-                break;
-            default: throw new Error("Logical Error.  Cannot Recover");
-        }
-        result.add(GameEventType.MESSAGE);
-        result.add(GameEventType.PING);
-        result.add(GameEventType.INTEGRITY_CHECK);
-        result.add(GameEventType.PLAYER_DISCONNECT);
-        result.add(GameEventType.REQUEST_GAME_STATE);
-        return result;
-    }
-
     /**
      * In beta
      *
