@@ -85,6 +85,12 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     addConnectedUser(username, connection.getID());
                     int id = connection.getID();
 
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        PiCasino.LOGGER.severe("SLEEP FAILED!");
+                    }
+
                     /* Get ClientGameState on the server */
                     ClientGameState clientGameState = ((ServerGameState)pi.getGameState()).getClientGameState();
 
