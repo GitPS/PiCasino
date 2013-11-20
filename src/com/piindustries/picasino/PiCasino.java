@@ -100,6 +100,14 @@ public class PiCasino {
     private void buildClientBlackJack(String host, String userName) {
         ClientNetworkHandler clientNetworkHandler = new ClientNetworkHandler(this, host, userName);
 
+        /* DEBUG START */
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        /* DEBUG END */
+
         /* Wait for a connection to be made before proceeding */
         while(!clientNetworkHandler.isConnected()){
             try {
