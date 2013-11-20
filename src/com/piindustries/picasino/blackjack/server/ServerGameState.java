@@ -169,6 +169,13 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                 } else
                     PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
                 return true;
+            case SET_INTERMISSION_TIME:
+                if( event.getValue() instanceof Integer ) {
+                    this.setIntermissionTime( (Integer) event.getValue() );
+                    PiCasino.LOGGER.info("Server GameState's network handler has been set.");
+                } else
+                    PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
+                return true;
             default: return false;
         }
     }
