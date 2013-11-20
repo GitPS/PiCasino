@@ -573,12 +573,23 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
 
     public String getStatus(){
         StringBuilder sb = new StringBuilder();
-        sb.append( this.getPhase().name() +'\n' );
+        sb.append( "\tPhase: " + this.getPhase().name() +'\n' );
+        sb.append( "\tPlayers...\n" );
         for( Hand h : this.getHands() ){
-            sb.append( "Username: "+h.getUsername() + " Bet: "+h.getBet()+" Cards: [ " );
+            sb.append( "\t\tUsername: "+h.getUsername() + " Bet: "+h.getBet()+" Cards: [ " );
             for( int i: h.getCards() )
                 sb.append( Cards.evaluateCardName(i)+" " );
             sb.append("]" + '\n' );
+        }
+        sb.append( "\tPassed List..." );
+        if( this.getPassedList().isEmpty() ) sb.append( " the passed list is empty\n" );
+        else {
+            for( Hand h : this.getPassedList() ){
+                sb.append( "\t\tUsername: "+h.getUsername() + " Bet: "+h.getBet()+" Cards: [ " );
+                for( int i: h.getCards() )
+                    sb.append( Cards.evaluateCardName(i)+" " );
+                sb.append("]" + '\n' );
+            }
         }
         return sb.toString();
     }
