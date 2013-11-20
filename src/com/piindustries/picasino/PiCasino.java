@@ -77,6 +77,17 @@ public class PiCasino {
             LOGGER.severe(e.getMessage());
         }
 
+        gameEvent = new GameEvent(GameEventType.SET_INTERMISSION_TIME);
+        gameEvent.setValue(30);
+
+        /* Set intermission time */
+        try{
+            gameState.invoke(gameEvent);
+        } catch (InvalidGameEventException e) {
+            LOGGER.severe("Failed to set intermission timer!");
+            LOGGER.severe(e.getMessage());
+        }
+
         /* Start timer in GameState */
         try{
             gameState.invoke(new GameEvent(GameEventType.START_TIMER));
