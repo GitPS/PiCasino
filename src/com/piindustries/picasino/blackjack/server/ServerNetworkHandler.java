@@ -103,7 +103,6 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     gameEvent.setValue(clientGameState.getPassedList());
                     server.sendToTCP(id, gameEvent);
 
-
                     /* Add the user to the server waiting list */
                     gameEvent = new GameEvent(GameEventType.ADD_PLAYER_TO_WAITING_LIST);
                     gameEvent.setValue(username);
