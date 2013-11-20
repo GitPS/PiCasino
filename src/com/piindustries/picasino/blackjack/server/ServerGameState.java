@@ -480,9 +480,13 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         // Advance all client phases
         PiCasino.LOGGER.info("Game Started at "+new Date());
         GameEvent event = new GameEvent();
-        event.setType(GameEventType.ADVANCE_TO_BETTING);
-        this.getNetworkHandler().send(event);
-        this.gameState.invoke(event);
+        if( this.gameState.getHands().size() < 2 ){
+            this.startTimer();
+        } else {
+            event.setType(GameEventType.ADVANCE_TO_BETTING);
+            this.getNetworkHandler().send(event);
+            this.gameState.invoke(event);
+        }
     }
 
     /** @return `this` network handler */
