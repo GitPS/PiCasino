@@ -79,8 +79,6 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
                     } catch (InvalidGameEventException e) {
                         PiCasino.LOGGER.severe(e.getMessage());
                     }
-                } else if(object instanceof ClientGameState){
-                    PiCasino.LOGGER.info("Client GameState was updated by server.");
                 }
             }
 
