@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 import com.piindustries.picasino.api.NetworkHandler;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
+import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
 
 import java.util.LinkedList;
 
@@ -51,5 +52,6 @@ public class Network {
         kryo.register(Hand.class);
         kryo.register(DealerHand.class);
         kryo.register(NetworkHandler.class);
+        kryo.register(ServerNetworkHandler.class);
     }
 }
