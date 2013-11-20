@@ -98,15 +98,20 @@ public class PiCasino {
     }
 
     private void buildClientBlackJack(String host, String userName) {
-        networkHandler = new ClientNetworkHandler(this, host, userName);
-        /* Pause for 2 seconds while the client establishes a connection. */
-        try {
-            LOGGER.info("Client is sleeping for 5 seconds while connection is established.");
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            LOGGER.severe("Sleep was interrupted!");
-            LOGGER.severe(e.getMessage());
+        ClientNetworkHandler clientNetworkHandler = new ClientNetworkHandler(this, host, userName);
+        /* DEBUG */
+        LOGGER.info("Is Connected = " + clientNetworkHandler.isConnected());
+        /* DEBUG*/
+
+        while(!clientNetworkHandler.isConnected()){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                LOGGER.severe(e.getMessage());
+            }
         }
+
+        networkHandler = clientNetworkHandler;
         gameState = new ClientGameState(this, userName);
         GameEvent gameEvent = new GameEvent(GameEventType.SET_NETWORK_HANDLER);
         gameEvent.setValue(networkHandler);
