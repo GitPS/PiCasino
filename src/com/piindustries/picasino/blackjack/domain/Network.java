@@ -2,6 +2,7 @@ package com.piindustries.picasino.blackjack.domain;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
+import com.piindustries.picasino.api.NetworkHandler;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
 
 import java.util.LinkedList;
@@ -48,5 +49,7 @@ public class Network {
         kryo.register(LinkedList.class);
         kryo.register(Phase.class);
         kryo.register(Hand.class);
+        kryo.register(DealerHand.class);
+        kryo.register(NetworkHandler.class);
     }
 }
