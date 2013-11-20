@@ -44,5 +44,7 @@ public class Network {
         kryo.register(GameEvent.class);
         kryo.register(GameEventType.class);
         kryo.register(LinkedList.class);
+        kryo.register(Hand.class);
+        kryo.register(Phase.class);
     }
 }
