@@ -83,8 +83,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      */
     public ServerGameState(PiCasino pi){
         this.gameState  = new ClientGameState(pi, "$Server");
-        this.setNetworkHandler(pi.getNetworkHandler());
-
         this.deck = buildDeck();
         this.gameTimer = new Timer(1000, new Listener() );
         PiCasino.LOGGER.info("Server Game State Constructed");
