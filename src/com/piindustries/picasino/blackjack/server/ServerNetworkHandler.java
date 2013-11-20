@@ -83,25 +83,6 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                 } else if (object instanceof String) {
                     String username = (String)object;
                     addConnectedUser(username, connection.getID());
-//                    int id = connection.getID();
-//
-//                    /* Get ClientGameState on the server */
-//                    ClientGameState clientGameState = ((ServerGameState)pi.getGameState()).getClientGameState();
-//
-//                    /* Send Phase */
-//                    GameEvent gameEvent = new GameEvent(GameEventType.SET_PHASE);
-//                    gameEvent.setValue(clientGameState.getPhase());
-//                    server.sendToTCP(id, gameEvent);
-//
-//                    /* Send Hands */
-//                    gameEvent = new GameEvent(GameEventType.SET_HANDS);
-//                    gameEvent.setValue(clientGameState.getHands());
-//                    server.sendToTCP(id, gameEvent);
-//
-//                    /* Send Passed List */
-//                    gameEvent = new GameEvent(GameEventType.SET_PASSED_LIST);
-//                    gameEvent.setValue(clientGameState.getPassedList());
-//                    server.sendToTCP(id, gameEvent);
 
                     /* Add the user to the server waiting list */
                     GameEvent gameEvent = new GameEvent(GameEventType.ADD_PLAYER_TO_WAITING_LIST);
