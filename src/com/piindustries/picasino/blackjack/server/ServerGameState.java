@@ -83,8 +83,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      */
     public ServerGameState(PiCasino pi){
         this.gameState  = new ClientGameState(pi, "$Server");
-        this.setNetworkHandler(pi.getNetworkHandler());
-
         this.deck = buildDeck();
         this.gameTimer = new Timer(1000, new Listener() );
         PiCasino.LOGGER.info("Server Game State Constructed");
@@ -165,6 +163,13 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
             case SET_NETWORK_HANDLER:
                 if( event.getValue() instanceof ServerNetworkHandler ) {
                     this.setNetworkHandler( (ServerNetworkHandler)event.getValue());
+                    PiCasino.LOGGER.info("Server GameState's network handler has been set.");
+                } else
+                    PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
+                return true;
+            case SET_INTERMISSION_TIME:
+                if( event.getValue() instanceof Integer ) {
+                    this.setIntermissionTime( (Integer) event.getValue() );
                     PiCasino.LOGGER.info("Server GameState's network handler has been set.");
                 } else
                     PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
