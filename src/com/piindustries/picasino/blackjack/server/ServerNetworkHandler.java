@@ -121,6 +121,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
      */
     public void send(com.piindustries.picasino.api.GameEvent toSend) {
         server.sendToAllTCP(toSend);
+        PiCasino.LOGGER.info("All players were sent a GameEvent.");
     }
 
     /**
@@ -133,6 +134,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
         userName = userName.toLowerCase();
         if (connectedUsers.containsKey(userName)) {
             server.sendToTCP(connectedUsers.get(userName), toSend);
+            PiCasino.LOGGER.info(userName + " was sent an individual GameEvent.");
         } else {
             PiCasino.LOGGER.severe("Attempted to send a GameEvent to an untracked user with ID: " + connectedUsers
                     .get(userName) + " and name " + userName + ".");
