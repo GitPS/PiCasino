@@ -623,7 +623,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @param seconds the number of seconds to wait in between
      *                games.
      */
-    public void setIntermissionTime(int seconds){
+    void setIntermissionTime(int seconds){
         if( !(seconds < 1) )
             this.intermissionTime = seconds;
     }
