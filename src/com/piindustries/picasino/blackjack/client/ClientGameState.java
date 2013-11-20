@@ -155,15 +155,18 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                 } else
                     PiCasino.LOGGER.severe("Client GameState's network handler could not be set. Reason: Value does not conform to type ClientNetworkHandler.");
                 return true;
-            case SET_GAME_STATE:
-                if( event.getValue() instanceof ClientNetworkHandler ){
-                    PiCasino.LOGGER.info("Client GameState has been set.");
+            case SET_PHASE:
+                if( event.getValue() instanceof Phase ){
+                    this.setPhase((Phase)event.getValue());
+                    PiCasino.LOGGER.info("Client GameState Phase has been set.");
                 } else
-                    PiCasino.LOGGER.severe("Client GameState could not be set. Reason: Value does not conform to type ClientGameState.");
+                    PiCasino.LOGGER.severe("Client GameState Phase could not be set. Reason: Value does not conform to type ClientGameState.");
                 return true;
             default: return false;
         }
     }
+
+    public LinkedList<Hand> getPassedList(){ return this.passedList; }
 
     public String getThisUser() {
         return thisUser;
