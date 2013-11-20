@@ -99,10 +99,8 @@ public class PiCasino {
 
     private void buildClientBlackJack(String host, String userName) {
         ClientNetworkHandler clientNetworkHandler = new ClientNetworkHandler(this, host, userName);
-        /* DEBUG */
-        LOGGER.info("Is Connected = " + clientNetworkHandler.isConnected());
-        /* DEBUG*/
 
+        /* Wait for a connection to be made before proceeding */
         while(!clientNetworkHandler.isConnected()){
             try {
                 Thread.sleep(100);
