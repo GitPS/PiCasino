@@ -574,18 +574,20 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     public String getStatus(){
         StringBuilder sb = new StringBuilder();
         sb.append( "\tPhase: " + this.getPhase().name() +'\n' );
-        sb.append( "\tPlayers...\n" );
+        sb.append( "\tPlayers List...\n" );
         for( Hand h : this.getHands() ){
-            sb.append( "\t\tUsername: "+h.getUsername() + " Bet: "+h.getBet()+" Cards: [ " );
+            sb.append( "\t\t"+h.getUsername() + " Bet: "+h.getBet()+" Cards: [ " );
             for( int i: h.getCards() )
                 sb.append( Cards.evaluateCardName(i)+" " );
-            sb.append("]" + '\n' );
+            sb.append("] " );
+            if( h.isSplit() )sb.append( "Split\n" );
+            else sb.append("Not Split\n");
         }
         sb.append( "\tPassed List..." );
         if( this.getPassedList().isEmpty() ) sb.append( " the passed list is empty\n" );
         else {
             for( Hand h : this.getPassedList() ){
-                sb.append( "\t\tUsername: "+h.getUsername() + " Bet: "+h.getBet()+" Cards: [ " );
+                sb.append( "\t\t"+h.getUsername() + " Bet: "+h.getBet()+" Cards: [ " );
                 for( int i: h.getCards() )
                     sb.append( Cards.evaluateCardName(i)+" " );
                 sb.append("]" + '\n' );
