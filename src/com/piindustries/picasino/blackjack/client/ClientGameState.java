@@ -171,7 +171,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                 return true;
             case SET_HANDS:
                 if( event.getValue() instanceof LinkedList ){
-                    this.setHands( (LinkedList<Hand>)event.getValue() );
+                    this.setHands((LinkedList<Hand>) event.getValue());
                     PiCasino.LOGGER.info("Client GameState Hands List has been set.");
                 } else
                     PiCasino.LOGGER.severe("Client GameState Hands List could not be set. Reason: Value does not conform to type LinkedList<Hand>.");
@@ -569,5 +569,17 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         for(int i = 0; i < 9; i++ )
             result.setPlayer( i+1, data[0] );
         return result;
+    }
+
+    public String getStatus(){
+        StringBuilder sb = new StringBuilder();
+        sb.append( this.getPhase().name() +'\n' );
+        for( Hand h : this.getHands() ){
+            sb.append( "Username: "+h.getUsername() + " Bet: "+h.getBet()+" Cards: [ " );
+            for( int i: h.getCards() )
+                sb.append( Cards.evaluateCardName(i)+" " );
+            sb.append("]" + '\n' );
+        }
+        return sb.toString();
     }
 }
