@@ -101,7 +101,8 @@ public class PiCasino {
         networkHandler = new ClientNetworkHandler(this, host, userName);
         /* Pause for 2 seconds while the client establishes a connection. */
         try {
-            Thread.sleep(2000);
+            LOGGER.info("Client is sleeping for 5 seconds while connection is established.");
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             LOGGER.severe("Sleep was interrupted!");
             LOGGER.severe(e.getMessage());
