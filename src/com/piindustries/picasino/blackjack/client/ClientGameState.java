@@ -502,7 +502,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      *
      * @return a list of actions a client can invoke.
      */
-    public ArrayList<GameEventType> getAvailableActions(){
+    ArrayList<GameEventType> getAvailableActions(){
         ArrayList<GameEventType> result = new ArrayList<>();
         switch(this.getPhase()){
             case INITIALIZATION:
