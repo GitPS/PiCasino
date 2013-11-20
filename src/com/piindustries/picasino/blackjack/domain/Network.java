@@ -36,7 +36,7 @@ import java.util.LinkedList;
  */
 
 public class Network {
-    static public final int port = 1337;
+    static public final int port = 65000;
 
     /* This registers objects that are going to be sent over the network. */
     static public void register(EndPoint endPoint) {
