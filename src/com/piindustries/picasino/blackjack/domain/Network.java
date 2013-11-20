@@ -51,19 +51,5 @@ public class Network {
         Kryo kryo = endPoint.getKryo();
         kryo.register(GameEvent.class);
         kryo.register(GameEventType.class);
-        kryo.register(ClientGameState.class);
-        kryo.register(LinkedList.class);
-        kryo.register(Phase.class);
-        kryo.register(Hand.class);
-        kryo.register(DealerHand.class);
-        kryo.register(NetworkHandler.class);
-        kryo.register(ServerNetworkHandler.class);
-        kryo.register(HashMap.class);
-        kryo.register(InvalidGameEventException.class);
-        kryo.register(PiCasino.class);
-        kryo.register(Cards.class);
-        kryo.register(Game.class);
-        kryo.register(ArrayList.class);
-        kryo.register(Server.class);
     }
 }
