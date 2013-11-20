@@ -86,6 +86,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     int id = connection.getID();
 
                     try {
+                        PiCasino.LOGGER.info("Sleeping for 2 seconds...");
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         PiCasino.LOGGER.severe("SLEEP FAILED!");
