@@ -86,6 +86,8 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
 
                     /* Create and send the client the most up to date GameState */
                     ClientGameState clientGameState = ((ServerGameState) pi.getGameState()).getClientGameState();
+                    GameEvent gameEvent = new GameEvent(GameEventType.SET_GAME_STATE);
+                    gameEvent.setValue(((ServerGameState) pi.getGameState()).getClientGameState());
                     clientGameState.setThisUser(username);
                     server.sendToTCP(connection.getID(), clientGameState);
 
@@ -93,7 +95,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     clientGameState.setThisUser("$Server");
 
                     /* Add the user to the server waiting list */
-                    GameEvent gameEvent = new GameEvent(GameEventType.ADD_PLAYER_TO_WAITING_LIST);
+                    gameEvent = new GameEvent(GameEventType.ADD_PLAYER_TO_WAITING_LIST);
                     gameEvent.setValue(username);
                     try {
                         pi.getGameState().invoke(gameEvent);
