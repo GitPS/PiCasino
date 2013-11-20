@@ -110,4 +110,8 @@ public class ClientNetworkHandler implements com.piindustries.picasino.api.Netwo
     public void send(com.piindustries.picasino.api.GameEvent toSend) {
         client.sendTCP(toSend);
     }
+
+    public boolean isConnected(){
+        return client.isConnected();
+    }
 }
