@@ -127,4 +127,8 @@ public class PiCasino {
         return networkHandler;
     }
 
+    public void setGameState(GameState gs){
+        gameState = gs;
+    }
+
 }
