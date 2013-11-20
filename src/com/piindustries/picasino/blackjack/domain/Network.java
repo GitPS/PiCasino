@@ -2,6 +2,7 @@ package com.piindustries.picasino.blackjack.domain;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
+import com.esotericsoftware.kryonet.Server;
 import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
@@ -63,5 +64,6 @@ public class Network {
         kryo.register(Cards.class);
         kryo.register(Game.class);
         kryo.register(ArrayList.class);
+        kryo.register(Server.class);
     }
 }
