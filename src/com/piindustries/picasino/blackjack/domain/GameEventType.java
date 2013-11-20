@@ -60,5 +60,7 @@ public enum GameEventType {
     SET_NETWORK_HANDLER,
     START_TIMER,
     SET_INTERMISSION_TIME,
-    SET_GAME_STATE
+    SET_PHASE,
+    SET_HANDS,
+    SET_PASSED_LIST,
 }
