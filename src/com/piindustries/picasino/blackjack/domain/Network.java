@@ -2,15 +2,7 @@ package com.piindustries.picasino.blackjack.domain;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
-import com.esotericsoftware.kryonet.Server;
-import com.piindustries.picasino.PiCasino;
-import com.piindustries.picasino.api.InvalidGameEventException;
-import com.piindustries.picasino.api.NetworkHandler;
-import com.piindustries.picasino.blackjack.client.ClientGameState;
-import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
@@ -51,5 +43,6 @@ public class Network {
         Kryo kryo = endPoint.getKryo();
         kryo.register(GameEvent.class);
         kryo.register(GameEventType.class);
+        kryo.register(LinkedList.class);
     }
 }
