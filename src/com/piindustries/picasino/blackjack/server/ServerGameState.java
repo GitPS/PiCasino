@@ -142,6 +142,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         }
     }
 
+    ClientGameState getGameState(){ return gameState; }
+
     // TODO more descriptive comment
     /**
      * Handles any global event
