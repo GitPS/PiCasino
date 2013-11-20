@@ -89,7 +89,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                     GameEvent gameEvent = new GameEvent(GameEventType.SET_GAME_STATE);
                     gameEvent.setValue(((ServerGameState) pi.getGameState()).getClientGameState());
                     clientGameState.setThisUser(username);
-                    server.sendToTCP(connection.getID(), clientGameState);
+                    server.sendToTCP(connection.getID(), gameEvent);
 
                     /* Set the server name back to default */
                     clientGameState.setThisUser("$Server");
