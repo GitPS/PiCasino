@@ -160,7 +160,21 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                     this.setPhase((Phase)event.getValue());
                     PiCasino.LOGGER.info("Client GameState Phase has been set.");
                 } else
-                    PiCasino.LOGGER.severe("Client GameState Phase could not be set. Reason: Value does not conform to type ClientGameState.");
+                    PiCasino.LOGGER.severe("Client GameState Phase could not be set. Reason: Value does not conform to type Phase.");
+                return true;
+            case SET_PASSED_LIST:
+                if( event.getValue() instanceof LinkedList ){
+                    this.passedList = (LinkedList<Hand>)event.getValue();
+                    PiCasino.LOGGER.info("Client GameState Passed List has been set.");
+                } else
+                    PiCasino.LOGGER.severe("Client GameState Passed List could not be set. Reason: Value does not conform to type LinkedList<Hand>.");
+                return true;
+            case SET_HANDS:
+                if( event.getValue() instanceof LinkedList ){
+                    this.setHands( (LinkedList<Hand>)event.getValue() );
+                    PiCasino.LOGGER.info("Client GameState Hands List has been set.");
+                } else
+                    PiCasino.LOGGER.severe("Client GameState Hands List could not be set. Reason: Value does not conform to type LinkedList<Hand>.");
                 return true;
             default: return false;
         }
