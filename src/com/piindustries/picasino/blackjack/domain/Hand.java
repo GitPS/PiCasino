@@ -60,6 +60,10 @@ public class Hand implements Serializable {
         return Cards.getMaxHandValue(toEval);
     }
 
+    public boolean hasBusted(){
+        return getBestHandValue() > 21;
+    }
+
     /**
      * Lazily gets the bet of this. If it is null, it sets it to 0.
      * @return the bet value of `this`.  If null, lazily sets to 0 and returns.
