@@ -75,7 +75,7 @@ public class Cards {
      * @return the face value of a card.
      */
     public static int getBJCard(int cardId){
-        return cardId / 13;
+        return cardId % 13;
     }
 
     public static int getMaxHandValue(int[] hand){
