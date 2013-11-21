@@ -93,30 +93,6 @@ public class Cards {
         return cardId / 13;
     }
 
-    public static LinkedList<Integer> getHandValues(int[] hand){
-        LinkedList<Integer> result = new LinkedList<>();
-        if( hand == null || hand.length < 1 )
-            return null;
-        result.add(hand[0]);    // TODO make sure there can't be an index out of bounds exception
-        for(int i : hand ){
-            int[] value = getBJValue(i);
-            if( value.length > 1 ){
-                for( int r : result ){
-                    result.addLast(r);
-                }
-                for(int v = 0; v < result.size()/2; v++ ){
-                    result.set(v, result.get(v) + value[0]);
-                    result.set(v+result.size()/2, result.get(v+result.size()/2) + value[1]);
-                }
-            } else {
-                for( int r = 0; r < result.size(); r++ ){
-                    result.set(r, result.get(r) + value[0] );
-                }
-            }
-        }
-        return result;
-    }
-
     public static int getMaxHandValue(int[] hand){
         int result = 0;
         int aces = 0;
@@ -129,13 +105,6 @@ public class Cards {
             result += 10;
             aces -= 1;
         }
-        return result;
-    }
-
-    public static int getMinHandValue(int[] hand){
-        int result = Integer.MAX_VALUE;
-        for(int v: getHandValues(hand))
-            result = Math.min(result,v);
         return result;
     }
 }
