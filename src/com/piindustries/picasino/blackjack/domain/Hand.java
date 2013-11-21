@@ -53,10 +53,6 @@ public class Hand implements Serializable {
         this.setSplit(false);
     }
 
-    /**
-     * @return the highest value that this hand can have that is equal to or less than 21.  If the hand can only bust,
-     *         than -1 is returned indicating a bust.
-     */
     public int getBestHandValue() {
         int[] toEval = new int[getCards().size()];
         for( int i = 0; i < getCards().size(); i++ )
