@@ -58,11 +58,10 @@ public class Hand implements Serializable {
      *         than -1 is returned indicating a bust.
      */
     public int getBestHandValue() {
-        int[] v = this.getHandValues();
-        int result = -1;
-        for (int i : v)
-            result = (i > 21) ? result : Math.max(result, i);
-        return result;
+        int[] toEval = new int[getCards().size()];
+        for( int i = 0; i < getCards().size(); i++ )
+            toEval[i] = getCards().get(i);
+        return Cards.getMaxHandValue(toEval);
     }
 
     /**
@@ -111,33 +110,6 @@ public class Hand implements Serializable {
      */
     public void setCards(LinkedList<Integer> cards) {
         this.cards = cards;
-    }
-
-    /**
-     * @return an array of the possible values that this hand could have.  Because Aces can be handled as 1's or 11's,
-     *         the number of aces determines the size of the array returned.  A hand with no aces will return an array
-     *         of length one. A hand with one ace will return a hand of length 2.  A hand with 2 aces will return an
-     *         array of length 4.  And so on.  All possibilities are returned, including those that have a value over
-     *         21.
-     */
-    public int[] getHandValues() {
-        int[] result = new int[1];
-        result[0] = 0;
-        for (int c : this.getCards()) {
-            if (c % 13 == 0) { // Ace
-                int[] tmp = new int[result.length * 2];
-                for (int i = 0; i < result.length; i++) {
-                    tmp[i] = result[i] + 1;
-                    tmp[i + result.length] = result[i] + 11;
-                }
-                result = tmp;
-            } else if (c % 13 <= 12) { // 2 through K
-                for (int i = 0; i < result.length; i++) {
-                    result[i] = result[i] + Math.min(c + 1, 10);
-                }
-            }
-        }
-        return result;
     }
 
     /** @return the username of `this`. */
