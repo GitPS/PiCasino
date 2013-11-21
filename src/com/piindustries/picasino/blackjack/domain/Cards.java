@@ -68,21 +68,6 @@ public class Cards {
     }
 
     /**
-     * @param cardId the id of the card to eval.
-     *
-     * @return the blackjack value of the card.
-     * If it is an Ace, it will return 2 values.
-     */
-    public static int[] getBJValue(int cardId){
-        int[] result;
-        if( cardId / 13 == 0 )
-            result =  new int[] { 1, 11 };
-        else
-            result =  new int[] { Math.min( cardId/13 + 1, 10 ) };
-        return result;
-    }
-
-    /**
      * Gets the id of a card.
      *
      * @param cardId a card id.
