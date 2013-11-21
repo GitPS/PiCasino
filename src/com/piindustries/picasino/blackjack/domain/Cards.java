@@ -97,8 +97,8 @@ public class Cards {
         int result = 0;
         int aces = 0;
         for( int c: hand ){
-            result += Math.min( 10, c / 13 + 1 );
-            if( c / 13 == 0 )
+            result += Math.min( 10, c % 13 + 1 );
+            if( c % 13 == 0 )
                 aces += 1;
         }
         while( result < 11 && aces > 0 ){
