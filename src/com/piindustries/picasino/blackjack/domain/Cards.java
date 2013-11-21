@@ -118,9 +118,16 @@ public class Cards {
     }
 
     public static int getMaxHandValue(int[] hand){
-        int result = Integer.MIN_VALUE;
-        for( int v : getHandValues( hand ) ){
-            result = Math.max(result,v);
+        int result = 0;
+        int aces = 0;
+        for( int c: hand ){
+            result += Math.min( 10, c / 13 + 1 );
+            if( c / 13 == 0 )
+                aces += 1;
+        }
+        while( result < 11 && aces > 0 ){
+            result += 10;
+            aces -= 1;
         }
         return result;
     }
