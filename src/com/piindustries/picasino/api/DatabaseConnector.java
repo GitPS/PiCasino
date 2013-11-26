@@ -37,4 +37,5 @@ public interface DatabaseConnector {
     public boolean updatePlayerCurrentChipCount(String username, int chipCount);
     public boolean updatePlayerHighScore(String username, int highChipCount);
     public boolean checkPlayerLogin(String username, String password);
+    public boolean changeUserPassword(String username, String oldPassword, String newPassword);
 }
