@@ -50,13 +50,14 @@ public class DatabaseConnectorTest implements DatabaseConnector {
         try{
             System.out.println("Running test connection via WAN to home.andrewreiscomputers.com:PiCasino");
             conn = DriverManager.getConnection("jdbc:mysql://home.andrewreiscomputers.com/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
-            if(conn.isValid(1)){
+            conn.setCatalog("Picasino");
+            if(conn.isValid(30)){
                 System.out.println("Connection Successful!");
             }else{
                 throw new SQLException("Connection Failed");
             }
         }catch(SQLException e){
-            System.out.println(e.getErrorCode());
+            System.out.println("Error: " + e.getErrorCode() + "\nSQLState: " + e.getSQLState() + "\nError Message: " + e.toString());
         }
     }
     @Override
