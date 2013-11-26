@@ -1,7 +1,7 @@
 package com.piindustries.picasino.blackjack.database;
 
 import com.piindustries.picasino.api.DatabaseConnector;
-
+import java.sql.*;
 /**
  * Created with IntelliJ IDEA.
  * User: reis_as
@@ -10,8 +10,26 @@ import com.piindustries.picasino.api.DatabaseConnector;
  * To change this template use File | Settings | File Templates.
  */
 public class BlackjackDatabaseConnector implements DatabaseConnector{
-    @Override
+
+    Connection conn;
+
+    public BlackjackDatabaseConnector(){
+        try{
+            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
+        }catch(SQLException sql){
+            System.out.println("SQLException:" + sql.getMessage());
+            System.out.println("SQLState: " + sql.getSQLState());
+            System.out.println("VendorError: " + sql.getErrorCode());
+        }
+    }
+
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
+        try{
+            Statement addplayer = conn.createStatement();
+            ResultSet rs = addplayer.executeQuery("INSERT INTO `user` ");
+        }catch(SQLException sql){
+
+        }
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
