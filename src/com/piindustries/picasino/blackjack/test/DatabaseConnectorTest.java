@@ -1,6 +1,7 @@
 package com.piindustries.picasino.blackjack.test;
 
 import com.piindustries.picasino.api.DatabaseConnector;
+import java.security.MessageDigest;
 import java.sql.*;
 /**
  * Created with IntelliJ IDEA.
@@ -43,16 +44,22 @@ public class DatabaseConnectorTest implements DatabaseConnector {
     Connection conn;
 
     public static void main(String[] args){
-        new DatabaseConnectorTest();
+        DatabaseConnectorTest dbt = new DatabaseConnectorTest();
+        boolean playerAdded = dbt.createNewPlayer("areis422","Ihh4areis22#","Andrew","Reis","reis.andr@uwlax.edu");
+        if(!playerAdded){
+            System.out.println("Add failed");
+        }else{
+            System.out.println("Add succeeded");
+        }
     }
 
     public DatabaseConnectorTest(){
         try{
             System.out.println("Running test connection via WAN to home.andrewreiscomputers.com:PiCasino");
             conn = DriverManager.getConnection("jdbc:mysql://home.andrewreiscomputers.com/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
-            conn.setCatalog("Picasino");
+            conn.setCatalog("PiCasino");
             if(conn.isValid(30)){
-                System.out.println("Connection Successful!");
+                System.out.println("Connection Successful! Connected to: " + conn.getCatalog());
             }else{
                 throw new SQLException("Connection Failed");
             }
@@ -60,9 +67,30 @@ public class DatabaseConnectorTest implements DatabaseConnector {
             System.out.println("Error: " + e.getErrorCode() + "\nSQLState: " + e.getSQLState() + "\nError Message: " + e.toString());
         }
     }
-    @Override
+
+    private String sha1(String password){
+        String temp = null;
+
+        return temp;
+    }
+
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+
+        String query = "INSERT INTO `login` NATURAL JOIN `userdata` VALUES('" + username +
+                "','" + sha1(password) + "'),'" + firstName + " " + lastName + "','" + email + "',0,0);";
+        try{
+        Statement addPlayer = conn.createStatement();
+        int result = addPlayer.executeUpdate(query);
+            if(result > 0){
+                System.out.println("Successfully added " + result + "row: " + username);
+            }
+           return true;
+        }catch(SQLException e){
+            System.out.println("SQL Error: " + e.getErrorCode());
+            System.out.println("Error Message: " + e.toString());
+            System.out.println("Query Executed: " + query);
+            return false;
+        }
     }
 
     @Override
