@@ -26,7 +26,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
         try{
             Statement addplayer = conn.createStatement();
-            ResultSet rs = addplayer.executeQuery("INSERT INTO `user` ");
+            ResultSet rs = addplayer.executeQuery("INSERT INTO `userdata` natural join `login` VALUES('"+username+",sha1("+password+"),'"firstName + " " + lastName+"','"+email+"';");
         }catch(SQLException sql){
 
         }
