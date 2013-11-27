@@ -11,7 +11,7 @@ import java.sql.*;
  */
 public class BlackjackDatabaseConnector implements DatabaseConnector{
 
-    Connection conn;
+    private Connection conn;
 
     public BlackjackDatabaseConnector(){
         try{
@@ -25,12 +25,19 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
 
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
         try{
-            Statement addplayer = conn.createStatement();
-            ResultSet rs = addplayer.executeQuery("INSERT INTO `userdata` natural join `login` VALUES('"+username+",sha1("+password+"),'"+firstName + " " + lastName+"','"+email+"';");
-        }catch(SQLException sql){
+            StringBuilder stmt = new StringBuilder();
+            stmt.append("INSERT INTO `login` NATURAL JOIN `userdata` VALUES(");
 
+            stmt.append(");");
+            Statement addPlayer = conn.createStatement();
+            ResultSet rs = addPlayer.executeQuery(stmt.toString());
+
+            return true;
+        }catch(SQLException sql){
+            System.out.println("SQLException: " + sql.getMessage());
+            System.out.println("SQL Message: " + sql.toString());
+            return false;
         }
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override

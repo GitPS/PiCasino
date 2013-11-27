@@ -45,7 +45,7 @@ public class DatabaseConnectorTest implements DatabaseConnector {
 
     public static void main(String[] args){
         DatabaseConnectorTest dbt = new DatabaseConnectorTest();
-        boolean playerAdded = dbt.createNewPlayer("areis422","Ihh4areis22#","Andrew","Reis","reis.andr@uwlax.edu");
+        boolean playerAdded = dbt.createNewPlayer("areis422","testtest","Andrew","Reis","reis.andr@uwlax.edu");
         if(!playerAdded){
             System.out.println("Add failed");
         }else{
