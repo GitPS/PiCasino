@@ -17,24 +17,24 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         try{
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
         }catch(SQLException sql){
-            System.out.println("SQLException:" + sql.getMessage());
-            System.out.println("SQLState: " + sql.getSQLState());
-            System.out.println("VendorError: " + sql.getErrorCode());
+            System.out.println("SQL Exception:" + sql.getMessage());
+            System.out.println("SQL State: " + sql.getSQLState());
+            System.out.println("Vendor Error: " + sql.getErrorCode());
         }
     }
 
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
         try{
             StringBuilder stmt = new StringBuilder();
-            stmt.append("INSERT INTO `login` NATURAL JOIN `userdata` VALUES(");
-
+            stmt.append("INSERT INTO `login` NATURAL JOIN `userdata` VALUES('");
+            stmt.append(username + "','" + password + "','" + firstName + " " + lastName + "','" + email + "',0,0");
             stmt.append(");");
             Statement addPlayer = conn.createStatement();
             ResultSet rs = addPlayer.executeQuery(stmt.toString());
 
             return true;
         }catch(SQLException sql){
-            System.out.println("SQLException: " + sql.getMessage());
+            System.out.println("SQL Exception: " + sql.getMessage());
             System.out.println("SQL Message: " + sql.toString());
             return false;
         }
