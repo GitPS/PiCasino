@@ -10,12 +10,10 @@ import java.sql.*;
  * To change this template use File | Settings | File Templates.
  */
 public class BlackjackDatabaseConnector implements DatabaseConnector{
-
     private Connection conn;
-
     public BlackjackDatabaseConnector(){
         try{
-            conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
+            conn = DriverManager.getConnection("jdbc:mysql://home.andrewreiscomputers.com/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
         }catch(SQLException sql){
             System.out.println("SQL Exception:" + sql.getMessage());
             System.out.println("SQL State: " + sql.getSQLState());
@@ -24,34 +22,68 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
+        StringBuilder stmt = new StringBuilder();
         try{
-            StringBuilder stmt = new StringBuilder();
-            stmt.append("INSERT INTO `login` NATURAL JOIN `userdata` VALUES('");
-            stmt.append(username + "','" + password + "','" + firstName + " " + lastName + "','" + email + "',0,0");
-            stmt.append(");");
+            stmt.append("INSERT INTO login SET ");
+            stmt.append("username='"+username + "',password='" + password + "',lastLoggedInDate=NULL;");
             Statement addPlayer = conn.createStatement();
-            ResultSet rs = addPlayer.executeQuery(stmt.toString());
-
+            if(addPlayer.executeUpdate(stmt.toString()) != 1){
+                System.out.println("INSERT statement returned something other than 0. Please debug further.");
+                return false;
+            }
             return true;
         }catch(SQLException sql){
-            System.out.println("SQL Exception: " + sql.getMessage());
-            System.out.println("SQL Message: " + sql.toString());
+            System.out.println("Query: " + stmt.toString());
+            System.out.println("SQL Exception:\n" + sql.getErrorCode() + ": " + sql.getMessage());
+            System.out.println("SQL Message:\n" + sql.toString());
             return false;
         }
     }
 
-    @Override
     public boolean changeUserPassword(String username, String oldPassword, String newPassword){
+        int rowcount = 0;
+        String query = "SELECT password FROM login where username='" + username + "';";
+        try{
+            Statement updatePassword = conn.createStatement();
+            ResultSet oldPwd = updatePassword.executeQuery(query);
+            if(oldPwd.last()){
+                rowcount = oldPwd.getRow();
+                oldPwd.beforeFirst();
+            }
+
+            if(rowcount < 1 || rowcount > 1){
+                System.out.println("Rows returned was either < or > 1. Please correct the database mistake.");
+                return false;
+            }
+
+            while(oldPwd.next()){
+                String prevPassword = oldPwd.getString(1);
+                if(oldPassword.compareTo(prevPassword) == 0){
+                    query = "UPDATE login SET password='" + newPassword + "' WHERE username='" + username + "';";
+                    int rs = updatePassword.executeUpdate(query);
+                    if(rs != 1){
+                        System.out.println("Something went wrong with password update. Please check and correct.");
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+            }
+        }catch(SQLException sql){
+            System.out.println("Query: " + query.toString());
+            System.out.println("SQL Exception:\n" + sql.getMessage());
+            System.out.println("SQL Message:\n" + sql.toString());
+            return false;
+        }
         return false;
     }
-    @Override
+
     public boolean updateLoginDate(String username) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
-    @Override
     public boolean updatePlayerCurrentChipCount(String username, int chipCount) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
