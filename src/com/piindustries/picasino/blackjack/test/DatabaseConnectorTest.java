@@ -42,11 +42,20 @@ public class DatabaseConnectorTest{
 
     public static void main(String[] args){
         BlackjackDatabaseConnector dbt = new BlackjackDatabaseConnector();
+        //Test Create Player
         boolean playerAdded = dbt.createNewPlayer("areis422","testtest","Andrew","Reis","reis.andr@uwlax.edu");
         if(!playerAdded){
             System.out.println("Add failed");
         }else{
             System.out.println("Add succeeded");
+        }
+
+        //Test Update Password
+        boolean passwordChanged = dbt.changeUserPassword("areis422","testtest","Eagles2013!");
+        if(!passwordChanged){
+            System.out.println("Change password failed");
+        }else{
+            System.out.println("Change password succeeded");
         }
     }
 }

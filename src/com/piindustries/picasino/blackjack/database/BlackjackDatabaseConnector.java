@@ -56,41 +56,45 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     public boolean changeUserPassword(String username, String oldPassword, String newPassword){
-        int rowcount = 0;
-        String query = "SELECT password FROM login where username='" + username + "';";
+        String oldPwd = null, oldPwdEntered = null;
+        String oldPwdStmt = "SELECT sha1('"+oldPassword+"') LIMIT 1;";
+        String query = "SELECT password FROM login where username='" + username + "' LIMIT 1;";
         try{
-            Statement updatePassword = conn.createStatement();
-            ResultSet oldPwd = updatePassword.executeQuery(query);
-            if(oldPwd.last()){
-                rowcount = oldPwd.getRow();
-                oldPwd.beforeFirst();
+            //Create new Statement
+            Statement stmt = conn.createStatement();
+
+            //Execute two lookups to get hashes to compare
+            ResultSet oldPwdEnteredRS = stmt.executeQuery(oldPwdStmt);
+            while(oldPwdEnteredRS.next()){
+                oldPwdEntered = oldPwdEnteredRS.getString(1);
             }
 
-            if(rowcount < 1 || rowcount > 1){
-                System.out.println("Rows returned was either < or > 1. Please correct the database mistake.");
+            ResultSet oldPwdRS = stmt.executeQuery(query);
+            while(oldPwdRS.next()){
+                oldPwd = oldPwdRS.getString(1);
+            }
+
+            //Compare hashes. If same, execute update, otherwise fail
+            if(oldPwd.compareTo(oldPwdEntered) == 0){
+                query = "UPDATE login SET password=sha1('"+newPassword+"') WHERE username='"+username+"' LIMIT 1;";
+                if(stmt.executeUpdate(query) != 1){
+                    System.out.println("Something broke during password update");
+                    return false;
+                }
+            }else{
+                System.out.println("Old and New passwords do not match. Please try again later");
                 return false;
             }
 
-            while(oldPwd.next()){
-                String prevPassword = oldPwd.getString(1);
-                if(oldPassword.compareTo(prevPassword) == 0){
-                    query = "UPDATE login SET password='" + newPassword + "' WHERE username='" + username + "';";
-                    int rs = updatePassword.executeUpdate(query);
-                    if(rs != 1){
-                        System.out.println("Something went wrong with password update. Please check and correct.");
-                        return false;
-                    }else{
-                        return true;
-                    }
-                }
-            }
+            //If everything executes ok, then return true.
+            return true;
         }catch(SQLException sql){
+            sql.printStackTrace();
             System.out.println("Query: " + query.toString());
             System.out.println("SQL Exception:\n" + sql.getMessage());
             System.out.println("SQL Message:\n" + sql.toString());
             return false;
         }
-        return false;
     }
 
     public boolean updateLoginDate(String username) {
