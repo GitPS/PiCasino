@@ -72,6 +72,10 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 oldPwd = oldPwdRS.getString(1);
             }
 
+            oldPwdRS.close();
+            oldPwdEnteredRS.close();
+            stmt.close();
+
             //Compare hashes. If same, execute update, otherwise fail
             if(oldPwd.compareTo(oldPwdEntered) == 0){
                 query = "UPDATE login SET password=sha1('"+newPassword+"') WHERE username='"+username+"' LIMIT 1;";
@@ -83,7 +87,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 System.out.println("Old and New passwords do not match. Please try again later");
                 return false;
             }
-
+            stmt.close();
             //If everything executes ok, then return true.
             return true;
         }catch(SQLException sql){
@@ -95,7 +99,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
 
     public boolean updateLoginDate(String username) {
         StringBuilder sb = new StringBuilder();
-        sb.append("UPDATE login SET lastLoggedInDate=CONCAT(MONTH(NOW()),DAY(NOW()),YEAR(NOW())) WHERE username='"+username+"';");
+        sb.append("UPDATE login SET lastLoggedInDate=CONCAT(MONTH(NOW()),'/',DAY(NOW()),'/',YEAR(NOW())) WHERE username='"+username+"';");
         try{
             Statement stmt = conn.createStatement();
             if(stmt.executeUpdate(sb.toString()) != 1){
@@ -104,9 +108,9 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             }
             return true;
         }catch(SQLException sql){
-             printError(sql,sb.toString());
+            printError(sql,sb.toString());
+            return false;
         }
-        return false;
     }
 
     public boolean updatePlayerCurrentChipCount(String username, int chipCount) {
