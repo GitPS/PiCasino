@@ -47,9 +47,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             if(sql.getErrorCode() == 1062){
                 System.out.println("User " + username + " already exists! Please choose another username");
             }else{
-                System.out.println("Query: " + stmt.toString());
-                System.out.println("SQL Exception:\n" + sql.getErrorCode() + ": " + sql.getMessage());
-                System.out.println("SQL Message:\n" + sql.toString());
+                printError(sql,stmt.toString());
             }
             return false;
         }
@@ -89,15 +87,25 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             //If everything executes ok, then return true.
             return true;
         }catch(SQLException sql){
-            sql.printStackTrace();
-            System.out.println("Query: " + query.toString());
-            System.out.println("SQL Exception:\n" + sql.getMessage());
-            System.out.println("SQL Message:\n" + sql.toString());
+            printError(sql,query);
             return false;
         }
     }
 
+
     public boolean updateLoginDate(String username) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("UPDATE login SET lastLoggedInDate=CONCAT(MONTH(NOW()),DAY(NOW()),YEAR(NOW())) WHERE username='"+username+"';");
+        try{
+            Statement stmt = conn.createStatement();
+            if(stmt.executeUpdate(sb.toString()) != 1){
+                System.out.println("lastLoggedInDate UPDATE failed. Please debug.");
+                return false;
+            }
+            return true;
+        }catch(SQLException sql){
+             printError(sql,sb.toString());
+        }
         return false;
     }
 
@@ -113,5 +121,12 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     @Override
     public boolean checkPlayerLogin(String username, String password) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private void printError(SQLException sql, String query){
+        sql.printStackTrace();
+        System.out.println("Query: " + query.toString());
+        System.out.println("SQL Exception:\n" + sql.getMessage());
+        System.out.println("SQL Message:\n" + sql.toString());
     }
 }
