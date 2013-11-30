@@ -13,7 +13,11 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     private Connection conn;
     public BlackjackDatabaseConnector(){
         try{
-            conn = DriverManager.getConnection("jdbc:mysql://home.andrewreiscomputers.com/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
+            //Used for testing via WAN
+            conn = DriverManager.getConnection("jdbc:mysql://home.andrewreiscomputers.com:3306/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
+
+            //Final connection string when using locally
+            //conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
         }catch(SQLException sql){
             System.out.println("SQL Exception:" + sql.getMessage());
             System.out.println("SQL State: " + sql.getSQLState());
@@ -24,18 +28,29 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
         StringBuilder stmt = new StringBuilder();
         try{
-            stmt.append("INSERT INTO login SET ");
-            stmt.append("username='"+username + "',password='" + password + "',lastLoggedInDate=NULL;");
+            stmt.append("INSERT INTO `login`(username,password) VALUES(");
+            stmt.append("'"+username + "',sha1('" + password + "'));");
             Statement addPlayer = conn.createStatement();
             if(addPlayer.executeUpdate(stmt.toString()) != 1){
                 System.out.println("INSERT statement returned something other than 0. Please debug further.");
                 return false;
+            }else{
+                stmt = new StringBuilder();
+                stmt.append("UPDATE `userdata` SET name='" + firstName + " " + lastName + "',email='" + email + "' WHERE username='" + username + "';");
+                if(addPlayer.executeUpdate(stmt.toString()) != 1){
+                    System.out.println("UPDATE statement returned something other than 0. Please debug further.");
+                    return false;
+                }
+                return true;
             }
-            return true;
         }catch(SQLException sql){
-            System.out.println("Query: " + stmt.toString());
-            System.out.println("SQL Exception:\n" + sql.getErrorCode() + ": " + sql.getMessage());
-            System.out.println("SQL Message:\n" + sql.toString());
+            if(sql.getErrorCode() == 1062){
+                System.out.println("User " + username + " already exists! Please choose another username");
+            }else{
+                System.out.println("Query: " + stmt.toString());
+                System.out.println("SQL Exception:\n" + sql.getErrorCode() + ": " + sql.getMessage());
+                System.out.println("SQL Message:\n" + sql.toString());
+            }
             return false;
         }
     }
