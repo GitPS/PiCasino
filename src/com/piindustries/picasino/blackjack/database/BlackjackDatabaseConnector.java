@@ -164,7 +164,34 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     public boolean checkPlayerLogin(String username, String password) {
-        return false;
+        sb = new StringBuilder();
+        try{
+            stmt = conn.createStatement();
+            String oldPwdHash = "SELECT password FROM login WHERE username='" + username + "';";
+
+            ResultSet oldpwdrs = stmt.executeQuery(oldPwdHash);
+            while(oldpwdrs.next()){
+                oldPwdHash = oldpwdrs.getString(1);
+            }
+            oldpwdrs.close();
+
+            String loginPwdHash = "SELECT sha1('" + password + "');";
+            ResultSet loginPwdRS = stmt.executeQuery(loginPwdHash);
+            while(loginPwdRS.next()){
+                loginPwdHash = loginPwdRS.getString(1);
+            }
+            loginPwdRS.close();
+
+            if(oldPwdHash.compareTo(loginPwdHash) == 0){
+                return true;
+            }else{
+                System.out.println("Passwords did not match. Please try logging in again.");
+                return false;
+            }
+        }catch(SQLException sql){
+            printError(sql, sb.toString());
+            return false;
+        }
     }
 
     private void printError(SQLException sql, String query){
