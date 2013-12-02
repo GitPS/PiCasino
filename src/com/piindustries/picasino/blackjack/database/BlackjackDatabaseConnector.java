@@ -35,15 +35,24 @@ import java.sql.*;
  */
 
 public class BlackjackDatabaseConnector implements DatabaseConnector{
-    private Connection conn;        // Connection object for DriverManager.getConnection
-    private StringBuilder sb;       // StringBuilder used in most methods
-    private Statement stmt;         // Statement used for queries
+    private Connection conn;                    // Connection object for DriverManager.getConnection
+    private StringBuilder sb;                   // StringBuilder used in most methods
+    private Statement stmt;                     // Statement used for queries
+    private static final boolean DEBUG = true;  //Set to true for debug messages
 
     public BlackjackDatabaseConnector(){
         try{
-            //Used for testing via WAN
-            conn = DriverManager.getConnection("jdbc:mysql://home.andrewreiscomputers.com:3306/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
+            if(DEBUG){
+                //Used for testing via WAN
+                conn = DriverManager.getConnection("jdbc:mysql://home.andrewreiscomputers.com:3306/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
+            }else{
+                //Used for production
+                conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
+            }
 
+            if(DEBUG){
+                System.out.println("Connected to Database: " + conn.getCatalog() + " located on " + conn.getMetaData().getURL() + " as " + conn.getMetaData().getUserName() );
+            }
             //Final connection string when using locally
             //conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
         }catch(SQLException sql){
@@ -242,10 +251,22 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             }
             loginPwdRS.close();
 
+            if(DEBUG){
+                System.out.println("Stored password hash:\t" + oldPwdHash);
+                System.out.println("Entered password hash:\t" + loginPwdHash);
+                if(oldPwdHash.compareTo(loginPwdHash) == 0){
+                    System.out.println("When compared, they match");
+                }else{
+                    System.out.println("When compared, they don't match");
+                }
+            }
+
             if(oldPwdHash.compareTo(loginPwdHash) == 0){
                 return true;
             }else{
-                System.out.println("Passwords did not match. Please try logging in again.");
+                if(DEBUG){
+                    System.out.println("DEBUG: Passwords did not match. Please try logging in again.");
+                }
                 return false;
             }
         }catch(SQLException sql){
@@ -259,5 +280,26 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         System.out.println("Query: " + query);
         System.out.println("SQL Exception:\n" + sql.getMessage());
         System.out.println("SQL Message:\n" + sql.toString());
+    }
+
+    public void cleanDatabaseForTesting(){
+        System.out.println("Cleaning up the Database for testing");
+        java.util.ArrayList<String> cleanup = new java.util.ArrayList<>();
+        cleanup.add("SET foreign_key_checks = 0;");
+        cleanup.add("TRUNCATE login;");
+        cleanup.add("TRUNCATE userdata;");
+        cleanup.add("SET foreign_key_checks = 1;");
+        try{
+            stmt = conn.createStatement();
+            while(cleanup.size() > 0){
+                stmt.execute(cleanup.get(0));
+                cleanup.remove(0);
+            }
+            stmt.close();
+        }catch(SQLException sql){
+            printError(sql, sb.toString());
+        }catch(NullPointerException npe){
+            npe.printStackTrace();
+        }
     }
 }

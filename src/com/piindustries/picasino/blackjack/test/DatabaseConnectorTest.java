@@ -35,6 +35,10 @@ public class DatabaseConnectorTest{
 
     public static void main(String[] args){
         BlackjackDatabaseConnector dbt = new BlackjackDatabaseConnector();
+
+        //Clean database to test
+        dbt.cleanDatabaseForTesting();
+
         //Test Create Player
         boolean playerAdded = dbt.createNewPlayer("test_user","testtest","Test","User","test@test.user");
         if(!playerAdded){
@@ -51,20 +55,27 @@ public class DatabaseConnectorTest{
             System.out.println("Change password succeeded");
         }
 
-        //Test Updating chip count
-        boolean currentChipCountUpdated = dbt.updatePlayerCurrentChipCount("test_user",999999);
-        if(!currentChipCountUpdated){
-            System.out.println("Current chip Count update failed");
-        }else{
-            System.out.println("Current Chip Count update Succeeded");
+        //Test Updating chip count (2500 tests, values between 0 and 1 billion)
+        for(int i = 0; i < 2500; i++){
+            int chipCount = (int)(Math.random() * 1000000000);
+            boolean currentChipCountUpdated = dbt.updatePlayerCurrentChipCount("test_user",chipCount);
+            if(!currentChipCountUpdated){
+                System.out.println("Current chip Count update failed with value: " + chipCount);
+            }else{
+                System.out.println("Current Chip Count update Succeeded with value: " + chipCount);
+            }
         }
 
-        //Test Updating high chip count
-        boolean highChipCountUpdated = dbt.updatePlayerHighScore("test_user",999999);
-        if(!highChipCountUpdated){
-            System.out.println("High chip Count update failed");
-        }else{
-            System.out.println("High Chip Count update Succeeded");
+
+        //Test Updating high chip count (2500 tests, values between 0 and 1 billion)
+        for(int i = 0; i < 2500; i++){
+            int chipCount = (int)(Math.random() * 1000000000);
+            boolean highChipCountUpdated = dbt.updatePlayerHighScore("test_user",chipCount);
+            if(!highChipCountUpdated){
+                System.out.println("High chip Count update failed");
+            }else{
+                System.out.println("High Chip Count update Succeeded");
+            }
         }
 
         //Test Updating Login Date
@@ -73,6 +84,22 @@ public class DatabaseConnectorTest{
             System.out.println("Login Date update failed");
         }else{
             System.out.println("Login Date update Succeeded");
+        }
+
+        //Test check player login with correct password
+        boolean loginSuccess = dbt.checkPlayerLogin("test_user","Eagles2013!");
+        if(loginSuccess){
+            System.out.println("Logging in with correct password: login test succeeded. EXPECTED");
+        }else{
+            System.out.println("Logging in with correct password: login test failed. UNEXPECTED");
+        }
+
+        //Test check player login with incorrect password. Should receive error message
+        boolean loginFailed = dbt.checkPlayerLogin("test_user",null);
+        if(loginFailed){
+            System.out.println("Logging in with wrong password: Login succeeded. UNEXPECTED");
+        }else{
+            System.out.println("Logging in with wrong password: Login failed. EXPECTED");
         }
     }
 }
