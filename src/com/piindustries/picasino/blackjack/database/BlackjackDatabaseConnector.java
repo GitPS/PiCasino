@@ -11,6 +11,9 @@ import java.sql.*;
  */
 public class BlackjackDatabaseConnector implements DatabaseConnector{
     private Connection conn;
+    private StringBuilder sb;
+    private Statement stmt;
+
     public BlackjackDatabaseConnector(){
         try{
             //Used for testing via WAN
@@ -26,28 +29,31 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
-        StringBuilder stmt = new StringBuilder();
+        sb = new StringBuilder();
         try{
-            stmt.append("INSERT INTO `login`(username,password) VALUES(");
-            stmt.append("'"+username + "',sha1('" + password + "'));");
-            Statement addPlayer = conn.createStatement();
-            if(addPlayer.executeUpdate(stmt.toString()) != 1){
+            sb.append("INSERT INTO `login`(username,password) VALUES(");
+            sb.append("'"+username + "',sha1('" + password + "'));");
+            stmt = conn.createStatement();
+            if(stmt.executeUpdate(sb.toString()) != 1){
                 System.out.println("INSERT statement returned something other than 0. Please debug further.");
+                stmt.close();
                 return false;
             }else{
-                stmt = new StringBuilder();
-                stmt.append("UPDATE `userdata` SET name='" + firstName + " " + lastName + "',email='" + email + "' WHERE username='" + username + "';");
-                if(addPlayer.executeUpdate(stmt.toString()) != 1){
+                sb = new StringBuilder();
+                sb.append("UPDATE `userdata` SET name='" + firstName + " " + lastName + "',email='" + email + "' WHERE username='" + username + "';");
+                if(stmt.executeUpdate(sb.toString()) != 1){
                     System.out.println("UPDATE statement returned something other than 0. Please debug further.");
+                    stmt.close();
                     return false;
                 }
+                stmt.close();
                 return true;
             }
         }catch(SQLException sql){
             if(sql.getErrorCode() == 1062){
                 System.out.println("User " + username + " already exists! Please choose another username");
             }else{
-                printError(sql,stmt.toString());
+                printError(sql,sb.toString());
             }
             return false;
         }
@@ -57,23 +63,24 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         String oldPwd = null, oldPwdEntered = null;
         String oldPwdStmt = "SELECT sha1('"+oldPassword+"') LIMIT 1;";
         String query = "SELECT password FROM login where username='" + username + "' LIMIT 1;";
+
         try{
             //Create new Statement
-            Statement stmt = conn.createStatement();
+            stmt = conn.createStatement();
 
             //Execute two lookups to get hashes to compare
             ResultSet oldPwdEnteredRS = stmt.executeQuery(oldPwdStmt);
             while(oldPwdEnteredRS.next()){
                 oldPwdEntered = oldPwdEnteredRS.getString(1);
             }
+            oldPwdEnteredRS.close();
 
             ResultSet oldPwdRS = stmt.executeQuery(query);
             while(oldPwdRS.next()){
                 oldPwd = oldPwdRS.getString(1);
             }
-
             oldPwdRS.close();
-            oldPwdEnteredRS.close();
+
             stmt.close();
 
             //Compare hashes. If same, execute update, otherwise fail
@@ -98,7 +105,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
 
 
     public boolean updateLoginDate(String username) {
-        StringBuilder sb = new StringBuilder();
+        sb = new StringBuilder();
         sb.append("UPDATE login SET lastLoggedInDate=CONCAT(MONTH(NOW()),'/',DAY(NOW()),'/',YEAR(NOW())) WHERE username='"+username+"';");
         try{
             Statement stmt = conn.createStatement();
@@ -114,15 +121,39 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     public boolean updatePlayerCurrentChipCount(String username, int chipCount) {
+        sb = new StringBuilder();
+        sb.append("UPDATE `userdata` SET currentChipCount=" + chipCount + " WHERE username='" + username + "';");
+        try{
+            Statement stmt = conn.createStatement();
+            if(stmt.executeUpdate(sb.toString()) != 1){
+                System.out.println("Something went wrong during current chip count update for " + username + "! Please contact PiCasino support!");
+                return false;
+            }else{
+                return true;
+            }
+        }catch(SQLException sql){
+            printError(sql, sb.toString());
+            return false;
+        }
+    }
+
+    public boolean updatePlayerHighScore(String username, int highChipCount) {
+        sb = new StringBuilder();
+        sb.append("UPDATE `userdata` SET highChipCount=" + highChipCount + " WHERE username='" + username + "';");
+        try{
+            stmt = conn.createStatement();
+            if(stmt.executeUpdate(sb.toString()) != 1){
+                System.out.println("Something went wrong during high chip count update for " + username + "! Please contact PiCasino support!");
+            }else{
+                return true;
+            }
+        }catch(SQLException sql){
+            printError(sql, sb.toString());
+            return false;
+        }
         return false;
     }
 
-    @Override
-    public boolean updatePlayerHighScore(String username, int highChipCount) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
     public boolean checkPlayerLogin(String username, String password) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }

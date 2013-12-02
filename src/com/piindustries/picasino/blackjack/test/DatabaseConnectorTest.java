@@ -57,5 +57,21 @@ public class DatabaseConnectorTest{
         }else{
             System.out.println("Change password succeeded");
         }
+
+        //Test Updating chip count
+        boolean currentChipCountUpdated = dbt.updatePlayerCurrentChipCount("areis422",999999);
+        if(!currentChipCountUpdated){
+            System.out.println("Current chip Count update failed");
+        }else{
+            System.out.println("Current Chip Count update Succeeded");
+        }
+
+        //Test Updating high chip count
+        boolean highChipCountUpdated = dbt.updatePlayerHighScore("areis422",999999);
+        if(!highChipCountUpdated){
+            System.out.println("Current chip Count update failed");
+        }else{
+            System.out.println("Current Chip Count update Succeeded");
+        }
     }
 }
