@@ -1,13 +1,5 @@
 package com.piindustries.picasino.blackjack.test;
 import com.piindustries.picasino.blackjack.database.BlackjackDatabaseConnector;
-
-/**
- * Created with IntelliJ IDEA.
- * User: Andrew Reis
- * Date: 11/25/13
- * Time: 8:21 PM
- * To change this template use File | Settings | File Templates.
- */
 /*
  *
  *       ___ _   ___          _
@@ -38,6 +30,7 @@ import com.piindustries.picasino.blackjack.database.BlackjackDatabaseConnector;
  * You should have received a copy of the GNU General Public License
  * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 public class DatabaseConnectorTest{
 
     public static void main(String[] args){

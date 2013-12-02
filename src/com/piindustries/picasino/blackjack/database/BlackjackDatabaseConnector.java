@@ -2,13 +2,38 @@ package com.piindustries.picasino.blackjack.database;
 
 import com.piindustries.picasino.api.DatabaseConnector;
 import java.sql.*;
-/**
- * Created with IntelliJ IDEA.
- * User: reis_as
- * Date: 11/25/13
- * Time: 7:42 PM
- * To change this template use File | Settings | File Templates.
+
+/*
+ *
+ *       ___ _   ___          _
+ *      / _ (_) / __\__ _ ___(_)_ __   ___
+ *     / /_)/ |/ /  / _` / __| | '_ \ / _ \
+ *    / ___/| / /__| (_| \__ \ | | | | (_) |
+ *    \/    |_\____/\__,_|___/_|_| |_|\___/
+ *
+ *
+ * Class: com.piindustries.picasino.api.GameEvent
+ * Version: 1.0
+ * Date: October 29, 2013
+ *
+ * Copyright 2013 - Michael Hoyt, Aaron Jensen, Andrew Reis, and Phillip Sime.
+ *
+ * This file is part of PiCasino.
+ *
+ * PiCasino is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * PiCasino is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with PiCasino.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 public class BlackjackDatabaseConnector implements DatabaseConnector{
     private Connection conn;        // Connection object for DriverManager.getConnection
     private StringBuilder sb;       // StringBuilder used in most methods
@@ -31,8 +56,14 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
         sb = new StringBuilder();
         try{
+            //Create Insert Statement
             sb.append("INSERT INTO `login`(username,password) VALUES(");
-            sb.append("'"+username + "',sha1('" + password + "'));");
+            sb.append("'");
+            sb.append(username);
+            sb.append("',sha1('");
+            sb.append(password);
+            sb.append("'));");
+
             stmt = conn.createStatement();
             if(stmt.executeUpdate(sb.toString()) != 1){
                 System.out.println("INSERT statement returned something other than 0. Please debug further.");
@@ -40,7 +71,17 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 return false;
             }else{
                 sb = new StringBuilder();
-                sb.append("UPDATE `userdata` SET name='" + firstName + " " + lastName + "',email='" + email + "' WHERE username='" + username + "';");
+                //Build query
+                sb.append("UPDATE `userdata` SET name='");
+                sb.append(firstName);
+                sb.append(" ");
+                sb.append(lastName);
+                sb.append("',email='");
+                sb.append(email);
+                sb.append("' WHERE username='");
+                sb.append(username);
+                sb.append("';");
+
                 if(stmt.executeUpdate(sb.toString()) != 1){
                     System.out.println("UPDATE statement returned something other than 0. Please debug further.");
                     stmt.close();
@@ -63,7 +104,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     public boolean changeUserPassword(String username, String oldPassword, String newPassword){
-        String oldPwd = null, oldPwdEntered = null;
+        String oldPwd = "", oldPwdEntered = "";
         String oldPwdStmt = "SELECT sha1('"+oldPassword+"') LIMIT 1;";
         String query = "SELECT password FROM login where username='" + username + "' LIMIT 1;";
 
@@ -103,12 +144,17 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }catch(SQLException sql){
             printError(sql,query);
             return false;
+        }catch(NullPointerException npe){
+            npe.printStackTrace();
+            return false;
         }
     }
 
     public boolean updateLoginDate(String username) {
         sb = new StringBuilder();
-        sb.append("UPDATE login SET lastLoggedInDate=DATE_FORMAT( CURDATE(), '%m/%d/%Y') WHERE username='"+username+"';");
+        sb.append("UPDATE login SET lastLoggedInDate=DATE_FORMAT( CURDATE(), '%m/%d/%Y') WHERE username='");
+        sb.append(username);
+        sb.append("';");
         try{
             Statement stmt = conn.createStatement();
             if(stmt.executeUpdate(sb.toString()) != 1){
@@ -127,7 +173,14 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
 
     public boolean updatePlayerCurrentChipCount(String username, int chipCount) {
         sb = new StringBuilder();
-        sb.append("UPDATE `userdata` SET currentChipCount=" + chipCount + " WHERE username='" + username + "';");
+
+        //Create Query
+        sb.append("UPDATE `userdata` SET currentChipCount=");
+        sb.append(chipCount);
+        sb.append(" WHERE username='");
+        sb.append(username);
+        sb.append("';");
+
         try{
             Statement stmt = conn.createStatement();
             if(stmt.executeUpdate(sb.toString()) != 1){
@@ -146,7 +199,14 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
 
     public boolean updatePlayerHighScore(String username, int highChipCount) {
         sb = new StringBuilder();
-        sb.append("UPDATE `userdata` SET highChipCount=" + highChipCount + " WHERE username='" + username + "';");
+
+        //Generate Query
+        sb.append("UPDATE `userdata` SET highChipCount=");
+        sb.append(highChipCount);
+        sb.append(" WHERE username='");
+        sb.append(username);
+        sb.append("';");
+
         try{
             stmt = conn.createStatement();
             if(stmt.executeUpdate(sb.toString()) != 1){
@@ -196,7 +256,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
 
     private void printError(SQLException sql, String query){
         sql.printStackTrace();
-        System.out.println("Query: " + query.toString());
+        System.out.println("Query: " + query);
         System.out.println("SQL Exception:\n" + sql.getMessage());
         System.out.println("SQL Message:\n" + sql.toString());
     }
