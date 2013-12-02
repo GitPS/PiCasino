@@ -9,7 +9,7 @@ package com.piindustries.picasino.api;
  *    \/    |_\____/\__,_|___/_|_| |_|\___/
  *
  *
- * Class: com.piindustries.picasino.api.GameEvent
+ * Class: com.piindustries.picasino.api.DatabaseConnector
  * Version: 1.0
  * Date: October 29, 2013
  *
@@ -32,10 +32,11 @@ package com.piindustries.picasino.api;
  */
 
 public interface DatabaseConnector {
+    public boolean changeUserPassword(String username, String oldPassword, String newPassword);
+    public boolean checkPlayerLogin(String username, String password);
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email);
+    public java.util.HashMap<String,String> getAllPlayerData(String username);
     public boolean updateLoginDate(String username);
     public boolean updatePlayerCurrentChipCount(String username, int chipCount);
     public boolean updatePlayerHighScore(String username, int highChipCount);
-    public boolean checkPlayerLogin(String username, String password);
-    public boolean changeUserPassword(String username, String oldPassword, String newPassword);
 }

@@ -2,6 +2,7 @@ package com.piindustries.picasino.blackjack.database;
 
 import com.piindustries.picasino.api.DatabaseConnector;
 import java.sql.*;
+import java.util.HashMap;
 
 /*
  *
@@ -110,6 +111,32 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             }
             return false;
         }
+    }
+
+    public HashMap<String, String> getAllPlayerData(String username) {
+        sb = new StringBuilder();
+        HashMap<String,String> userdata = new HashMap<>();
+        sb.append("SELECT * FROM login NATURAL JOIN userdata WHERE username='");
+        sb.append(username);
+        sb.append("';");
+        try{
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sb.toString());
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int numOfCols = rsmd.getColumnCount();
+            while(rs.next()){
+                for(int i = 1; i <= numOfCols; i++){
+                    userdata.put(rsmd.getColumnName(i),rs.getString(i));
+                }
+            }
+            rs.close();
+            stmt.close();
+        }catch(SQLException sql){
+            printError(sql, sb.toString());
+            return new HashMap<>();
+        }
+
+        return userdata;
     }
 
     public boolean changeUserPassword(String username, String oldPassword, String newPassword){
