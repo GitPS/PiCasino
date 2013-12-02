@@ -43,7 +43,7 @@ public class DatabaseConnectorTest{
     public static void main(String[] args){
         BlackjackDatabaseConnector dbt = new BlackjackDatabaseConnector();
         //Test Create Player
-        boolean playerAdded = dbt.createNewPlayer("areis422","testtest","Andrew","Reis","reis.andr@uwlax.edu");
+        boolean playerAdded = dbt.createNewPlayer("test_user","testtest","Test","User","test@test.user");
         if(!playerAdded){
             System.out.println("Add failed");
         }else{
@@ -51,7 +51,7 @@ public class DatabaseConnectorTest{
         }
 
         //Test Update Password
-        boolean passwordChanged = dbt.changeUserPassword("areis422","testtest","Eagles2013!");
+        boolean passwordChanged = dbt.changeUserPassword("test_user","testtest","Eagles2013!");
         if(!passwordChanged){
             System.out.println("Change password failed");
         }else{
@@ -59,7 +59,7 @@ public class DatabaseConnectorTest{
         }
 
         //Test Updating chip count
-        boolean currentChipCountUpdated = dbt.updatePlayerCurrentChipCount("areis422",999999);
+        boolean currentChipCountUpdated = dbt.updatePlayerCurrentChipCount("test_user",999999);
         if(!currentChipCountUpdated){
             System.out.println("Current chip Count update failed");
         }else{
@@ -67,11 +67,19 @@ public class DatabaseConnectorTest{
         }
 
         //Test Updating high chip count
-        boolean highChipCountUpdated = dbt.updatePlayerHighScore("areis422",999999);
+        boolean highChipCountUpdated = dbt.updatePlayerHighScore("test_user",999999);
         if(!highChipCountUpdated){
-            System.out.println("Current chip Count update failed");
+            System.out.println("High chip Count update failed");
         }else{
-            System.out.println("Current Chip Count update Succeeded");
+            System.out.println("High Chip Count update Succeeded");
+        }
+
+        //Test Updating Login Date
+        boolean loginDateUpdated = dbt.updateLoginDate("test_user");
+        if(!loginDateUpdated){
+            System.out.println("Login Date update failed");
+        }else{
+            System.out.println("Login Date update Succeeded");
         }
     }
 }

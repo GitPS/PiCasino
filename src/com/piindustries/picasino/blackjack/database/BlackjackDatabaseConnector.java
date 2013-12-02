@@ -45,9 +45,12 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                     System.out.println("UPDATE statement returned something other than 0. Please debug further.");
                     stmt.close();
                     return false;
+                }else{
+                    stmt.close();
+                    sb = null;
+                    System.gc();
+                    return true;
                 }
-                stmt.close();
-                return true;
             }
         }catch(SQLException sql){
             if(sql.getErrorCode() == 1062){
@@ -81,8 +84,6 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             }
             oldPwdRS.close();
 
-            stmt.close();
-
             //Compare hashes. If same, execute update, otherwise fail
             if(oldPwd.compareTo(oldPwdEntered) == 0){
                 query = "UPDATE login SET password=sha1('"+newPassword+"') WHERE username='"+username+"' LIMIT 1;";
@@ -96,6 +97,8 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             }
             stmt.close();
             //If everything executes ok, then return true.
+            sb = null;
+            System.gc();
             return true;
         }catch(SQLException sql){
             printError(sql,query);
@@ -106,14 +109,17 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
 
     public boolean updateLoginDate(String username) {
         sb = new StringBuilder();
-        sb.append("UPDATE login SET lastLoggedInDate=CONCAT(MONTH(NOW()),'/',DAY(NOW()),'/',YEAR(NOW())) WHERE username='"+username+"';");
+        sb.append("UPDATE login SET lastLoggedInDate=DATE_FORMAT( CURDATE(), '%m/%d/%Y') WHERE username='"+username+"';");
         try{
             Statement stmt = conn.createStatement();
             if(stmt.executeUpdate(sb.toString()) != 1){
                 System.out.println("lastLoggedInDate UPDATE failed. Please debug.");
                 return false;
+            }else{
+                sb = null;
+                System.gc();
+                return true;
             }
-            return true;
         }catch(SQLException sql){
             printError(sql,sb.toString());
             return false;
@@ -129,6 +135,8 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 System.out.println("Something went wrong during current chip count update for " + username + "! Please contact PiCasino support!");
                 return false;
             }else{
+                sb = null;
+                System.gc();
                 return true;
             }
         }catch(SQLException sql){
@@ -145,6 +153,8 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             if(stmt.executeUpdate(sb.toString()) != 1){
                 System.out.println("Something went wrong during high chip count update for " + username + "! Please contact PiCasino support!");
             }else{
+                sb = null;
+                System.gc();
                 return true;
             }
         }catch(SQLException sql){
