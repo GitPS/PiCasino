@@ -72,9 +72,9 @@ public class DatabaseConnectorTest{
             int chipCount = (int)(Math.random() * 1000000000);
             boolean highChipCountUpdated = dbt.updatePlayerHighScore("test_user",chipCount);
             if(!highChipCountUpdated){
-                System.out.println("High chip Count update failed");
+                System.out.println("High chip Count update failed for value: " + chipCount);
             }else{
-                System.out.println("High Chip Count update Succeeded");
+                System.out.println("High Chip Count update Succeeded for value: " + chipCount);
             }
         }
 

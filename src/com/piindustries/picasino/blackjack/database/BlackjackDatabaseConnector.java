@@ -209,7 +209,8 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     public boolean updatePlayerHighScore(String username, int highChipCount) {
         sb = new StringBuilder();
 
-        //Generate Query
+        //Generate Update Query
+        sb = new StringBuilder();
         sb.append("UPDATE `userdata` SET highChipCount=");
         sb.append(highChipCount);
         sb.append(" WHERE username='");
