@@ -10,9 +10,9 @@ import java.sql.*;
  * To change this template use File | Settings | File Templates.
  */
 public class BlackjackDatabaseConnector implements DatabaseConnector{
-    private Connection conn;
-    private StringBuilder sb;
-    private Statement stmt;
+    private Connection conn;        // Connection object for DriverManager.getConnection
+    private StringBuilder sb;       // StringBuilder used in most methods
+    private Statement stmt;         // Statement used for queries
 
     public BlackjackDatabaseConnector(){
         try{
@@ -106,7 +106,6 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }
     }
 
-
     public boolean updateLoginDate(String username) {
         sb = new StringBuilder();
         sb.append("UPDATE login SET lastLoggedInDate=DATE_FORMAT( CURDATE(), '%m/%d/%Y') WHERE username='"+username+"';");
@@ -165,7 +164,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     public boolean checkPlayerLogin(String username, String password) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     private void printError(SQLException sql, String query){
