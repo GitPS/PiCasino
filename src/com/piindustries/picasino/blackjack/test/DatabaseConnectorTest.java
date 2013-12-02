@@ -87,6 +87,7 @@ public class DatabaseConnectorTest{
         }
 
         //Test check player login with correct password
+        System.out.println("Testing login for test_user with password Eagles2013! (Correct)");
         boolean loginSuccess = dbt.checkPlayerLogin("test_user","Eagles2013!");
         if(loginSuccess){
             System.out.println("Logging in with correct password: login test succeeded. EXPECTED");
@@ -95,7 +96,8 @@ public class DatabaseConnectorTest{
         }
 
         //Test check player login with incorrect password. Should receive error message
-        boolean loginFailed = dbt.checkPlayerLogin("test_user",null);
+        System.out.println("Testing login for test_user with password ThisPassw0rdShouldntW0rk (incorrect)");
+        boolean loginFailed = dbt.checkPlayerLogin("test_user","ThisPassw0rdShouldntW0rk");
         if(loginFailed){
             System.out.println("Logging in with wrong password: Login succeeded. UNEXPECTED");
         }else{
