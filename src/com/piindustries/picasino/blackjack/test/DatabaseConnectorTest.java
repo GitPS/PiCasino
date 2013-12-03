@@ -69,19 +69,6 @@ public class DatabaseConnectorTest{
             }
         }
 
-
-        //Test Updating high chip count (2500 tests, values between 0 and 1 billion)
-        System.out.println("\nTesting updating High Chip Count");
-        for(int i = 0; i < 15; i++){
-            int chipCount = (int)(Math.random() * 1000000000);
-            boolean highChipCountUpdated = dbt.updatePlayerHighScore("test_user",chipCount);
-            if(!highChipCountUpdated){
-                System.out.println("High chip Count update failed for value: " + chipCount);
-            }else{
-                System.out.println("High Chip Count update Succeeded for value: " + chipCount);
-            }
-        }
-
         //Test Updating Login Date
         boolean loginDateUpdated = dbt.updateLoginDate("test_user");
         if(!loginDateUpdated){

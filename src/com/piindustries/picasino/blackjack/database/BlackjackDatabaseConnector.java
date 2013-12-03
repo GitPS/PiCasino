@@ -98,7 +98,6 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                     return false;
                 }else{
                     stmt.close();
-                    sb = null;
                     System.gc();
                     return true;
                 }
@@ -174,7 +173,6 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             }
             stmt.close();
             //If everything executes ok, then return true.
-            sb = null;
             System.gc();
             return true;
         }catch(SQLException sql){
@@ -197,7 +195,6 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 System.out.println("lastLoggedInDate UPDATE failed. Please debug.");
                 return false;
             }else{
-                sb = null;
                 System.gc();
                 return true;
             }
@@ -208,56 +205,58 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     public boolean updatePlayerCurrentChipCount(String username, int chipCount) {
+        // Get current High score from database
+        int highCount = 0;
         sb = new StringBuilder();
-
-        //Create Query
-        sb.append("UPDATE `userdata` SET currentChipCount=");
-        sb.append(chipCount);
-        sb.append(" WHERE username='");
-        sb.append(username);
-        sb.append("';");
-
-        try{
-            Statement stmt = conn.createStatement();
-            if(stmt.executeUpdate(sb.toString()) != 1){
-                System.out.println("Something went wrong during current chip count update for " + username + "! Please contact PiCasino support!");
-                return false;
-            }else{
-                sb = null;
-                System.gc();
-                return true;
-            }
-        }catch(SQLException sql){
-            printError(sql, sb.toString());
-            return false;
-        }
-    }
-
-    public boolean updatePlayerHighScore(String username, int highChipCount) {
-        sb = new StringBuilder();
-
-        //Generate Update Query
-        sb = new StringBuilder();
-        sb.append("UPDATE `userdata` SET highChipCount=");
-        sb.append(highChipCount);
-        sb.append(" WHERE username='");
+        sb.append("SELECT highChipCount FROM userdata WHERE username='");
         sb.append(username);
         sb.append("';");
 
         try{
             stmt = conn.createStatement();
-            if(stmt.executeUpdate(sb.toString()) != 1){
-                System.out.println("Something went wrong during high chip count update for " + username + "! Please contact PiCasino support!");
+            ResultSet rs = stmt.executeQuery(sb.toString());
+            while(rs.next()){
+                highCount = rs.getInt(1);
+            }
+            rs.close();
+            stmt.close();
+
+            //Update High Chip count if current count > high count from DB.
+            if(chipCount > highCount){
+                //Create Query to update high score
+                sb = new StringBuilder();
+                sb.append("UPDATE `userdata` SET highChipCount=");
+                sb.append(chipCount);
+                sb.append(" WHERE username='");
+                sb.append(username);
+                sb.append("';");
+
+                stmt = conn.createStatement();
+                int result = stmt.executeUpdate(sb.toString());
+                if(result != 1){
+                    System.out.println("Update of high chip count failed.");
+                    return false;
+                }
+            }
+            sb = new StringBuilder();
+            sb.append("UPDATE userdata SET currentChipCount=");
+            sb.append(chipCount);
+            sb.append(" WHERE username='");
+            sb.append(username);
+            sb.append("';");
+
+            stmt = conn.createStatement();
+            int result = stmt.executeUpdate(sb.toString());
+            if(result != 1){
+                System.out.println("Update of current chip count failed.");
+                return false;
             }else{
-                sb = null;
-                System.gc();
                 return true;
             }
         }catch(SQLException sql){
-            printError(sql, sb.toString());
+            printError(sql,sb.toString());
             return false;
         }
-        return false;
     }
 
     public boolean checkPlayerLogin(String username, String password) {
