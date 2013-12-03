@@ -1,6 +1,5 @@
 package com.piindustries.picasino.blackjack.test;
 
-import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
 import com.piindustries.picasino.blackjack.domain.Cards;
 import com.piindustries.picasino.blackjack.domain.GameEvent;
@@ -106,11 +105,6 @@ public class Invoker {
             }
         } catch (IndexOutOfBoundsException e){
             System.out.println("Not enough arguments for "+type);
-        }
-        try{
-            this.getInnards().invoke(toInvoke);
-        } catch(InvalidGameEventException e) {
-            System.out.println("Invalid");
         }
         this.getInnards().getNetworkHandler().send(toInvoke);
         step();
