@@ -59,8 +59,8 @@ public class DatabaseConnectorTest{
 
         //Test Updating chip count (2500 tests, values between 0 and 1 billion)
         System.out.println("\nTesting updating Current Chip Count");
-        for(int i = 0; i < 2500; i++){
-            int chipCount = (int)(Math.random() * 1000000000);
+        for(int i = 0; i < 5000; i++){
+            int chipCount = (int)(Math.random() * 10000);
             boolean currentChipCountUpdated = dbt.updatePlayerCurrentChipCount("test_user",chipCount);
             if(!currentChipCountUpdated){
                 System.out.println("Current chip Count update failed with value: " + chipCount);
