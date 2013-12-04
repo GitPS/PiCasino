@@ -31,6 +31,7 @@ import java.util.List;
 public class Player {
     String username;
     LinkedList<LinkedList<Integer>> hands;
+    int index;
     int value;
     int bet;
     boolean hasSplit;
@@ -123,6 +124,15 @@ public class Player {
     public void setHandValue(int handValue) {
         this.handValue = handValue;
     }
+
+    public void setIndex( int index ) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
 
     public static class Builder {
         String username;

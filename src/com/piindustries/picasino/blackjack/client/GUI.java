@@ -706,27 +706,27 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void stool4ActionPerformed(java.awt.event.ActionEvent evt) {
-        player.setIndex( 4 );
+        //player.setIndex( 4 );
         setStoolsHidden();
     }
 
     private void stool5ActionPerformed(java.awt.event.ActionEvent evt) {
-        player.setIndex( 5 );
+        //player.setIndex( 5 );
         setStoolsHidden();
     }
 
     private void stool6ActionPerformed(java.awt.event.ActionEvent evt) {
-        player.setIndex( 6 );
+        //player.setIndex( 6 );
         setStoolsHidden();
     }
 
     private void stool7ActionPerformed(java.awt.event.ActionEvent evt) {
-        player.setIndex( 7 );
+        //player.setIndex( 7 );
         setStoolsHidden();
     }
 
     private void stool8ActionPerformed(java.awt.event.ActionEvent evt) {
-        player.setIndex( 8 );
+        //player.setIndex( 8 );
         setStoolsHidden();
     }
 
