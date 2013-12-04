@@ -468,6 +468,7 @@ public class GUI extends JFrame implements GuiHandler {
         username1.setText("Username1");
         getContentPane().add(username1);
         username1.setBounds(790, 130, 130, 20);
+        username1.setVisible( false );
 
         chipCount1.setFont(new Font("Tahoma", 1, 11)); 
         chipCount1.setForeground(new Color(255, 255, 255));
@@ -475,6 +476,7 @@ public class GUI extends JFrame implements GuiHandler {
         chipCount1.setText("ChipCount1");
         getContentPane().add(chipCount1);
         chipCount1.setBounds(790, 150, 130, 30);
+        chipCount1.setVisible( false );
 
         username2.setFont(new Font("Tahoma", 1, 11)); 
         username2.setForeground(new Color(255, 255, 255));
@@ -482,6 +484,7 @@ public class GUI extends JFrame implements GuiHandler {
         username2.setText("Username2");
         getContentPane().add(username2);
         username2.setBounds(790, 330, 130, 20);
+        username2.setVisible( false );
 
         chipCount2.setFont(new Font("Tahoma", 1, 11)); 
         chipCount2.setForeground(new Color(255, 255, 255));
@@ -489,6 +492,7 @@ public class GUI extends JFrame implements GuiHandler {
         chipCount2.setText("ChipCount2");
         getContentPane().add(chipCount2);
         chipCount2.setBounds(790, 350, 130, 30);
+        chipCount2.setVisible( false );
 
         username3.setFont(new Font("Tahoma", 1, 11)); 
         username3.setForeground(new Color(255, 255, 255));
@@ -496,6 +500,7 @@ public class GUI extends JFrame implements GuiHandler {
         username3.setText("Username3");
         getContentPane().add(username3);
         username3.setBounds(790, 500, 130, 20);
+        username3.setVisible( false );
 
         chipCount3.setFont(new Font("Tahoma", 1, 11)); 
         chipCount3.setForeground(new Color(255, 255, 255));
@@ -503,6 +508,8 @@ public class GUI extends JFrame implements GuiHandler {
         chipCount3.setText("ChipCount3");
         getContentPane().add(chipCount3);
         chipCount3.setBounds(790, 520, 130, 30);
+        chipCount3.setVisible( false );
+
 
         username4.setFont(new Font("Tahoma", 1, 11)); 
         username4.setForeground(new Color(255, 255, 255));
@@ -510,6 +517,7 @@ public class GUI extends JFrame implements GuiHandler {
         username4.setText("Username4");
         getContentPane().add(username4);
         username4.setBounds(630, 520, 130, 20);
+        username4.setVisible( false );
 
         chipCount4.setFont(new Font("Tahoma", 1, 11)); 
         chipCount4.setForeground(new Color(255, 255, 255));
@@ -517,6 +525,7 @@ public class GUI extends JFrame implements GuiHandler {
         chipCount4.setText("ChipCount4");
         getContentPane().add(chipCount4);
         chipCount4.setBounds(630, 540, 130, 30);
+        chipCount4.setVisible( false );
 
         username5.setFont(new Font("Tahoma", 1, 11)); 
         username5.setForeground(new Color(255, 255, 255));
@@ -524,6 +533,7 @@ public class GUI extends JFrame implements GuiHandler {
         username5.setText("Username5");
         getContentPane().add(username5);
         username5.setBounds(150, 520, 130, 20);
+        username5.setVisible( false );
 
         chipCount5.setFont(new Font("Tahoma", 1, 11)); 
         chipCount5.setForeground(new Color(255, 255, 255));
@@ -531,6 +541,7 @@ public class GUI extends JFrame implements GuiHandler {
         chipCount5.setText("ChipCount5");
         getContentPane().add(chipCount5);
         chipCount5.setBounds(150, 540, 130, 30);
+        chipCount5.setVisible( false );
 
         username6.setFont(new Font("Tahoma", 1, 11)); 
         username6.setForeground(new Color(255, 255, 255));
@@ -538,6 +549,7 @@ public class GUI extends JFrame implements GuiHandler {
         username6.setText("Username6");
         getContentPane().add(username6);
         username6.setBounds(0, 500, 130, 20);
+        username6.setVisible( false );
 
         chipCount6.setFont(new Font("Tahoma", 1, 11)); 
         chipCount6.setForeground(new Color(255, 255, 255));
@@ -545,6 +557,7 @@ public class GUI extends JFrame implements GuiHandler {
         chipCount6.setText("ChipCount6");
         getContentPane().add(chipCount6);
         chipCount6.setBounds(0, 520, 130, 30);
+        chipCount6.setVisible( false );
 
         username7.setFont(new Font("Tahoma", 1, 11)); 
         username7.setForeground(new Color(255, 255, 255));
@@ -552,6 +565,7 @@ public class GUI extends JFrame implements GuiHandler {
         username7.setText("Username7");
         getContentPane().add(username7);
         username7.setBounds(0, 340, 130, 20);
+        username7.setVisible( false );
 
         chipCount7.setFont(new Font("Tahoma", 1, 11)); 
         chipCount7.setForeground(new Color(255, 255, 255));
@@ -559,6 +573,7 @@ public class GUI extends JFrame implements GuiHandler {
         chipCount7.setText("ChipCount7");
         getContentPane().add(chipCount7);
         chipCount7.setBounds(0, 360, 130, 30);
+        chipCount7.setVisible( false );
 
         username8.setFont(new Font("Tahoma", 1, 11)); 
         username8.setForeground(new Color(255, 255, 255));
@@ -566,6 +581,7 @@ public class GUI extends JFrame implements GuiHandler {
         username8.setText("Username8");
         getContentPane().add(username8);
         username8.setBounds(0, 140, 130, 20);
+        username8.setVisible( false );
 
         chipCount8.setFont(new Font("Tahoma", 1, 11)); 
         chipCount8.setForeground(new Color(255, 255, 255));
@@ -573,58 +589,71 @@ public class GUI extends JFrame implements GuiHandler {
         chipCount8.setText("ChipCount8");
         getContentPane().add(chipCount8);
         chipCount8.setBounds(0, 160, 130, 30);
+        chipCount8.setVisible( false );
 
         info1.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info1);
         info1.setBounds(790, 120, 132, 60);
+        info1.setVisible( false );
 
         info2.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info2);
         info2.setBounds(790, 320, 132, 60);
+        info2.setVisible( false );
 
         info3.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info3);
         info3.setBounds(790, 490, 132, 60);
+        info3.setVisible( false );
 
         info4.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info4);
         info4.setBounds(630, 510, 132, 60);
+        info4.setVisible( false );
 
         info5.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info5);
         info5.setBounds(150, 510, 132, 60);
+        info5.setVisible( false );
 
         info6.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info6);
         info6.setBounds(0, 490, 132, 60);
+        info6.setVisible( false );
 
         info7.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info7);
         info7.setBounds(0, 330, 132, 60);
+        info7.setVisible( false );
 
         info8.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info8);
         info8.setBounds(0, 130, 132, 60);
+        info8.setVisible( false );
 
         hitButton.setBorderPainted(false);
         hitButton.setContentAreaFilled(false);
         getContentPane().add(hitButton);
         hitButton.setBounds(530, 570, 150, 100);
+        hitButton.setVisible( false );
 
         stayButton.setBorderPainted(false);
         stayButton.setContentAreaFilled(false);
         getContentPane().add(stayButton);
         stayButton.setBounds(360, 570, 150, 100);
+        stayButton.setVisible( false );
 
         doubleDownButton.setBorderPainted(false);
         doubleDownButton.setContentAreaFilled(false);
         getContentPane().add(doubleDownButton);
         doubleDownButton.setBounds(190, 570, 150, 100);
+        doubleDownButton.setVisible( false );
 
         splitButton.setBorderPainted(false);
         splitButton.setContentAreaFilled(false);
         getContentPane().add(splitButton);
         splitButton.setBounds(20, 570, 150, 100);
+        splitButton.setVisible( false );
 
         hitText.setFont(new Font("Tahoma", 1, 18)); 
         hitText.setForeground(new Color(255, 255, 255));
@@ -632,6 +661,7 @@ public class GUI extends JFrame implements GuiHandler {
         hitText.setText("HIT");
         getContentPane().add(hitText);
         hitText.setBounds(530, 570, 150, 110);
+        hitText.setVisible( false );
 
         stayText.setFont(new Font("Tahoma", 1, 18)); 
         stayText.setForeground(new Color(255, 255, 255));
@@ -639,6 +669,7 @@ public class GUI extends JFrame implements GuiHandler {
         stayText.setText("STAY");
         getContentPane().add(stayText);
         stayText.setBounds(360, 570, 150, 110);
+        stayText.setVisible( false );
 
         doubleDownText.setFont(new Font("Tahoma", 1, 18)); 
         doubleDownText.setForeground(new Color(255, 255, 255));
@@ -646,6 +677,7 @@ public class GUI extends JFrame implements GuiHandler {
         doubleDownText.setText("DOUBLE DOWN");
         getContentPane().add(doubleDownText);
         doubleDownText.setBounds(190, 570, 150, 110);
+        doubleDownText.setVisible( false );
 
         splitText.setFont(new Font("Tahoma", 1, 18)); 
         splitText.setForeground(new Color(255, 255, 255));
@@ -653,23 +685,28 @@ public class GUI extends JFrame implements GuiHandler {
         splitText.setText("SPLIT");
         getContentPane().add(splitText);
         splitText.setBounds(20, 570, 150, 110);
+        splitText.setVisible( false );
 
         hitImage.setForeground(new Color(255, 255, 255));
         hitImage.setIcon(new ImageIcon(getClass().getResource("/Resources/Buttons.png")));
         getContentPane().add(hitImage);
         hitImage.setBounds(530, 570, 150, 120);
+        hitImage.setVisible( false );
 
         stayImage.setIcon(new ImageIcon(getClass().getResource("/Resources/Buttons.png")));
         getContentPane().add(stayImage);
         stayImage.setBounds(360, 570, 150, 120);
+        stayImage.setVisible( false );
 
         doubleDownImage.setIcon(new ImageIcon(getClass().getResource("/Resources/Buttons.png")));
         getContentPane().add(doubleDownImage);
         doubleDownImage.setBounds(190, 570, 150, 120);
+        doubleDownImage.setVisible( false );
 
         splitImage.setIcon(new ImageIcon(getClass().getResource("/Resources/Buttons.png")));
         getContentPane().add(splitImage);
         splitImage.setBounds(20, 570, 150, 120);
+        splitImage.setVisible( false );
 
         table.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoTable.png")));
         getContentPane().add(table);
@@ -737,34 +774,51 @@ public class GUI extends JFrame implements GuiHandler {
         stool8.setEnabled( false );
     }
 
-    //TODO send that the player hit
+    /**
+     * Send hit game event
+     * @param evt When clicked
+     */
     private void hit(java.awt.event.ActionEvent evt) {
         GameEvent event = new GameEvent( GameEventType.HIT );
         client.send(event);
 
     }
 
-    //TODO send that the player stood
+    /**
+     * Send stand game event
+     * @param evt
+     */
     private void stand(java.awt.event.ActionEvent evt) {
         GameEvent event = new GameEvent( GameEventType.STAND );
         client.send(event);
 
     }
 
-    //TODO send that the player doubleddown
+    /**
+     * Send doubleDown game event
+     * @param evt
+     */
     private void doubleDown(java.awt.event.ActionEvent evt) {
         GameEvent event = new GameEvent( GameEventType.DOUBLE_DOWN );
         client.send(event);
 
     }
 
-    //TODO send that the player split
+    /**
+     * Send Split game event
+     * @param evt
+     */
     private void split(java.awt.event.ActionEvent evt) {
         GameEvent event = new GameEvent( GameEventType.SPLIT );
         client.send(event);
 
     }
 
+    /**
+     * Called from gamestate to update all users
+     * @param possibleActions What actions the current player cna use
+     * @param data The current GuiData
+     */
     public void updateGui( java.util.List<GameEventType> possibleActions, GuiData data ) { //TODO Add functionality for split and Double Down
 
         //if players turn, display buttons that he can use
@@ -842,7 +896,9 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void updateP1Info( Player toUpdate ) {
-
+        info1.setVisible( true );
+        username1.setVisible( true );
+        chipCount1.setVisible( true );
         username1.setText( toUpdate.getUsername() );
         chipCount1.setText(Integer.toString(toUpdate.getValue()));
 
@@ -865,6 +921,9 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void updateP2Info( Player toUpdate ) {
+        info2.setVisible( true );
+        username2.setVisible( true );
+        chipCount2.setVisible( true );
         username2.setText( toUpdate.getUsername() );
         chipCount2.setText( Integer.toString(toUpdate.getValue()) );
 
@@ -887,6 +946,9 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void updateP3Info( Player toUpdate ) {
+        info3.setVisible( true );
+        username3.setVisible( true );
+        chipCount3.setVisible( true );
         username3.setText( toUpdate.getUsername() );
         chipCount3.setText( Integer.toString(toUpdate.getValue()) );
 
@@ -909,6 +971,9 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void updateP4Info( Player toUpdate ) {
+        info4.setVisible( true );
+        username4.setVisible( true );
+        chipCount4.setVisible( true );
         username4.setText( toUpdate.getUsername() );
         chipCount4.setText( Integer.toString(toUpdate.getValue()) );
 
@@ -931,6 +996,9 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void updateP5Info( Player toUpdate ) {
+        info5.setVisible( true );
+        username5.setVisible( true );
+        chipCount5.setVisible( true );
         username5.setText( toUpdate.getUsername() );
         chipCount5.setText( Integer.toString(toUpdate.getValue()) );
 
@@ -953,6 +1021,9 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void updateP6Info( Player toUpdate ) {
+        info6.setVisible( true );
+        username6.setVisible( true );
+        chipCount6.setVisible( true );
         username6.setText( toUpdate.getUsername() );
         chipCount6.setText( Integer.toString(toUpdate.getValue()) );
 
@@ -974,6 +1045,9 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void updateP7Info( Player toUpdate ) {
+        info7.setVisible( true );
+        username7.setVisible( true );
+        chipCount7.setVisible( true );
         username7.setText( toUpdate.getUsername() );
         chipCount7.setText( Integer.toString(toUpdate.getValue()) );
 
@@ -995,6 +1069,9 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void updateP8Info( Player toUpdate ) {
+        info8.setVisible( true );
+        username8.setVisible( true );
+        chipCount8.setVisible( true );
         username8.setText( toUpdate.getUsername() );
         chipCount8.setText( Integer.toString(toUpdate.getValue()) );
 
