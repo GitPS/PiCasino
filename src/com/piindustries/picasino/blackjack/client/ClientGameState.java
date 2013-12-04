@@ -65,8 +65,9 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private LinkedList<Hand> hands;
     private LinkedList<Hand> passedList;
     private NetworkHandler networkHandler;
-    private GuiHandler guiHandler;
+    private com.piindustries.picasino.api.GuiHandler guiHandler;
     private String thisUser;
+    private boolean isServer;
 
     /**
      * Default Constructor.
@@ -79,6 +80,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.setNetworkHandler(pi.getNetworkHandler());
         this.setThisUser(username);
         this.passedList = new LinkedList<>();   // Create an empty passed list
+        Player player = new Player.Builder().username(username).hands(new LinkedList<LinkedList<Integer>>()).value(1000).split(false).busted(false).handValue(0).index(0).result();
+        this.guiHandler = new GUI(player,(ClientNetworkHandler)networkHandler);
     }
 
     // TODO Make sure splitting works as designed
@@ -135,7 +138,11 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                 } break;
             default: throw new Error("Logical Error, Cannot Recover");
         }
-        guiHandler.updateGui(getGuiData());
+        guiHandler.updateGui( getAvailableActions(), getGuiData());
+    }
+
+    public void setIsServer(boolean b){
+        this.isServer = b;
     }
 
     /**
@@ -543,6 +550,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                    .bet(focus.getBet())
                    .handValue(focus.getBestHandValue())
                    .split( focus.isSplit() )
+                   .index(index + 1)
                    .busted( focus.getBestHandValue() > 21 );    // TODO verify
 
             // Generate a hand for each hand assigned to this player
@@ -555,6 +563,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
             builder.hands(toAddHands);
             if( focus instanceof DealerHand ){
                 // Assign the dealers hand to the dealers position
+                builder.index(0);
                 tmpData[8] = builder.result();
                 return buildGuiDataFromArray(tmpData);
             } else {
