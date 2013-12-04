@@ -616,7 +616,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     private class Listener implements ActionListener {
         
         /* If the intermission time has not been set or is invalid, default to 30 seconds */
-        private int counter = ( this.intermissionTime == null || this.intermissionTime < 1 ) ? 30 : this.intermissionTime;
+        private int counter = ( intermissionTime < 1 ) ? 30 : intermissionTime;
 
         @Override
         public void actionPerformed(ActionEvent e) {

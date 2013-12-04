@@ -63,4 +63,5 @@ public enum GameEventType {
     SET_PHASE,
     SET_HANDS,
     SET_PASSED_LIST,
+    SET_GAME_STATE
 }
