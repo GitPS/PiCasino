@@ -409,6 +409,10 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         PiCasino.LOGGER.info("Advancing phase from PLAYING to CONCLUSION.");
     }
 
+    public void setIsServer(boolean b){
+        this.gameState.setIsServer(b);
+    }
+
     /**
      * Deals 1 card at a time to all players in order until all players
      * and the dealer have 2 cards.
@@ -459,10 +463,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         }
         // Once every hand has been dealt, Advance Phase
         advanceToPlaying();
-    }
-
-    public void setIsServer(boolean b){
-        this.gameState.setIsServer(b);
     }
 
     /**
