@@ -97,6 +97,18 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         }
     }
 
+    public void setGameState(Object[] data){
+        LinkedList<Hand> tHands = new LinkedList<Hand>();
+        for( int i = 0; i < 9; i += 1 ){
+            Hand toAdd = new Hand((String)data[i],(LinkedList<Integer>)data[i+18]);
+            toAdd.setBet( data[i+9] );
+            tHands.add(toAdd);
+        }
+        this.setHands(tHands);
+        this.passedList = data[27];
+        this.setPhase( data[28] );
+    }
+
     // TODO Make sure splitting works as designed
     // TODO Make sure doubling down works as designed
     // TODO Make sure empty games caused by disconnects don't explode
