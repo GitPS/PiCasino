@@ -31,6 +31,8 @@
 
 package com.piindustries.picasino.api;
 
+import com.piindustries.picasino.blackjack.client.GuiData;
+
 /**
  * An interface that handles the graphics
  * of a com.piindustries.picasino.Game.
@@ -44,5 +46,5 @@ public interface GuiHandler {
      * Updates the Graphical Interface of this game
      * given its current ClientGameState.
      */
-    public void updateGui();
+    public void updateGui(GuiData data);
 }

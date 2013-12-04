@@ -31,11 +31,12 @@ public class Invoker {
     }
 
     private void printActions(){
-        for( GameEventType s : GameEventType.values() )
-            System.out.println( '\t' + s.name());
+        for( GameEventType type : innards.getAvailableActions() )
+            System.out.println( '\t' + type.name());
     }
 
     public synchronized void step(){
+        printActions();
         String[] input = readLine().trim().split("[ ]");
         String type = input[0].toLowerCase();
         GameEvent toInvoke = new GameEvent();

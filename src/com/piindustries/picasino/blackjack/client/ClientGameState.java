@@ -65,6 +65,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private LinkedList<Hand> hands;
     private LinkedList<Hand> passedList;
     private NetworkHandler networkHandler;
+    private GuiHandler guiHandler;
     private String thisUser;
 
     /**
@@ -134,6 +135,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                 } break;
             default: throw new Error("Logical Error, Cannot Recover");
         }
+        guiHandler.updateGui(getGuiData());
     }
 
     /**
@@ -489,7 +491,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      *
      * @return a list of actions a client can invoke.
      */
-    ArrayList<GameEventType> getAvailableActions(){
+    public ArrayList<GameEventType> getAvailableActions(){
         ArrayList<GameEventType> result = new ArrayList<>();
         switch(this.getPhase()){
             case INITIALIZATION:
@@ -526,7 +528,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     // FIXME this DEFINITELY needs to be tested...
     // TODO comment
     // In Beta
-    GuiData getGuiData(){
+    private GuiData getGuiData(){
         LinkedList<Hand> tmpHands = (LinkedList<Hand>) getHands().clone();
         Player[] tmpData = new Player[9];
         // Queue first player to front.
