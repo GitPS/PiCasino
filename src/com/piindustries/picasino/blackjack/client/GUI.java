@@ -636,24 +636,44 @@ public class GUI extends JFrame implements GuiHandler {
         getContentPane().add(hitButton);
         hitButton.setBounds(530, 570, 150, 100);
         hitButton.setVisible( false );
+        hitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hit(evt);
+            }
+        });
 
         stayButton.setBorderPainted(false);
         stayButton.setContentAreaFilled(false);
         getContentPane().add(stayButton);
         stayButton.setBounds(360, 570, 150, 100);
         stayButton.setVisible( false );
+        stayButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stand(evt);
+            }
+        });
 
         doubleDownButton.setBorderPainted(false);
         doubleDownButton.setContentAreaFilled(false);
         getContentPane().add(doubleDownButton);
         doubleDownButton.setBounds(190, 570, 150, 100);
         doubleDownButton.setVisible( false );
+        doubleDownButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                doubleDown(evt);
+            }
+        });
 
         splitButton.setBorderPainted(false);
         splitButton.setContentAreaFilled(false);
         getContentPane().add(splitButton);
         splitButton.setBounds(20, 570, 150, 100);
         splitButton.setVisible( false );
+        splitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                split(evt);
+            }
+        });
 
         hitText.setFont(new Font("Tahoma", 1, 18)); 
         hitText.setForeground(new Color(255, 255, 255));
