@@ -31,8 +31,6 @@
 
 package com.piindustries.picasino.blackjack.domain;
 
-import java.util.LinkedList;
-
 public class Cards {
     public static String evaluateCardName(int cardId){
         if( cardId == 52 )
