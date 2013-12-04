@@ -346,7 +346,9 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         result.setValue( event.getValue() );
         this.getNetworkHandler().send(result);
         // Update the underlying gameState
-        gameState.invoke(result);
+        synchronized (this){
+            gameState.invoke(result);
+        }
         // If the dealer is up to bet.
         if( gameState.getCurrentHand() instanceof DealerHand){
             result.setType(GameEventType.BET);

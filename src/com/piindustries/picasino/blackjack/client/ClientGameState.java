@@ -326,7 +326,9 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         }
         // Append to the log appropriately
         if( !contained ){
-            this.getHands().add( this.getHands().size() - 1, new Hand(username, new LinkedList<Integer>()));
+            Hand dh = this.getHands().removeLast();
+            this.getHands().addLast( new Hand(username, new LinkedList<Integer>()));
+            this.getHands().addLast(dh);
             PiCasino.LOGGER.info(username + " was added to the game.");
         } else
             PiCasino.LOGGER.info(username + " was could not be added to the game.");
