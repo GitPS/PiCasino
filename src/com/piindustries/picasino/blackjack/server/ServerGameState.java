@@ -568,6 +568,20 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         return result;
     }
 
+    private void setGameState(String username){
+        GameEvent g = new GameEvent(GameEventType.SET_GAME_STATE);
+        Object[] data = new Object[27];
+        int index = 0;
+        for( Hand h : this.gameState.getHands() ){
+            data[index] = h.getUsername();
+            data[index + 9] = h.getBet();
+            data[index + 18] = h.getCards();
+            index += 1;
+        }
+        g.setValue(data);
+        this.getNetworkHandler().send(data, username);
+    }
+
     /**
      * @return a random card from the deck
      */
