@@ -461,6 +461,10 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         advanceToPlaying();
     }
 
+    public void setIsServer(boolean b){
+        this.gameState.setIsServer(b);
+    }
+
     /**
      * Informs all connected clients to advance their
      * phase to PLAYING
