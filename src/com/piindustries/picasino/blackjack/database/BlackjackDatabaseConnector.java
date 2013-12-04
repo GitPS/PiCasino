@@ -302,6 +302,22 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }
     }
 
+    public boolean checkUserExist(String username){
+        sb = new StringBuilder();
+        sb.append("SELECT username FROM login WHERE username='");
+        sb.append(username);
+        sb.append("';");
+
+        try{
+            stmt = conn.createStatement();
+            return stmt.executeQuery(sb.toString()).next();
+        }catch(SQLException sql){
+            printError(sql,sb.toString());
+            return false;
+        }
+
+    }
+
     private void printError(SQLException sql, String query){
         sql.printStackTrace();
         System.out.println("Query: " + query);

@@ -38,4 +38,5 @@ public interface DatabaseConnector {
     public java.util.HashMap<String,String> getAllPlayerData(String username);
     public boolean updateLoginDate(String username);
     public boolean updatePlayerCurrentChipCount(String username, int chipCount);
+    public boolean checkUserExist(String username);
 }
