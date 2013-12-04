@@ -674,12 +674,13 @@ public class GUI extends JFrame implements GuiHandler {
         getContentPane().add(table);
         table.setBounds(0, 0, 925, 700);
 
+        setStoolsHidden();
         pack();
 
         //Make stools unclickable if the player is already sitting down
-        if( player.getIndex() != 99 ) {
-            setStoolsHidden();
-        }
+        //if( player.getIndex() != 99 ) {
+        //    setStoolsHidden();
+        //}
 
 
     }// </editor-fold>
@@ -821,7 +822,7 @@ public class GUI extends JFrame implements GuiHandler {
                 case 6: updateP6Info(toUpdate); break;
                 case 7: updateP7Info(toUpdate); break;
                 case 8: updateP8Info(toUpdate); break;
-                case 9: updateDealerInfo( toUpdate ); break;
+                case 0: updateDealerInfo( toUpdate ); break;
             }
     }
 
