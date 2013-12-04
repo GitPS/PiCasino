@@ -279,6 +279,10 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
             playDealersHand();
     }
 
+    public void setIsServer(boolean b){
+        this.gameState.setIsServer(b);
+    }
+
     /**
      * Deals a card back to the requesting player and informs all other players
      * about it.
@@ -407,10 +411,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         // Advance Phase
         this.advanceToConclusion();
         PiCasino.LOGGER.info("Advancing phase from PLAYING to CONCLUSION.");
-    }
-
-    public void setIsServer(boolean b){
-        this.gameState.setIsServer(b);
     }
 
     /**
