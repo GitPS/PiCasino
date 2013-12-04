@@ -190,6 +190,14 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                 } else
                     PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
                 return true;
+            case SET_GAME_STATE:
+                if( event.getValue() instanceof String ) {
+                    String username = (String)event.getValue();
+                    this.setGameState( username );
+                    PiCasino.LOGGER.info( username+"'s game state is being refreshed.");
+                } else
+                    PiCasino.LOGGER.severe("Attempt to refresh gameState could not be handled because GameEvent Value does not conform to type String.");
+                return true;
             default: return false;
         }
     }
@@ -356,7 +364,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     private void bet(GameEvent event) throws InvalidGameEventException{
         GameEvent result = new GameEvent();
         result.setType(GameEventType.BET);
-        result.setValue( event.getValue() );
+        result.setValue(event.getValue());
         this.getNetworkHandler().send(result);
         // Update the underlying gameState
         synchronized (this){
@@ -496,7 +504,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      */
     private void beginGame() throws InvalidGameEventException {
         // Advance all client phases
-        PiCasino.LOGGER.info("Game Started at "+new Date());
+        PiCasino.LOGGER.info("Game Started at " + new Date());
         GameEvent event = new GameEvent();
         if( this.gameState.getHands().size() < 2 ){
             this.startTimer();
@@ -580,7 +588,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @param username The username to send the data to.
      */
     private void setGameState(String username){
-        GameEvent g = new GameEvent(GameEventType.SET_GAME_STATE);
+        GameEvent toSend = new GameEvent(GameEventType.SET_GAME_STATE);
         Object[] data = new Object[29];
         int index = 0;
         for( Hand h : this.gameState.getHands() ){
@@ -591,8 +599,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         }
         data[27] = this.gameState.getPassedList();
         data[28] = this.gameState.getPhase();
-        g.setValue(data);
-        this.getNetworkHandler().send(data, username);
+        toSend.setValue(data);
+        this.getNetworkHandler().send( toSend, username );
     }
 
     /**

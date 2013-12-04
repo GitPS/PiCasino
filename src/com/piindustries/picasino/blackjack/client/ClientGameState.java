@@ -82,15 +82,13 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * Default Constructor.
      */
     public ClientGameState(PiCasino pi, String username, boolean isServer) {
-        this.setPhase(Phase.INITIALIZATION);     // Set phase
-        LinkedList<Hand> h = new LinkedList<>();   // Build Player List
-        h.add(new DealerHand());  // Add a dealer hand
-        this.setHands(h);
+        this.setPhase(Phase.INITIALIZATION);
         this.setNetworkHandler(pi.getNetworkHandler());
         this.setThisUser(username);
-        this.passedList = new LinkedList<>();   // Create an empty passed list
-        this.isServer = isServer;
         blackjackDatabaseConnector = new BlackjackDatabaseConnector();
+        GameEvent request = new GameEvent( GameEventType.SET_GAME_STATE, username );
+        this.getNetworkHandler().send(request);
+        this.isServer = isServer;
         if( ! isServer ){
             Player player = new Player.Builder().username(username).hands(new LinkedList<LinkedList<Integer>>()).value(1000).split(false).busted(false).handValue(0).index(0).result();
             this.guiHandler = new GUI(player,(ClientNetworkHandler)networkHandler);
@@ -101,12 +99,12 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         LinkedList<Hand> tHands = new LinkedList<Hand>();
         for( int i = 0; i < 9; i += 1 ){
             Hand toAdd = new Hand((String)data[i],(LinkedList<Integer>)data[i+18]);
-            toAdd.setBet( data[i+9] );
+            toAdd.setBet( (Integer)data[i+9] );
             tHands.add(toAdd);
         }
         this.setHands(tHands);
-        this.passedList = data[27];
-        this.setPhase( data[28] );
+        this.passedList = (LinkedList<Hand>)data[27];
+        this.setPhase( (Phase)data[28] );
     }
 
     // TODO Make sure splitting works as designed
@@ -211,6 +209,13 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                     PiCasino.LOGGER.info("Client GameState Hands List has been set.");
                 } else
                     PiCasino.LOGGER.severe("Client GameState Hands List could not be set. Reason: Value does not conform to type LinkedList<Hand>.");
+                return true;
+            case SET_GAME_STATE:
+                if( event.getValue() instanceof Object[] ){
+                    this.setGameState( (Object[])event.getValue() );
+                } else {
+                    PiCasino.LOGGER.severe("Client GameState could not be updated because data did not conform to the required type Array<Object>");
+                }
                 return true;
             default: return false;
         }
