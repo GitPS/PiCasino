@@ -1,11 +1,9 @@
 package com.piindustries.picasino.blackjack.client;
-
 import com.piindustries.picasino.blackjack.domain.GameEventType;
-
+import com.piindustries.picasino.api.*;
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -14,7 +12,7 @@ import java.util.LinkedList;
  * Time: 11:36 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GUI extends JFrame {
+public class GUI extends JFrame implements GuiHandler {
 
     private Player player;      //The player in which this GUI belongs to
     private ClientNetworkHandler client; //The client
@@ -763,7 +761,7 @@ public class GUI extends JFrame {
 
     }
 
-    public void updateGUI( ArrayList<GameEventType> possibleActions, GuiData data ) { //TODO Add functionality for split and Double Down
+    public void updateGui( java.util.List<GameEventType> possibleActions, GuiData data ) { //TODO Add functionality for split and Double Down
 
         //if players turn, display buttons that he can use
         for( GameEventType g : possibleActions ) {
@@ -844,7 +842,7 @@ public class GUI extends JFrame {
     private void updateP1Info( Player toUpdate ) {
 
         username1.setText( toUpdate.getUsername() );
-        chipCount1.setText( Integer.toString(toUpdate.getValue()) );
+        chipCount1.setText(Integer.toString(toUpdate.getValue()));
 
         LinkedList<Integer> hand;
 
