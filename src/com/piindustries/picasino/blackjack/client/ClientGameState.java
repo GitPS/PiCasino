@@ -560,14 +560,25 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         for( Hand focus: tmpHands ){
             Player.Builder builder = Player.builder();
 
-            // Populate know info
-            builder.username(focus.getUsername())
-                   .bet(focus.getBet())
-                   .handValue(focus.getBestHandValue())
-                   .split( focus.isSplit() )
-                   .index(index + 1)
-                   .value(Integer.valueOf(blackjackDatabaseConnector.getAllPlayerData(focus.getUsername()).get("currentChipCount")))
-                   .busted(focus.getBestHandValue() > 21);    // TODO verify
+            if( focus.getUsername().startsWith("$") ){
+                // Populate know info
+                builder.username(focus.getUsername())
+                        .bet(focus.getBet())
+                        .handValue(focus.getBestHandValue())
+                        .split( focus.isSplit() )
+                        .index(0)
+                        .value(999999)
+                        .busted(focus.getBestHandValue() > 21);    // TODO verify
+            } else {
+                // Populate know info
+                builder.username(focus.getUsername())
+                        .bet(focus.getBet())
+                        .handValue(focus.getBestHandValue())
+                        .split( focus.isSplit() )
+                        .index(index + 1)
+                        .value(Integer.parseInt(blackjackDatabaseConnector.getAllPlayerData(focus.getUsername()).get("currentChipCount")))
+                        .busted(focus.getBestHandValue() > 21);    // TODO verify
+            }
 
             // Generate a hand for each hand assigned to this player
             LinkedList<LinkedList<Integer>> toAddHands = new LinkedList<>();
