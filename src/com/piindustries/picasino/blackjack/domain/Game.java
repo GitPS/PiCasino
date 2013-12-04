@@ -33,7 +33,6 @@ package com.piindustries.picasino.blackjack.domain;
 
 import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
-import com.piindustries.picasino.blackjack.client.GuiHandler;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
 
 
@@ -72,6 +71,6 @@ public class Game implements com.piindustries.picasino.api.Game {
      * @return a GuiHandler that will handle graphics on the client.
      */
     public com.piindustries.picasino.api.GuiHandler buildGuiHandler(){
-        return new GuiHandler();
+        return new GUI();
     }
 }
