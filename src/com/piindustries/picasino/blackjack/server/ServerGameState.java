@@ -605,12 +605,13 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * A simple listener that responds to gameTimer events.
      */
     private class Listener implements ActionListener {
-        private int counter = intermissionTime;
+        
+        /* If the intermission time has not been set or is invalid, default to 30 seconds */
+        private int counter = ( this.intermissionTime == null || this.intermissionTime < 1 ) ? 30 : this.intermissionTime;
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            /* If the intermission time has not been set or is invalid, default to 30 seconds */
-            this.intermissionTime = ( this.intermissionTime == null || this.intermissionTime < 1 ) ? 30 : this.intermissionTime;
+            
             if( counter == 0 ){
                 counter = intermissionTime + 1;
                 gameTimer.stop();
@@ -639,8 +640,10 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      *                games.
      */
     void setIntermissionTime(int seconds){
-        if( !(seconds < 1) )
+        if( seconds > 0  )
             this.intermissionTime = seconds;
+        else
+            throw new IllegalArgumentException("The intermission time must be a positive integer.");
     }
 
 }
