@@ -140,7 +140,9 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                 } break;
             default: throw new Error("Logical Error, Cannot Recover");
         }
-        guiHandler.updateGui( getAvailableActions(), getGuiData());
+        if( !isServer ) {
+            guiHandler.updateGui( getAvailableActions(), getGuiData());
+        }
     }
 
     public void setIsServer(boolean b){
