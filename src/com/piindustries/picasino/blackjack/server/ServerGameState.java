@@ -568,9 +568,20 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         return result;
     }
 
+    /**
+     * Builds an Array containing all the information necessary to reconstruct a ClientGameState.
+     *
+     * Indicies 0-8 contain all the usernames
+     * Indicies 9-17 contain the bets of those users in respective order
+     * Indicies 18-26 contain the cards of those users
+     * Index 27 contains the passed list
+     * Index 28 contains the current phase
+     *
+     * @param username The username to send the data to.
+     */
     private void setGameState(String username){
         GameEvent g = new GameEvent(GameEventType.SET_GAME_STATE);
-        Object[] data = new Object[27];
+        Object[] data = new Object[29];
         int index = 0;
         for( Hand h : this.gameState.getHands() ){
             data[index] = h.getUsername();
@@ -578,6 +589,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
             data[index + 18] = h.getCards();
             index += 1;
         }
+        data[27] = this.gameState.getPassedList();
+        data[28] = this.gameState.getPhase();
         g.setValue(data);
         this.getNetworkHandler().send(data, username);
     }
