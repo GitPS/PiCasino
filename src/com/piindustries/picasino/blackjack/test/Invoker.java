@@ -18,7 +18,6 @@ public class Invoker {
 
     public Invoker(ClientGameState toSet){
         this.setInnards(toSet);
-        System.out.println("What action?");
         printActions();
     }
 
