@@ -39,6 +39,15 @@ public class DatabaseConnectorTest{
         //Clean database to test
         dbt.cleanDatabaseForTesting();
 
+        //Testing if user exists
+        System.out.println("\nChecking if user exists:");
+        boolean playerDoesntExist = dbt.checkUserExist("test_user");
+        if(!playerDoesntExist){
+            System.out.println("Player test_user doesn't exist (EXPECTED)");
+        }else{
+            System.out.println("Player test_user exists (UNEXPECTED)");
+        }
+
         //Test Create Player
         System.out.println("\nTesting Add User");
         boolean playerAdded = dbt.createNewPlayer("test_user","testtest","Test","User","test@test.user");
@@ -46,6 +55,15 @@ public class DatabaseConnectorTest{
             System.out.println("Add failed");
         }else{
             System.out.println("Add succeeded");
+        }
+
+        //Testing if user exists
+        System.out.println("\nChecking if user exists:");
+        boolean playerExists = dbt.checkUserExist("test_user");
+        if(!playerExists){
+            System.out.println("Player test_user doesn't exist (UNEXPECTED)");
+        }else{
+            System.out.println("Player test_user exists (EXPECTED)");
         }
 
         //Test Update Password
@@ -59,7 +77,7 @@ public class DatabaseConnectorTest{
 
         //Test Updating chip count (2500 tests, values between 0 and 1 billion)
         System.out.println("\nTesting updating Current Chip Count");
-        for(int i = 0; i < 5000; i++){
+        for(int i = 0; i < 25; i++){
             int chipCount = (int)(Math.random() * 10000);
             boolean currentChipCountUpdated = dbt.updatePlayerCurrentChipCount("test_user",chipCount);
             if(!currentChipCountUpdated){
