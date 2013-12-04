@@ -82,10 +82,14 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * instantiates a deck of cards.
      */
     public ServerGameState(PiCasino pi){
-        this.gameState  = new ClientGameState(pi, "$Server");
+        this.gameState  = new ClientGameState(pi, "$Server", true);
         this.deck = buildDeck();
         this.gameTimer = new Timer(1000, new Listener() );
         PiCasino.LOGGER.info("Server Game State Constructed");
+    }
+
+    public void setIsServer(boolean b){
+        this.gameState.setIsServer(b);
     }
 
     // TODO Make sure splitting works as designed
@@ -277,10 +281,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         // If it is the dealer's turn to act. Play as the dealer
         if(gameState.getCurrentHand() instanceof DealerHand)
             playDealersHand();
-    }
-
-    public void setIsServer(boolean b){
-        this.gameState.setIsServer(b);
     }
 
     /**

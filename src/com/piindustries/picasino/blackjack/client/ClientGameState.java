@@ -67,12 +67,19 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private NetworkHandler networkHandler;
     private com.piindustries.picasino.api.GuiHandler guiHandler;
     private String thisUser;
-    private boolean isServer;
+    private boolean isServer = false;
 
     /**
      * Default Constructor.
      */
     public ClientGameState(PiCasino pi, String username) {
+        this(pi,username,false);
+    }
+
+    /**
+     * Default Constructor.
+     */
+    public ClientGameState(PiCasino pi, String username, boolean isServer) {
         this.setPhase(Phase.INITIALIZATION);     // Set phase
         LinkedList<Hand> h = new LinkedList<>();   // Build Player List
         h.add(new DealerHand());  // Add a dealer hand
@@ -80,6 +87,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.setNetworkHandler(pi.getNetworkHandler());
         this.setThisUser(username);
         this.passedList = new LinkedList<>();   // Create an empty passed list
+        this.isServer = isServer;
         if( ! isServer ){
             Player player = new Player.Builder().username(username).hands(new LinkedList<LinkedList<Integer>>()).value(1000).split(false).busted(false).handValue(0).index(0).result();
             this.guiHandler = new GUI(player,(ClientNetworkHandler)networkHandler);
