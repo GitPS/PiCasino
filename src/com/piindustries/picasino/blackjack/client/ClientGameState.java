@@ -67,7 +67,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private NetworkHandler networkHandler;
     private com.piindustries.picasino.api.GuiHandler guiHandler;
     private String thisUser;
-    private boolean isServer;
+    private boolean isServer = false;
 
     /**
      * Default Constructor.
