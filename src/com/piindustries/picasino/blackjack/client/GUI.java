@@ -1,5 +1,6 @@
 package com.piindustries.picasino.blackjack.client;
 import com.piindustries.picasino.blackjack.domain.GameEventType;
+import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.api.*;
 import javax.swing.*;
 import java.awt.*;
@@ -8,9 +9,8 @@ import java.util.*;
 /**
  * Created with IntelliJ IDEA.
  * User: Mike
- * Date: 11/19/13
- * Time: 11:36 PM
- * To change this template use File | Settings | File Templates.
+ * 
+ * Creates the client GUI
  */
 public class GUI extends JFrame implements GuiHandler {
 
@@ -462,147 +462,147 @@ public class GUI extends JFrame implements GuiHandler {
         getContentPane().add(stool8);
         stool8.setBounds(120, 30, 120, 120);
 
-        username1.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        username1.setFont(new Font("Tahoma", 1, 11)); 
         username1.setForeground(new Color(255, 255, 255));
         username1.setHorizontalAlignment(SwingConstants.CENTER);
         username1.setText("Username1");
         getContentPane().add(username1);
         username1.setBounds(790, 130, 130, 20);
 
-        chipCount1.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        chipCount1.setFont(new Font("Tahoma", 1, 11)); 
         chipCount1.setForeground(new Color(255, 255, 255));
         chipCount1.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount1.setText("ChipCount1");
         getContentPane().add(chipCount1);
         chipCount1.setBounds(790, 150, 130, 30);
 
-        username2.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        username2.setFont(new Font("Tahoma", 1, 11)); 
         username2.setForeground(new Color(255, 255, 255));
         username2.setHorizontalAlignment(SwingConstants.CENTER);
         username2.setText("Username2");
         getContentPane().add(username2);
         username2.setBounds(790, 330, 130, 20);
 
-        chipCount2.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        chipCount2.setFont(new Font("Tahoma", 1, 11)); 
         chipCount2.setForeground(new Color(255, 255, 255));
         chipCount2.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount2.setText("ChipCount2");
         getContentPane().add(chipCount2);
         chipCount2.setBounds(790, 350, 130, 30);
 
-        username3.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        username3.setFont(new Font("Tahoma", 1, 11)); 
         username3.setForeground(new Color(255, 255, 255));
         username3.setHorizontalAlignment(SwingConstants.CENTER);
         username3.setText("Username3");
         getContentPane().add(username3);
         username3.setBounds(790, 500, 130, 20);
 
-        chipCount3.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        chipCount3.setFont(new Font("Tahoma", 1, 11)); 
         chipCount3.setForeground(new Color(255, 255, 255));
         chipCount3.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount3.setText("ChipCount3");
         getContentPane().add(chipCount3);
         chipCount3.setBounds(790, 520, 130, 30);
 
-        username4.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        username4.setFont(new Font("Tahoma", 1, 11)); 
         username4.setForeground(new Color(255, 255, 255));
         username4.setHorizontalAlignment(SwingConstants.CENTER);
         username4.setText("Username4");
         getContentPane().add(username4);
         username4.setBounds(630, 520, 130, 20);
 
-        chipCount4.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        chipCount4.setFont(new Font("Tahoma", 1, 11)); 
         chipCount4.setForeground(new Color(255, 255, 255));
         chipCount4.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount4.setText("ChipCount4");
         getContentPane().add(chipCount4);
         chipCount4.setBounds(630, 540, 130, 30);
 
-        username5.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        username5.setFont(new Font("Tahoma", 1, 11)); 
         username5.setForeground(new Color(255, 255, 255));
         username5.setHorizontalAlignment(SwingConstants.CENTER);
         username5.setText("Username5");
         getContentPane().add(username5);
         username5.setBounds(150, 520, 130, 20);
 
-        chipCount5.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        chipCount5.setFont(new Font("Tahoma", 1, 11)); 
         chipCount5.setForeground(new Color(255, 255, 255));
         chipCount5.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount5.setText("ChipCount5");
         getContentPane().add(chipCount5);
         chipCount5.setBounds(150, 540, 130, 30);
 
-        username6.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        username6.setFont(new Font("Tahoma", 1, 11)); 
         username6.setForeground(new Color(255, 255, 255));
         username6.setHorizontalAlignment(SwingConstants.CENTER);
         username6.setText("Username6");
         getContentPane().add(username6);
         username6.setBounds(0, 500, 130, 20);
 
-        chipCount6.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        chipCount6.setFont(new Font("Tahoma", 1, 11)); 
         chipCount6.setForeground(new Color(255, 255, 255));
         chipCount6.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount6.setText("ChipCount6");
         getContentPane().add(chipCount6);
         chipCount6.setBounds(0, 520, 130, 30);
 
-        username7.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        username7.setFont(new Font("Tahoma", 1, 11)); 
         username7.setForeground(new Color(255, 255, 255));
         username7.setHorizontalAlignment(SwingConstants.CENTER);
         username7.setText("Username7");
         getContentPane().add(username7);
         username7.setBounds(0, 340, 130, 20);
 
-        chipCount7.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        chipCount7.setFont(new Font("Tahoma", 1, 11)); 
         chipCount7.setForeground(new Color(255, 255, 255));
         chipCount7.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount7.setText("ChipCount7");
         getContentPane().add(chipCount7);
         chipCount7.setBounds(0, 360, 130, 30);
 
-        username8.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        username8.setFont(new Font("Tahoma", 1, 11)); 
         username8.setForeground(new Color(255, 255, 255));
         username8.setHorizontalAlignment(SwingConstants.CENTER);
         username8.setText("Username8");
         getContentPane().add(username8);
         username8.setBounds(0, 140, 130, 20);
 
-        chipCount8.setFont(new Font("Tahoma", 1, 11)); // NOI18N
+        chipCount8.setFont(new Font("Tahoma", 1, 11)); 
         chipCount8.setForeground(new Color(255, 255, 255));
         chipCount8.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount8.setText("ChipCount8");
         getContentPane().add(chipCount8);
         chipCount8.setBounds(0, 160, 130, 30);
 
-        info1.setIcon(new ImageIcon(getClass().getResource("/PiCasinoPlayerInfo.png"))); // NOI18N
+        info1.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info1);
         info1.setBounds(790, 120, 132, 60);
 
-        info2.setIcon(new ImageIcon(getClass().getResource("/PiCasinoPlayerInfo.png"))); // NOI18N
+        info2.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info2);
         info2.setBounds(790, 320, 132, 60);
 
-        info3.setIcon(new ImageIcon(getClass().getResource("/PiCasinoPlayerInfo.png"))); // NOI18N
+        info3.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info3);
         info3.setBounds(790, 490, 132, 60);
 
-        info4.setIcon(new ImageIcon(getClass().getResource("/PiCasinoPlayerInfo.png"))); // NOI18N
+        info4.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info4);
         info4.setBounds(630, 510, 132, 60);
 
-        info5.setIcon(new ImageIcon(getClass().getResource("/PiCasinoPlayerInfo.png"))); // NOI18N
+        info5.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info5);
         info5.setBounds(150, 510, 132, 60);
 
-        info6.setIcon(new ImageIcon(getClass().getResource("/PiCasinoPlayerInfo.png"))); // NOI18N
+        info6.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info6);
         info6.setBounds(0, 490, 132, 60);
 
-        info7.setIcon(new ImageIcon(getClass().getResource("/PiCasinoPlayerInfo.png"))); // NOI18N
+        info7.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info7);
         info7.setBounds(0, 330, 132, 60);
 
-        info8.setIcon(new ImageIcon(getClass().getResource("/PiCasinoPlayerInfo.png"))); // NOI18N
+        info8.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info8);
         info8.setBounds(0, 130, 132, 60);
 
@@ -626,28 +626,28 @@ public class GUI extends JFrame implements GuiHandler {
         getContentPane().add(splitButton);
         splitButton.setBounds(20, 570, 150, 100);
 
-        hitText.setFont(new Font("Tahoma", 1, 18)); // NOI18N
+        hitText.setFont(new Font("Tahoma", 1, 18)); 
         hitText.setForeground(new Color(255, 255, 255));
         hitText.setHorizontalAlignment(SwingConstants.CENTER);
         hitText.setText("HIT");
         getContentPane().add(hitText);
         hitText.setBounds(530, 570, 150, 110);
 
-        stayText.setFont(new Font("Tahoma", 1, 18)); // NOI18N
+        stayText.setFont(new Font("Tahoma", 1, 18)); 
         stayText.setForeground(new Color(255, 255, 255));
         stayText.setHorizontalAlignment(SwingConstants.CENTER);
         stayText.setText("STAY");
         getContentPane().add(stayText);
         stayText.setBounds(360, 570, 150, 110);
 
-        doubleDownText.setFont(new Font("Tahoma", 1, 18)); // NOI18N
+        doubleDownText.setFont(new Font("Tahoma", 1, 18)); 
         doubleDownText.setForeground(new Color(255, 255, 255));
         doubleDownText.setHorizontalAlignment(SwingConstants.CENTER);
         doubleDownText.setText("DOUBLE DOWN");
         getContentPane().add(doubleDownText);
         doubleDownText.setBounds(190, 570, 150, 110);
 
-        splitText.setFont(new Font("Tahoma", 1, 18)); // NOI18N
+        splitText.setFont(new Font("Tahoma", 1, 18)); 
         splitText.setForeground(new Color(255, 255, 255));
         splitText.setHorizontalAlignment(SwingConstants.CENTER);
         splitText.setText("SPLIT");
@@ -655,36 +655,30 @@ public class GUI extends JFrame implements GuiHandler {
         splitText.setBounds(20, 570, 150, 110);
 
         hitImage.setForeground(new Color(255, 255, 255));
-        hitImage.setIcon(new ImageIcon(getClass().getResource("/Buttons.png"))); // NOI18N
+        hitImage.setIcon(new ImageIcon(getClass().getResource("/Resources/Buttons.png")));
         getContentPane().add(hitImage);
         hitImage.setBounds(530, 570, 150, 120);
 
-        stayImage.setIcon(new ImageIcon(getClass().getResource("/Buttons.png"))); // NOI18N
+        stayImage.setIcon(new ImageIcon(getClass().getResource("/Resources/Buttons.png")));
         getContentPane().add(stayImage);
         stayImage.setBounds(360, 570, 150, 120);
 
-        doubleDownImage.setIcon(new ImageIcon(getClass().getResource("/Buttons.png"))); // NOI18N
+        doubleDownImage.setIcon(new ImageIcon(getClass().getResource("/Resources/Buttons.png")));
         getContentPane().add(doubleDownImage);
         doubleDownImage.setBounds(190, 570, 150, 120);
 
-        splitImage.setIcon(new ImageIcon(getClass().getResource("/Buttons.png"))); // NOI18N
+        splitImage.setIcon(new ImageIcon(getClass().getResource("/Resources/Buttons.png")));
         getContentPane().add(splitImage);
         splitImage.setBounds(20, 570, 150, 120);
 
-        table.setIcon(new ImageIcon(getClass().getResource("/PiCasinoTable.png"))); // NOI18N
+        table.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoTable.png")));
         getContentPane().add(table);
         table.setBounds(0, 0, 925, 700);
 
         setStoolsHidden();
         pack();
 
-        //Make stools unclickable if the player is already sitting down
-        //if( player.getIndex() != 99 ) {
-        //    setStoolsHidden();
-        //}
-
-
-    }// </editor-fold>
+    }
 
     ///////////////////////////////Buttons for taking a seat//////////////////////////////////
     /**
@@ -745,6 +739,7 @@ public class GUI extends JFrame implements GuiHandler {
 
     //TODO send that the player hit
     private void hit(java.awt.event.ActionEvent evt) {
+        GameEvent event = new GameEvent( GameEventType.HIT );
 
     }
 
@@ -831,7 +826,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             dealerHand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
@@ -853,7 +848,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             p1Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
@@ -875,7 +870,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             p2Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
@@ -897,7 +892,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             p3Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
@@ -919,7 +914,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             p4Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
@@ -941,7 +936,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             p5Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
@@ -963,7 +958,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             p6Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
@@ -984,7 +979,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             p7Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
@@ -1005,7 +1000,7 @@ public class GUI extends JFrame implements GuiHandler {
 
         for( int j = 0; j < hand.size(); j++ ) {
             StringBuilder sb = new StringBuilder();
-            sb.append("/");
+            sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
             p8Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
