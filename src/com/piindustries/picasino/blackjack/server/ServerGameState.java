@@ -71,7 +71,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     private Timer gameTimer;
 
     // number of seconds between games
-    private int intermissionTime = 5;
+    private int intermissionTime;
 
     private ServerNetworkHandler networkHandler;
 
@@ -609,6 +609,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            /* If the intermission time has not been set or is invalid, default to 30 seconds */
+            this.intermissionTime = ( this.intermissionTime == null || this.intermissionTime < 1 ) ? 30 : this.intermissionTime;
             if( counter == 0 ){
                 counter = intermissionTime + 1;
                 gameTimer.stop();
