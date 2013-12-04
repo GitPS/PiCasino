@@ -56,7 +56,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 PiCasino.LOGGER.info("Connected to Database: " + conn.getCatalog() + " located on " + conn.getMetaData().getURL() + " as " + conn.getMetaData().getUserName() );
             }
         }catch(SQLException sql){
-            printError(sql,sb.toString());
+            printError(sql,null);
         }
     }
 

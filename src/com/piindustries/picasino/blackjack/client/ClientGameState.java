@@ -34,6 +34,7 @@ package com.piindustries.picasino.blackjack.client;
 import com.piindustries.picasino.PiCasino;
 import com.piindustries.picasino.api.InvalidGameEventException;
 import com.piindustries.picasino.api.NetworkHandler;
+import com.piindustries.picasino.blackjack.database.BlackjackDatabaseConnector;
 import com.piindustries.picasino.blackjack.domain.*;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private com.piindustries.picasino.api.GuiHandler guiHandler;
     private String thisUser;
     private boolean isServer = false;
+    private BlackjackDatabaseConnector blackjackDatabaseConnector;
 
     /**
      * Default Constructor.
@@ -88,6 +90,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         this.setThisUser(username);
         this.passedList = new LinkedList<>();   // Create an empty passed list
         this.isServer = isServer;
+        blackjackDatabaseConnector = new BlackjackDatabaseConnector();
         if( ! isServer ){
             Player player = new Player.Builder().username(username).hands(new LinkedList<LinkedList<Integer>>()).value(1000).split(false).busted(false).handValue(0).index(0).result();
             this.guiHandler = new GUI(player,(ClientNetworkHandler)networkHandler);
@@ -557,13 +560,25 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         for( Hand focus: tmpHands ){
             Player.Builder builder = Player.builder();
 
-            // Populate know info
-            builder.username(focus.getUsername())
-                   .bet(focus.getBet())
-                   .handValue(focus.getBestHandValue())
-                   .split( focus.isSplit() )
-                   .index(index + 1)
-                   .busted( focus.getBestHandValue() > 21 );    // TODO verify
+            if( focus.getUsername().startsWith("$") ){
+                // Populate know info
+                builder.username(focus.getUsername())
+                        .bet(focus.getBet())
+                        .handValue(focus.getBestHandValue())
+                        .split( focus.isSplit() )
+                        .index(0)
+                        .value(999999)
+                        .busted(focus.getBestHandValue() > 21);    // TODO verify
+            } else {
+                // Populate know info
+                builder.username(focus.getUsername())
+                        .bet(focus.getBet())
+                        .handValue(focus.getBestHandValue())
+                        .split( focus.isSplit() )
+                        .index(index + 1)
+                        .value(Integer.parseInt(blackjackDatabaseConnector.getAllPlayerData(focus.getUsername()).get("currentChipCount")))
+                        .busted(focus.getBestHandValue() > 21);    // TODO verify
+            }
 
             // Generate a hand for each hand assigned to this player
             LinkedList<LinkedList<Integer>> toAddHands = new LinkedList<>();
@@ -591,8 +606,10 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     // TODO comment
     private GuiData buildGuiDataFromArray(Player[] data){
         GuiData result = new GuiData();
-        for(int i = 0; i < 9; i++ )
-            result.setPlayer( i+1, data[0] );
+        for(int i = 1; i < 9; i++ ){
+            result.setPlayer( i, data[0] );
+        }
+        result.setPlayer(0, data[8]);
         return result;
     }
 
