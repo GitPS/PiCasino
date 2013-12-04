@@ -32,6 +32,9 @@
 package com.piindustries.picasino.api;
 
 import com.piindustries.picasino.blackjack.client.GuiData;
+import com.piindustries.picasino.blackjack.domain.GameEventType;
+
+import java.util.List;
 
 /**
  * An interface that handles the graphics
@@ -46,5 +49,5 @@ public interface GuiHandler {
      * Updates the Graphical Interface of this game
      * given its current ClientGameState.
      */
-    public void updateGui(GuiData data);
+    public void updateGui(List<GameEventType> list, GuiData data);
 }
