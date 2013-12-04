@@ -599,8 +599,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                 // Assign player data to position
                 tmpData[index] = builder.result();
                 // Progress
-                index += 1;
             }
+            index += 1;
         }
         throw new Error("Unreachable code.  Method should have ended upon evaluation of dealer's hand.");
     }
