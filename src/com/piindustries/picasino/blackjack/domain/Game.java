@@ -32,6 +32,7 @@
 package com.piindustries.picasino.blackjack.domain;
 
 import com.piindustries.picasino.PiCasino;
+import com.piindustries.picasino.api.GuiHandler;
 import com.piindustries.picasino.blackjack.client.ClientGameState;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
 
@@ -64,13 +65,8 @@ public class Game implements com.piindustries.picasino.api.Game {
         return new ServerGameState(pi);
     }
 
-    /**
-     * Builds and returns an object conforming to type GuiHandler to
-     * handle graphics on the client side.
-     *
-     * @return a GuiHandler that will handle graphics on the client.
-     */
-    public com.piindustries.picasino.api.GuiHandler buildGuiHandler(){
-        return new GUI();
+    @Override
+    public GuiHandler buildGuiHandler() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -23,10 +23,7 @@
 
 package com.piindustries.picasino.blackjack.client;
 
-import com.piindustries.picasino.blackjack.domain.Hand;
-
 import java.util.LinkedList;
-import java.util.List;
 
 public class Player {
     String username;
@@ -50,7 +47,8 @@ public class Player {
                    boolean hasSplit,
                    boolean hasBusted,
                    boolean upToAct,
-                   int handValue) {
+                   int handValue,
+                   int index ) {
         this.username = username;
         this.hands = hands;
         this.value = value;
@@ -59,6 +57,7 @@ public class Player {
         this.hasBusted = hasBusted;
         isUpToAct = upToAct;
         this.handValue = handValue;
+        this.index = index;
     }
 
     public String getUsername() {
@@ -143,8 +142,9 @@ public class Player {
         boolean hasBusted;
         boolean isUpToAct;
         int handValue;
+        int index;
 
-        private Builder(){}
+        public Builder(){}
 
         public Builder username(String username){
             this.username = username;
@@ -186,8 +186,13 @@ public class Player {
             return this;
         }
 
+        public Builder index(int index){
+            this.index = index;
+            return this;
+        }
+
         public Player result(){
-            return new Player( username, hands, value, bet, hasSplit, hasBusted, isUpToAct, handValue );
+            return new Player( username, hands, value, bet, hasSplit, hasBusted, isUpToAct, handValue, index );
         }
     }
 }
