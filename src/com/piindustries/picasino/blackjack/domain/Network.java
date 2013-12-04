@@ -47,5 +47,6 @@ public class Network {
         kryo.register(Hand.class);
         kryo.register(Phase.class);
         kryo.register(DealerHand.class);
+        kryo.register(Object[].class);
     }
 }
