@@ -740,21 +740,28 @@ public class GUI extends JFrame implements GuiHandler {
     //TODO send that the player hit
     private void hit(java.awt.event.ActionEvent evt) {
         GameEvent event = new GameEvent( GameEventType.HIT );
+        client.send(event);
 
     }
 
     //TODO send that the player stood
     private void stand(java.awt.event.ActionEvent evt) {
+        GameEvent event = new GameEvent( GameEventType.STAND );
+        client.send(event);
 
     }
 
     //TODO send that the player doubleddown
     private void doubleDown(java.awt.event.ActionEvent evt) {
+        GameEvent event = new GameEvent( GameEventType.DOUBLE_DOWN );
+        client.send(event);
 
     }
 
     //TODO send that the player split
     private void split(java.awt.event.ActionEvent evt) {
+        GameEvent event = new GameEvent( GameEventType.SPLIT );
+        client.send(event);
 
     }
 
