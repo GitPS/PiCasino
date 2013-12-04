@@ -1,6 +1,7 @@
 package com.piindustries.picasino.blackjack.database;
 
 import com.piindustries.picasino.api.DatabaseConnector;
+import com.piindustries.picasino.PiCasino;
 import java.sql.*;
 import java.util.HashMap;
 
@@ -52,14 +53,10 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             }
 
             if(DEBUG){
-                System.out.println("Connected to Database: " + conn.getCatalog() + " located on " + conn.getMetaData().getURL() + " as " + conn.getMetaData().getUserName() );
+                PiCasino.LOGGER.info("Connected to Database: " + conn.getCatalog() + " located on " + conn.getMetaData().getURL() + " as " + conn.getMetaData().getUserName() );
             }
-            //Final connection string when using locally
-            //conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/PiCasino","picasino","nASXn178WgQm6nx1YvF36gdq");
         }catch(SQLException sql){
-            System.out.println("SQL Exception:" + sql.getMessage());
-            System.out.println("SQL State: " + sql.getSQLState());
-            System.out.println("Vendor Error: " + sql.getErrorCode());
+            printError(sql,sb.toString());
         }
     }
 
@@ -93,7 +90,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 sb.append("';");
 
                 if(stmt.executeUpdate(sb.toString()) != 1){
-                    System.out.println("UPDATE statement returned something other than 0. Please debug further.");
+                    PiCasino.LOGGER.severe("UPDATE statement returned something other than 0. Please debug further.");
                     stmt.close();
                     return false;
                 }else{
@@ -104,7 +101,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             }
         }catch(SQLException sql){
             if(sql.getErrorCode() == 1062){
-                System.out.println("User " + username + " already exists! Please choose another username");
+                PiCasino.LOGGER.severe("User " + username + " already exists! Please choose another username");
             }else{
                 printError(sql,sb.toString());
             }
@@ -164,11 +161,11 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             if(oldPwd.compareTo(oldPwdEntered) == 0){
                 query = "UPDATE login SET password=sha1('"+newPassword+"') WHERE username='"+username+"' LIMIT 1;";
                 if(stmt.executeUpdate(query) != 1){
-                    System.out.println("Something broke during password update");
+                    PiCasino.LOGGER.warning("Something broke during password update");
                     return false;
                 }
             }else{
-                System.out.println("Old and New passwords do not match. Please try again later");
+                PiCasino.LOGGER.warning("Old and New passwords do not match. Please try again later");
                 return false;
             }
             stmt.close();
@@ -192,7 +189,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         try{
             Statement stmt = conn.createStatement();
             if(stmt.executeUpdate(sb.toString()) != 1){
-                System.out.println("lastLoggedInDate UPDATE failed. Please debug.");
+                PiCasino.LOGGER.warning("lastLoggedInDate UPDATE failed. Please debug.");
                 return false;
             }else{
                 System.gc();
@@ -234,7 +231,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 stmt = conn.createStatement();
                 int result = stmt.executeUpdate(sb.toString());
                 if(result != 1){
-                    System.out.println("Update of high chip count failed.");
+                    PiCasino.LOGGER.warning("Update of high chip count failed.");
                     return false;
                 }
             }
@@ -248,7 +245,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             stmt = conn.createStatement();
             int result = stmt.executeUpdate(sb.toString());
             if(result != 1){
-                System.out.println("Update of current chip count failed.");
+                PiCasino.LOGGER.warning("Update of current chip count failed.");
                 return false;
             }else{
                 return true;
@@ -279,12 +276,12 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
             loginPwdRS.close();
 
             if(DEBUG){
-                System.out.println("Stored password hash:\t" + oldPwdHash);
-                System.out.println("Entered password hash:\t" + loginPwdHash);
+                PiCasino.LOGGER.info("Stored password hash:\t" + oldPwdHash);
+                PiCasino.LOGGER.info("Entered password hash:\t" + loginPwdHash);
                 if(oldPwdHash.compareTo(loginPwdHash) == 0){
-                    System.out.println("When compared, they match");
+                    PiCasino.LOGGER.info("When compared, they match");
                 }else{
-                    System.out.println("When compared, they don't match");
+                    PiCasino.LOGGER.info("When compared, they don't match");
                 }
             }
 
@@ -292,7 +289,7 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
                 return true;
             }else{
                 if(DEBUG){
-                    System.out.println("DEBUG: Passwords did not match. Please try logging in again.");
+                    PiCasino.LOGGER.info("DEBUG: Passwords did not match. Please try logging in again.");
                 }
                 return false;
             }
@@ -319,10 +316,10 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     }
 
     private void printError(SQLException sql, String query){
-        sql.printStackTrace();
-        System.out.println("Query: " + query);
-        System.out.println("SQL Exception:\n" + sql.getMessage());
-        System.out.println("SQL Message:\n" + sql.toString());
+        PiCasino.LOGGER.warning(sql.toString());
+        PiCasino.LOGGER.warning("Query: " + query);
+        PiCasino.LOGGER.warning("SQL Exception:\n" + sql.getMessage());
+        PiCasino.LOGGER.warning("SQL Message:\n" + sql.toString());
     }
 
     public void cleanDatabaseForTesting(){
