@@ -56,6 +56,11 @@ public class DatabaseConnectorTest{
         }else{
             System.out.println("Add succeeded");
         }
+        dbt.createNewPlayer("admin_aaron","123","Aaron","Admin","jensen.aaro@uwlax.edu");
+        dbt.createNewPlayer("admin_drew","123","Drew","Admin","reis.andr@uwlax.edu");
+        dbt.createNewPlayer("admin_mike","123","Mike","Admin","hoyt.mich@uwlax.edu");
+        dbt.createNewPlayer("admin_phil","123","Phil","Admin","sime.phil@uwlax.edu");
+
 
         //Testing if user exists
         System.out.println("\nChecking if user exists:");
