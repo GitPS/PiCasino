@@ -69,9 +69,6 @@ public class PiCasino {
         GameEvent gameEvent = new GameEvent(GameEventType.SET_NETWORK_HANDLER);
         gameEvent.setValue(networkHandler);
 
-        /* Set is server to true */
-        ((ServerGameState)(gameState)).setIsServer(true);
-
         /* Set NetworkHandler in GameState */
         try{
             gameState.invoke(gameEvent);
