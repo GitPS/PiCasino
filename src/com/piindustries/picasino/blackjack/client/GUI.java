@@ -79,6 +79,7 @@ public class GUI extends JFrame implements GuiHandler {
         this.player = player;
         this.client = client;
         initComponents();
+        setVisible(true);
     }
 
     /**
@@ -801,8 +802,6 @@ public class GUI extends JFrame implements GuiHandler {
         }
 
         repaint();
-
-
     }
 
     /**
