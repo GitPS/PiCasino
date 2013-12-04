@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class GUI extends JFrame implements GuiHandler {
 
-    private Player player;      //The player in which this GUI belongs to
+    private Player player;               //The player in which this GUI belongs to
     private ClientNetworkHandler client; //The client
     private JLabel[] dealerHand;
     private JLabel[] p1Hand;
@@ -25,8 +25,7 @@ public class GUI extends JFrame implements GuiHandler {
     private JLabel[] p6Hand;
     private JLabel[] p7Hand;
     private JLabel[] p8Hand;
-    private JPanel cardPanel;   //holds all of the cards on the table
-    private JLabel chipCount1;  //holds the chip count of each player
+    private JLabel chipCount1;          //holds the chip count of each player
     private JLabel chipCount2;
     private JLabel chipCount3;
     private JLabel chipCount4;
@@ -62,7 +61,6 @@ public class GUI extends JFrame implements GuiHandler {
     private JButton stool6;
     private JButton stool7;
     private JButton stool8;
-    private JLabel table;               //background
     private JLabel username1;           //client usernames to be displayed in info
     private JLabel username2;
     private JLabel username3;
@@ -84,10 +82,8 @@ public class GUI extends JFrame implements GuiHandler {
 
     /**
      * Initializes all of the objects from the GUI Builder.
-     * Do not modify.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         dealerHand = new JLabel[5];
@@ -99,7 +95,7 @@ public class GUI extends JFrame implements GuiHandler {
         p6Hand = new JLabel[5];
         p7Hand = new JLabel[5];
         p8Hand = new JLabel[5];
-        cardPanel = new JPanel();
+        JPanel cardPanel = new JPanel();
         JLabel dealer5 = new JLabel();
         JLabel dealer4 = new JLabel();
         JLabel dealer3 = new JLabel();
@@ -189,7 +185,7 @@ public class GUI extends JFrame implements GuiHandler {
         stayImage = new JLabel();
         doubleDownImage = new JLabel();
         splitImage = new JLabel();
-        table = new JLabel();
+        JLabel table = new JLabel();
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(930, 720));
@@ -462,174 +458,149 @@ public class GUI extends JFrame implements GuiHandler {
         getContentPane().add(stool8);
         stool8.setBounds(120, 30, 120, 120);
 
-        username1.setFont(new Font("Tahoma", 1, 11)); 
+        username1.setFont(new Font("Tahoma", Font.PLAIN, 11));
         username1.setForeground(new Color(255, 255, 255));
         username1.setHorizontalAlignment(SwingConstants.CENTER);
         username1.setText("Username1");
         getContentPane().add(username1);
         username1.setBounds(790, 130, 130, 20);
-        username1.setVisible( false );
 
-        chipCount1.setFont(new Font("Tahoma", 1, 11)); 
+        chipCount1.setFont(new Font("Tahoma", Font.PLAIN, 11));
         chipCount1.setForeground(new Color(255, 255, 255));
         chipCount1.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount1.setText("ChipCount1");
         getContentPane().add(chipCount1);
         chipCount1.setBounds(790, 150, 130, 30);
-        chipCount1.setVisible( false );
 
-        username2.setFont(new Font("Tahoma", 1, 11)); 
+        username2.setFont(new Font("Tahoma", Font.PLAIN, 11));
         username2.setForeground(new Color(255, 255, 255));
         username2.setHorizontalAlignment(SwingConstants.CENTER);
         username2.setText("Username2");
         getContentPane().add(username2);
         username2.setBounds(790, 330, 130, 20);
-        username2.setVisible( false );
 
-        chipCount2.setFont(new Font("Tahoma", 1, 11)); 
+        chipCount2.setFont(new Font("Tahoma", Font.PLAIN, 11));
         chipCount2.setForeground(new Color(255, 255, 255));
         chipCount2.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount2.setText("ChipCount2");
         getContentPane().add(chipCount2);
         chipCount2.setBounds(790, 350, 130, 30);
-        chipCount2.setVisible( false );
 
-        username3.setFont(new Font("Tahoma", 1, 11)); 
+        username3.setFont(new Font("Tahoma", Font.PLAIN, 11));
         username3.setForeground(new Color(255, 255, 255));
         username3.setHorizontalAlignment(SwingConstants.CENTER);
         username3.setText("Username3");
         getContentPane().add(username3);
         username3.setBounds(790, 500, 130, 20);
-        username3.setVisible( false );
 
-        chipCount3.setFont(new Font("Tahoma", 1, 11)); 
+        chipCount3.setFont(new Font("Tahoma", Font.PLAIN, 11));
         chipCount3.setForeground(new Color(255, 255, 255));
         chipCount3.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount3.setText("ChipCount3");
         getContentPane().add(chipCount3);
         chipCount3.setBounds(790, 520, 130, 30);
-        chipCount3.setVisible( false );
 
-
-        username4.setFont(new Font("Tahoma", 1, 11)); 
+        username4.setFont(new Font("Tahoma", Font.PLAIN, 11));
         username4.setForeground(new Color(255, 255, 255));
         username4.setHorizontalAlignment(SwingConstants.CENTER);
         username4.setText("Username4");
         getContentPane().add(username4);
         username4.setBounds(630, 520, 130, 20);
-        username4.setVisible( false );
 
-        chipCount4.setFont(new Font("Tahoma", 1, 11)); 
+        chipCount4.setFont(new Font("Tahoma", Font.PLAIN, 11));
         chipCount4.setForeground(new Color(255, 255, 255));
         chipCount4.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount4.setText("ChipCount4");
         getContentPane().add(chipCount4);
         chipCount4.setBounds(630, 540, 130, 30);
-        chipCount4.setVisible( false );
 
-        username5.setFont(new Font("Tahoma", 1, 11)); 
+        username5.setFont(new Font("Tahoma", Font.PLAIN, 11));
         username5.setForeground(new Color(255, 255, 255));
         username5.setHorizontalAlignment(SwingConstants.CENTER);
         username5.setText("Username5");
         getContentPane().add(username5);
         username5.setBounds(150, 520, 130, 20);
-        username5.setVisible( false );
 
-        chipCount5.setFont(new Font("Tahoma", 1, 11)); 
+        chipCount5.setFont(new Font("Tahoma", Font.PLAIN, 11));
         chipCount5.setForeground(new Color(255, 255, 255));
         chipCount5.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount5.setText("ChipCount5");
         getContentPane().add(chipCount5);
         chipCount5.setBounds(150, 540, 130, 30);
-        chipCount5.setVisible( false );
 
-        username6.setFont(new Font("Tahoma", 1, 11)); 
+        username6.setFont(new Font("Tahoma", Font.PLAIN, 11));
         username6.setForeground(new Color(255, 255, 255));
         username6.setHorizontalAlignment(SwingConstants.CENTER);
         username6.setText("Username6");
         getContentPane().add(username6);
         username6.setBounds(0, 500, 130, 20);
-        username6.setVisible( false );
 
-        chipCount6.setFont(new Font("Tahoma", 1, 11)); 
+        chipCount6.setFont(new Font("Tahoma", Font.PLAIN, 11));
         chipCount6.setForeground(new Color(255, 255, 255));
         chipCount6.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount6.setText("ChipCount6");
         getContentPane().add(chipCount6);
         chipCount6.setBounds(0, 520, 130, 30);
-        chipCount6.setVisible( false );
 
-        username7.setFont(new Font("Tahoma", 1, 11)); 
+        username7.setFont(new Font("Tahoma", Font.PLAIN, 11));
         username7.setForeground(new Color(255, 255, 255));
         username7.setHorizontalAlignment(SwingConstants.CENTER);
         username7.setText("Username7");
         getContentPane().add(username7);
         username7.setBounds(0, 340, 130, 20);
-        username7.setVisible( false );
 
-        chipCount7.setFont(new Font("Tahoma", 1, 11)); 
+        chipCount7.setFont(new Font("Tahoma", Font.PLAIN, 11));
         chipCount7.setForeground(new Color(255, 255, 255));
         chipCount7.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount7.setText("ChipCount7");
         getContentPane().add(chipCount7);
         chipCount7.setBounds(0, 360, 130, 30);
-        chipCount7.setVisible( false );
 
-        username8.setFont(new Font("Tahoma", 1, 11)); 
+        username8.setFont(new Font("Tahoma", Font.PLAIN, 11));
         username8.setForeground(new Color(255, 255, 255));
         username8.setHorizontalAlignment(SwingConstants.CENTER);
         username8.setText("Username8");
         getContentPane().add(username8);
         username8.setBounds(0, 140, 130, 20);
-        username8.setVisible( false );
 
-        chipCount8.setFont(new Font("Tahoma", 1, 11)); 
+        chipCount8.setFont(new Font("Tahoma", Font.PLAIN, 11));
         chipCount8.setForeground(new Color(255, 255, 255));
         chipCount8.setHorizontalAlignment(SwingConstants.CENTER);
         chipCount8.setText("ChipCount8");
         getContentPane().add(chipCount8);
         chipCount8.setBounds(0, 160, 130, 30);
-        chipCount8.setVisible( false );
 
         info1.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info1);
         info1.setBounds(790, 120, 132, 60);
-        info1.setVisible( false );
 
         info2.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info2);
         info2.setBounds(790, 320, 132, 60);
-        info2.setVisible( false );
 
         info3.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info3);
         info3.setBounds(790, 490, 132, 60);
-        info3.setVisible( false );
 
         info4.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info4);
         info4.setBounds(630, 510, 132, 60);
-        info4.setVisible( false );
 
         info5.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info5);
         info5.setBounds(150, 510, 132, 60);
-        info5.setVisible( false );
 
         info6.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info6);
         info6.setBounds(0, 490, 132, 60);
-        info6.setVisible( false );
 
         info7.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info7);
         info7.setBounds(0, 330, 132, 60);
-        info7.setVisible( false );
 
         info8.setIcon(new ImageIcon(getClass().getResource("/Resources/PiCasinoPlayerInfo.png")));
         getContentPane().add(info8);
         info8.setBounds(0, 130, 132, 60);
-        info8.setVisible( false );
 
         hitButton.setBorderPainted(false);
         hitButton.setContentAreaFilled(false);
@@ -675,7 +646,7 @@ public class GUI extends JFrame implements GuiHandler {
             }
         });
 
-        hitText.setFont(new Font("Tahoma", 1, 18)); 
+        hitText.setFont(new Font("Tahoma", Font.PLAIN, 18));
         hitText.setForeground(new Color(255, 255, 255));
         hitText.setHorizontalAlignment(SwingConstants.CENTER);
         hitText.setText("HIT");
@@ -683,7 +654,7 @@ public class GUI extends JFrame implements GuiHandler {
         hitText.setBounds(530, 570, 150, 110);
         hitText.setVisible( false );
 
-        stayText.setFont(new Font("Tahoma", 1, 18)); 
+        stayText.setFont(new Font("Tahoma", Font.PLAIN, 18));
         stayText.setForeground(new Color(255, 255, 255));
         stayText.setHorizontalAlignment(SwingConstants.CENTER);
         stayText.setText("STAY");
@@ -691,7 +662,7 @@ public class GUI extends JFrame implements GuiHandler {
         stayText.setBounds(360, 570, 150, 110);
         stayText.setVisible( false );
 
-        doubleDownText.setFont(new Font("Tahoma", 1, 18)); 
+        doubleDownText.setFont(new Font("Tahoma", Font.PLAIN, 18));
         doubleDownText.setForeground(new Color(255, 255, 255));
         doubleDownText.setHorizontalAlignment(SwingConstants.CENTER);
         doubleDownText.setText("DOUBLE DOWN");
@@ -699,7 +670,7 @@ public class GUI extends JFrame implements GuiHandler {
         doubleDownText.setBounds(190, 570, 150, 110);
         doubleDownText.setVisible( false );
 
-        splitText.setFont(new Font("Tahoma", 1, 18)); 
+        splitText.setFont(new Font("Tahoma", Font.PLAIN, 18));
         splitText.setForeground(new Color(255, 255, 255));
         splitText.setHorizontalAlignment(SwingConstants.CENTER);
         splitText.setText("SPLIT");
@@ -732,7 +703,11 @@ public class GUI extends JFrame implements GuiHandler {
         getContentPane().add(table);
         table.setBounds(0, 0, 925, 700);
 
+        //Don't display info boxes initially
+        setInfoHidden();
+        //set stool buttons to not work.  We're not currently implementing this functionality.
         setStoolsHidden();
+
         pack();
 
     }
@@ -741,7 +716,9 @@ public class GUI extends JFrame implements GuiHandler {
     /**
      * For all stoolXActionPerformed : the button is hidden.  When clicked, a user
      * will sit down, the button will then be unusable until the user leaves the spot
-     * TODO send that a player sat down through network handler
+     *
+     * Note** This functionality is currently not employed. Players are assigned seats based on when they join.
+     *        Starting from index 1 onwards.
      */
     private void stool1ActionPerformed(java.awt.event.ActionEvent evt) {
         //player.setIndex( 1 );
@@ -749,7 +726,7 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     private void stool2ActionPerformed(java.awt.event.ActionEvent evt) {
-        //player.setIndex( 2 );
+        player.setIndex( 2 );
         setStoolsHidden();
     }
 
@@ -783,6 +760,9 @@ public class GUI extends JFrame implements GuiHandler {
         setStoolsHidden();
     }
 
+    /**
+     * Remove stool button functionality
+     */
     private void setStoolsHidden() {
         stool1.setEnabled( false );
         stool2.setEnabled( false );
@@ -792,6 +772,45 @@ public class GUI extends JFrame implements GuiHandler {
         stool6.setEnabled( false );
         stool7.setEnabled( false );
         stool8.setEnabled( false );
+    }
+
+    /**
+     * Set the Info, Chip count and Username to not visible.
+     * Called initially and at every update of gamestate
+     */
+    private void setInfoHidden() {
+        info1.setVisible( false );
+        username1.setVisible( false );
+        chipCount1.setVisible( false );
+
+        info2.setVisible( false );
+        username2.setVisible( false );
+        chipCount2.setVisible( false );
+
+        info3.setVisible( false );
+        username3.setVisible( false );
+        chipCount3.setVisible( false );
+
+        info4.setVisible( false );
+        username4.setVisible( false );
+        chipCount4.setVisible( false );
+
+        info5.setVisible( false );
+        username5.setVisible( false );
+        chipCount5.setVisible( false );
+
+        info6.setVisible( false );
+        username6.setVisible( false );
+        chipCount6.setVisible( false );
+
+        info7.setVisible( false );
+        username7.setVisible( false );
+        chipCount7.setVisible( false );
+
+        info8.setVisible( false );
+        username8.setVisible( false );
+        chipCount8.setVisible( false );
+
     }
 
     /**
@@ -835,12 +854,16 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     /**
-     * Called from gamestate to update all users
+     * Called to update all users. If it is your turn, it displays buttons for functionality.  It also updates
+     * all of the users information, along with their current cards.
+     *
      * @param possibleActions What actions the current player cna use
      * @param data The current GuiData
      */
     public void updateGui( java.util.List<GameEventType> possibleActions, GuiData data ) { //TODO Add functionality for split and Double Down
 
+
+        setInfoHidden();
         //if players turn, display buttons that he can use
         for( GameEventType g : possibleActions ) {
             switch(g) {
@@ -870,7 +893,7 @@ public class GUI extends JFrame implements GuiHandler {
                     break;
             }
         }
-
+        //loop through all players. If they exist, update.
         for( int i = 0; i < 9; i++ ) {
             if( data.getPlayer(i) != null ) {
                 updatePlayerInfo( data.getPlayer(i) );
@@ -881,12 +904,11 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     /**
-     * Called by gamestate when any player gets a new card.  This then updates the GUI to reflect the new card
-     * being added by the given player
+     * Called by UpdateGui.  Updates the GUI to reflect every player.
      *
      * @param toUpdate The player whose card was added
      */
-    public void updatePlayerInfo( Player toUpdate ) {
+    private void updatePlayerInfo( Player toUpdate ) {
 
             switch( toUpdate.getIndex() ) {
                 case 1: updateP1Info( toUpdate ); break;
@@ -901,6 +923,12 @@ public class GUI extends JFrame implements GuiHandler {
             }
     }
 
+    /**
+     * The below methods: updateDealerInfo - updateP8Info have the same functionality.
+     * Each updates the current username and chip count. Then followed by what cards they currently have.
+     * This information is then shown across GUIs.
+     * @param toUpdate player toUpdate
+     */
     private void updateDealerInfo(Player toUpdate) {
 
         LinkedList<Integer> hand = toUpdate.getHands().getFirst();
