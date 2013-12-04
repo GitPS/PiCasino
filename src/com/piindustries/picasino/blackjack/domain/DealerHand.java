@@ -39,7 +39,7 @@ import java.util.LinkedList;
 public class DealerHand extends Hand {
 
     public DealerHand(){
-        super("PiCasino Dealer",new LinkedList<Integer>());
+        super("$Dealer",new LinkedList<Integer>());
     }
 
     /**

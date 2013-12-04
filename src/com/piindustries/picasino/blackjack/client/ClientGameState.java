@@ -571,6 +571,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                         .busted(focus.getBestHandValue() > 21);    // TODO verify
             } else {
                 // Populate know info
+
+                System.out.println( focus.getUsername() );
                 builder.username(focus.getUsername())
                         .bet(focus.getBet())
                         .handValue(focus.getBestHandValue())
