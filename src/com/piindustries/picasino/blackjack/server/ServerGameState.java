@@ -70,20 +70,29 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     // A global game timer
     private Timer gameTimer;
 
-    // number of seconds between games
+    // Number of seconds between games
     private int intermissionTime;
 
+    // The Server Network handler of this
     private ServerNetworkHandler networkHandler;
 
 
     /**
      * Default constructor.  Builds the underlying ClientGameState,
-     * Resets its ClientNetworkHandler to a new ClientNetworkHandler and
-     * instantiates a deck of cards.
+     * Resets its ClientNetworkHandler to a new ClientNetworkHandler,
+     * instantiates a deck of cards, and sets the intermission time to 30 seconds.
      */
     public ServerGameState(PiCasino pi){
+        this( pi, 30 );
+    }
+    
+    public ServerGameState(PiCasino pi, int intermission){
+        // Build the internal dependancies
         this.gameState  = new ClientGameState(pi, "$Server", true);
         this.deck = buildDeck();
+        
+        // Intermission time must be set before the timer is created.
+        this.intermissionTime = ( intermission > 0 ) ? intermission : 30;
         this.gameTimer = new Timer(1000, new Listener() );
         PiCasino.LOGGER.info("Server Game State Constructed");
     }
