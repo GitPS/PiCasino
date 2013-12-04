@@ -41,11 +41,6 @@ public class PiCasino {
             if (args[1].equalsIgnoreCase("client")) {
                 if(args.length >= 4){
                     pi.buildClientBlackJack(args[2], args[3]);
-                    /* Debug start */
-                    Invoker i = new Invoker((ClientGameState)pi.getGameState());
-                    i.getInnards().setNetworkHandler( pi.getNetworkHandler() );
-                    i.step();
-                    /* Debug end */
                 } else{
                     LOGGER.severe(invalidArgsMsg);
                 }
@@ -98,6 +93,7 @@ public class PiCasino {
     }
 
     private void buildClientBlackJack(String host, String userName) {
+        gameState = new ClientGameState(this, userName);
         ClientNetworkHandler clientNetworkHandler = new ClientNetworkHandler(this, host, userName);
 
         /* Wait for a connection to be made before proceeding */
@@ -108,19 +104,8 @@ public class PiCasino {
                 LOGGER.severe(e.getMessage());
             }
         }
-
         networkHandler = clientNetworkHandler;
-        gameState = new ClientGameState(this, userName);
-        GameEvent gameEvent = new GameEvent(GameEventType.SET_NETWORK_HANDLER);
-        gameEvent.setValue(networkHandler);
-
-        /* Set NetworkHandler in GameState */
-        try{
-            gameState.invoke(gameEvent);
-        } catch (InvalidGameEventException e) {
-            LOGGER.severe("Failed to bind NetworkHandler to GameState!");
-            LOGGER.severe(e.getMessage());
-        }
+        gameState.setNetworkHandler(networkHandler);
     }
 
     public GameState getGameState() {

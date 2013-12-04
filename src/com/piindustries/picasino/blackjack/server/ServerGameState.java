@@ -87,8 +87,13 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     }
     
     public ServerGameState(PiCasino pi, int intermission){
-        // Build the internal dependancies
+        // Build the internal dependencies
         this.gameState  = new ClientGameState(pi, "$Server", true);
+        this.gameState.setPhase(Phase.INITIALIZATION);
+        LinkedList<Hand> toStart = new LinkedList<>();
+        toStart.add(new DealerHand());
+        this.gameState.setHands(toStart);
+        this.gameState.setPassedList(new LinkedList<Hand>());
         this.deck = buildDeck();
         
         // Intermission time must be set before the timer is created.
@@ -194,7 +199,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                 if( event.getValue() instanceof String ) {
                     String username = (String)event.getValue();
                     this.setGameState( username );
-                    PiCasino.LOGGER.info( username+"'s game state is being refreshed.");
+                    PiCasino.LOGGER.info( username+"'s game state is being updated.");
                 } else
                     PiCasino.LOGGER.severe("Attempt to refresh gameState could not be handled because GameEvent Value does not conform to type String.");
                 return true;
@@ -367,9 +372,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         result.setValue(event.getValue());
         this.getNetworkHandler().send(result);
         // Update the underlying gameState
-        synchronized (this){
-            gameState.invoke(result);
-        }
+        gameState.invoke(result);
         // If the dealer is up to bet.
         if( gameState.getCurrentHand() instanceof DealerHand){
             result.setType(GameEventType.BET);
@@ -547,6 +550,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     public void addPlayerToWaitingList(String username){
         if( !getWaitingList().contains(username)){
             this.getWaitingList().add(username);
+            this.setGameState(username);
             PiCasino.LOGGER.info(username + " has been added to the waiting list.");
         } else
             PiCasino.LOGGER.warning("Player "+username+" could not be added to the waiting list.  Reason: A player by that name already exists");
@@ -579,9 +583,9 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     /**
      * Builds an Array containing all the information necessary to reconstruct a ClientGameState.
      *
-     * Indicies 0-8 contain all the usernames
-     * Indicies 9-17 contain the bets of those users in respective order
-     * Indicies 18-26 contain the cards of those users
+     * Indices 0-8 contain all the usernames
+     * Indices 9-17 contain the bets of those users in respective order
+     * Indices 18-26 contain the cards of those users
      * Index 27 contains the passed list
      * Index 28 contains the current phase
      *
@@ -590,12 +594,11 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     private void setGameState(String username){
         GameEvent toSend = new GameEvent(GameEventType.SET_GAME_STATE);
         Object[] data = new Object[29];
-        int index = 0;
-        for( Hand h : this.gameState.getHands() ){
-            data[index] = h.getUsername();
-            data[index + 9] = h.getBet();
-            data[index + 18] = h.getCards();
-            index += 1;
+        for( int index = 0; index < 9; index += 1 ){
+            Hand h =  index < this.gameState.getHands().size() ? this.gameState.getHands().get(index) : null;
+            data[index] = h != null ? h.getUsername() : null;
+            data[index + 9] = h != null ? h.getBet() : null;
+            data[index + 18] = h != null ? h.getCards() : null;
         }
         data[27] = this.gameState.getPassedList();
         data[28] = this.gameState.getPhase();

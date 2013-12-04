@@ -70,6 +70,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
     private String thisUser;
     private boolean isServer = false;
     private BlackjackDatabaseConnector blackjackDatabaseConnector;
+    private LinkedList<GameEvent> buffer;
+    private boolean enabled;
 
     /**
      * Default Constructor.
@@ -82,29 +84,35 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * Default Constructor.
      */
     public ClientGameState(PiCasino pi, String username, boolean isServer) {
-        this.setPhase(Phase.INITIALIZATION);
+        // this.setPhase(Phase.INITIALIZATION);
+        this.isServer = isServer;
         this.setNetworkHandler(pi.getNetworkHandler());
         this.setThisUser(username);
         blackjackDatabaseConnector = new BlackjackDatabaseConnector();
-        GameEvent request = new GameEvent( GameEventType.SET_GAME_STATE, username );
-        this.getNetworkHandler().send(request);
-        this.isServer = isServer;
-        if( ! isServer ){
+
+        // If its a server, its enabled, if it a client, it isn't
+        this.enabled = isServer;
+
+        // Build a GUI Handler if necessary
+        if( !isServer ){
             Player player = new Player.Builder().username(username).hands(new LinkedList<LinkedList<Integer>>()).value(1000).split(false).busted(false).handValue(0).index(0).result();
             this.guiHandler = new GUI(player,(ClientNetworkHandler)networkHandler);
         }
     }
 
-    public void setGameState(Object[] data){
+    public void setGameState(Object[] data) throws InvalidGameEventException {
         LinkedList<Hand> tHands = new LinkedList<Hand>();
         for( int i = 0; i < 9; i += 1 ){
-            Hand toAdd = new Hand((String)data[i],(LinkedList<Integer>)data[i+18]);
-            toAdd.setBet( (Integer)data[i+9] );
-            tHands.add(toAdd);
+            if( data[i] != null ){
+                Hand toAdd = new Hand((String)data[i],(LinkedList<Integer>)data[i+18]);
+                toAdd.setBet( (Integer)data[i+9] );
+                tHands.add(toAdd);
+            }
         }
         this.setHands(tHands);
-        this.passedList = (LinkedList<Hand>)data[27];
-        this.setPhase( (Phase)data[28] );
+        this.passedList = data[27] != null ? (LinkedList<Hand>)data[27] : new LinkedList<Hand>();
+        this.setPhase( data[28] != null ? (Phase)data[28] : Phase.INITIALIZATION );
+        this.setEnabled(true);
     }
 
     // TODO Make sure splitting works as designed
@@ -124,6 +132,11 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         GameEvent event = (GameEvent) e;    // Case event to type correct type.
         if( handleGlobalEvent(event) )
             return; // If a global event is handled, there is no need to continue.
+        if( !isEnabled() ){
+            appendToBuffer((GameEvent)e);
+            requestGameState();
+            return;
+        }
         switch (this.getPhase()) {
             case INITIALIZATION:
                 switch( event.getType() ){
@@ -166,6 +179,37 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         }
     }
 
+    private void requestGameState() throws InvalidGameEventException {
+        this.setEnabled( false );
+        if( this.networkHandler != null ){
+            GameEvent result = new GameEvent(GameEventType.SET_GAME_STATE);
+            this.getNetworkHandler().send(result);
+        }
+    }
+
+    private void appendToBuffer( GameEvent g ){
+        this.buffer.addLast( g );
+    }
+
+    private void setEnabled( boolean toSet ) throws InvalidGameEventException {
+        if( toSet ){
+            for( GameEvent g: this.getBuffer() ){
+                this.invoke(g);
+            }
+        }
+        this.enabled = toSet;
+    }
+
+    private boolean isEnabled(){
+        return this.enabled;
+    }
+
+    private LinkedList<GameEvent> getBuffer(){
+        if( this.buffer == null )
+            this.buffer = new LinkedList<GameEvent>();
+        return this.buffer;
+    }
+
     public void setIsServer(boolean b){
         this.isServer = b;
     }
@@ -180,36 +224,16 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      * @return 'true` if event was handled by `this#handleGlobalEvent`
      * otherwise `false`
      */
-    private boolean handleGlobalEvent(GameEvent event){
+    private boolean handleGlobalEvent(GameEvent event) throws InvalidGameEventException {
         switch(event.getType()){
             case SET_NETWORK_HANDLER:
-                if( event.getValue() instanceof ClientNetworkHandler ){
-                    setNetworkHandler( (ClientNetworkHandler) event.getValue() );
-                    PiCasino.LOGGER.info("Client GameState's network handler has been set.");
-                } else
-                    PiCasino.LOGGER.severe("Client GameState's network handler could not be set. Reason: Value does not conform to type ClientNetworkHandler.");
-                return true;
+                throw new Error("Unsupported Game Event");
             case SET_PHASE:
-                if( event.getValue() instanceof Phase ){
-                    this.setPhase((Phase)event.getValue());
-                    PiCasino.LOGGER.info("Client GameState Phase has been set.");
-                } else
-                    PiCasino.LOGGER.severe("Client GameState Phase could not be set. Reason: Value does not conform to type Phase.");
-                return true;
+                throw new Error("Unsupported Game Event");
             case SET_PASSED_LIST:
-                if( event.getValue() instanceof LinkedList ){
-                    this.passedList = (LinkedList<Hand>)event.getValue();
-                    PiCasino.LOGGER.info("Client GameState Passed List has been set.");
-                } else
-                    PiCasino.LOGGER.severe("Client GameState Passed List could not be set. Reason: Value does not conform to type LinkedList<Hand>.");
-                return true;
+                throw new Error("Unsupported Game Event");
             case SET_HANDS:
-                if( event.getValue() instanceof LinkedList ){
-                    this.setHands((LinkedList<Hand>) event.getValue());
-                    PiCasino.LOGGER.info("Client GameState Hands List has been set.");
-                } else
-                    PiCasino.LOGGER.severe("Client GameState Hands List could not be set. Reason: Value does not conform to type LinkedList<Hand>.");
-                return true;
+                throw new Error("Unsupported Game Event");
             case SET_GAME_STATE:
                 if( event.getValue() instanceof Object[] ){
                     this.setGameState( (Object[])event.getValue() );
@@ -221,7 +245,9 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         }
     }
 
-    public LinkedList<Hand> getPassedList(){ return this.passedList; }
+    public LinkedList<Hand> getPassedList(){
+        return this.passedList;
+    }
 
     public String getThisUser() {
         return thisUser;
@@ -367,9 +393,12 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         }
         // Append to the log appropriately
         if( !contained ){
-            Hand dh = this.getHands().removeLast();
+            Hand dh = null;
+            if( this.getHands().size() > 0 )
+                dh = this.getHands().removeLast();
             this.getHands().addLast( new Hand(username, new LinkedList<Integer>()));
-            this.getHands().addLast(dh);
+            if( this.getHands().size() > 0 )
+                this.getHands().addLast(dh);
             PiCasino.LOGGER.info(username + " was added to the game.");
         } else
             PiCasino.LOGGER.info(username + " was could not be added to the game.");
@@ -498,7 +527,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      *
      * @param phase the value to set `this.phase` to.
      */
-    protected void setPhase(Phase phase) {
+    public void setPhase(Phase phase) {
         this.phase = phase;
     }
 
@@ -514,12 +543,16 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         return hands;
     }
 
+    public void setPassedList(LinkedList<Hand> passedList) {
+        this.passedList = passedList;
+    }
+
     /**
      * Provides write access to `this.hands` to inheriting implementations.
      *
      * @param hands the value to set `this.hands` to.
      */
-    protected void setHands(LinkedList<Hand> hands) {
+    public void setHands(LinkedList<Hand> hands) {
         this.hands = hands;
     }
 
@@ -532,6 +565,8 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
      */
     public ArrayList<GameEventType> getAvailableActions(){
         ArrayList<GameEventType> result = new ArrayList<>();
+        if( this.getHands() == null || this.getHands().size() < 1 )
+            return result;
         switch(this.getPhase()){
             case INITIALIZATION:
                 // There are no actions to take in the initialization phase.
