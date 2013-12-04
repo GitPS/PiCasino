@@ -910,6 +910,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "Dealer card: " + hand.get(j) );
             dealerHand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             dealerHand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
@@ -934,6 +935,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "P1 card: " + hand.get(j) );
             p1Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             p1Hand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
@@ -959,6 +961,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "P2 card: " + hand.get(j) );
             p2Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             p2Hand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
@@ -984,6 +987,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "P3 card: " + hand.get(j) );
             p3Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             p3Hand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
@@ -1009,6 +1013,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "P4 card: " + hand.get(j) );
             p4Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             p4Hand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
@@ -1034,6 +1039,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "P5 card: " + hand.get(j) );
             p5Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             p5Hand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
@@ -1059,6 +1065,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "P6 card: " + hand.get(j) );
             p6Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             p6Hand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
@@ -1083,6 +1090,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "P7 card: " + hand.get(j) );
             p7Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             p7Hand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
@@ -1107,6 +1115,7 @@ public class GUI extends JFrame implements GuiHandler {
             sb.append("/Resources/");
             sb.append(Integer.toString(hand.get(j)));
             sb.append(".png");
+            System.out.println( "P8 card: " + hand.get(j) );
             p8Hand[j].setIcon(new ImageIcon(getClass().getResource(sb.toString())));
             p8Hand[j].setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         }
