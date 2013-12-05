@@ -111,6 +111,7 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
                 if(username != null){
                     /* Remove them from the network handler list */
                     connectedUsers.remove(username);
+                    PiCasino.LOGGER.info("Removed " + username + " from the network handler.");
                     /* Create a game event and let the game state know of disconnect */
                     GameEvent gameEvent = new GameEvent(GameEventType.PLAYER_DISCONNECT);
                     gameEvent.setValue(username);
