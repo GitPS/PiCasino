@@ -649,10 +649,6 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
                     toAddHands.add(hands.getCards());
                 }
             }
-            PiCasino.LOGGER.info(focus.getUsername());
-            for( int i : focus.getCards() ){
-                PiCasino.LOGGER.info( i + " : " + Cards.evaluateCardName(i) );
-            }
             builder.hands(toAddHands);
             if( focus instanceof DealerHand ){
                 // Assign the dealers hand to the dealers position
@@ -675,6 +671,7 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         for(int i = 1; i < 9; i++ ){
             result.setPlayer( i, data[0] );
         }
+        result.setPhase( this.getPhase() );
         result.setPlayer(0, data[8]);
         return result;
     }
