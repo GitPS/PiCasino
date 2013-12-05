@@ -184,20 +184,29 @@ public class ClientGameState implements com.piindustries.picasino.api.GameState 
         if( this.networkHandler != null ){
             GameEvent result = new GameEvent(GameEventType.SET_GAME_STATE);
             this.getNetworkHandler().send(result);
+            PiCasino.LOGGER.info("Client has requested a new game state and is now disabled.");
+        } else {
+            PiCasino.LOGGER.info("Client is now disabled, but could not request a new game state because NetworkHandler is null.");
         }
     }
 
     private void appendToBuffer( GameEvent g ){
         this.buffer.addLast( g );
+        PiCasino.LOGGER.info( "A game event was appended to the buffer: "+g.getType().name() );
     }
 
     private void setEnabled( boolean toSet ) throws InvalidGameEventException {
         if( toSet ){
-            for( GameEvent g: this.getBuffer() ){
-                this.invoke(g);
+            try {
+                for( GameEvent g: this.getBuffer() )
+                    this.invoke(g);
+            } catch (InvalidGameEventException e){
+                this.getBuffer().clear();
+                throw new InvalidGameEventException();
             }
         }
         this.enabled = toSet;
+        PiCasino.LOGGER.info("Successfully "+ ( toSet ? "enabled" : "disabled" ) + " Game State");
     }
 
     private boolean isEnabled(){
