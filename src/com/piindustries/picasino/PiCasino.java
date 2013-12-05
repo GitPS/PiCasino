@@ -9,7 +9,6 @@ import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEventType;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
 import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
-import com.piindustries.picasino.blackjack.test.Invoker;
 
 import java.util.logging.Logger;
 
@@ -104,6 +103,7 @@ public class PiCasino {
                 LOGGER.severe(e.getMessage());
             }
         }
+
         networkHandler = clientNetworkHandler;
         gameState.setNetworkHandler(networkHandler);
     }
