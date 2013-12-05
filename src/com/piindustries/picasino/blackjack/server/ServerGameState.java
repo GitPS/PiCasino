@@ -102,10 +102,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         PiCasino.LOGGER.info("Server Game State Constructed");
     }
 
-    public void setIsServer(boolean b){
-        this.gameState.setIsServer(b);
-    }
-
     // TODO Make sure splitting works as designed
     // TODO Make sure doubling down works as designed
     // TODO Make sure empty games don't explode
