@@ -76,6 +76,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     // The listener object
     private Listener intermissionListener;
 
+    private LinkedList<String> disconnectList;
+
 
     /**
      * Default constructor.  Builds the underlying ClientGameState,
@@ -95,6 +97,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         this.gameState.setHands(toStart);
         this.gameState.setPassedList(new LinkedList<Hand>());
         this.deck = buildDeck();
+        this.disconnectList = new LinkedList<>();
         
         // Intermission time must be set before the timer is created.
         this.intermissionListener = new Listener(intermission);
@@ -123,6 +126,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         GameEvent event = (GameEvent)e;
         if( handleGlobalEvent(event) )
             return; // If a global event is handled, than there is no need to continue.
+        if( handleDisconnectedTurns(event) )
+            return; // If a disconnected players hand can be automatically handled, there is no need to continue.
         switch( gameState.getPhase() ){
             case INITIALIZATION:
                 throw new InvalidGameEventException(event.getType().name());
@@ -141,7 +146,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                 switch(event.getType()){
                     case HIT: this.requestCard(); break;
                     // case SEND_CARD: gameState.invoke(event); break; TODO CHECK IF THIS CAN BE REMOVED
-                    case STAND: this.stand(event); break;
+                    case STAND: this.stand(); break;
                     case DOUBLE_DOWN: this.doubleDown(event); break;
                     case SPLIT: this.split(event); break;
                     // case ADVANCE_TO_CONCLUDING: this.advanceToConclusion(); break;  Should be called internally
@@ -156,9 +161,6 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         }
     }
 
-    // TODO comment
-    ClientGameState getClientGameState(){ return gameState; }
-
     // TODO more descriptive comment
     /**
      * Handles any global event
@@ -169,10 +171,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     private boolean handleGlobalEvent(GameEvent event) {
         switch(event.getType()){
             case ADD_PLAYER_TO_WAITING_LIST:
-                if( event.getValue() instanceof String )
-                    addPlayerToWaitingList( (String)event.getValue() );
-                else
-                    PiCasino.LOGGER.severe("Player could not be added to the waiting list. Reason: Value does not conform to type String");
+                if( event.getValue() instanceof String ) addPlayerToWaitingList( (String)event.getValue() );
+                else PiCasino.LOGGER.severe("Player could not be added to the waiting list. Reason: Value does not conform to type String");
                 return true;
             case START_TIMER:
                 this.startTimer();
@@ -181,24 +181,26 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
                 if( event.getValue() instanceof ServerNetworkHandler ) {
                     this.setNetworkHandler( (ServerNetworkHandler)event.getValue());
                     PiCasino.LOGGER.info("Server GameState's network handler has been set.");
-                } else
-                    PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
+                } else PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
                 return true;
             case SET_INTERMISSION_TIME:
                 if( event.getValue() instanceof Integer ) {
                     this.setIntermissionTime( (Integer) event.getValue() );
                     PiCasino.LOGGER.info("Server GameState's network handler has been set.");
-                } else
-                    PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
+                } else PiCasino.LOGGER.severe("Server GameState's network handler could not be set. Reason: Value does not conform to type ServerNetworkHandler.");
                 return true;
             case SET_GAME_STATE:
                 if( event.getValue() instanceof String ) {
                     String username = (String)event.getValue();
                     this.setGameState( username );
                     PiCasino.LOGGER.info( username+"'s game state is being updated.");
-                } else
-                    PiCasino.LOGGER.severe("Attempt to refresh gameState could not be handled because GameEvent Value does not conform to type String.");
+                } else PiCasino.LOGGER.severe("Attempt to refresh gameState could not be handled because GameEvent Value does not conform to type String.");
                 return true;
+            case PLAYER_DISCONNECT:
+                if( event.getValue() instanceof String ){
+                    String username = (String)event.getValue();
+                    this.playerDisconnect(username);
+                } else PiCasino.LOGGER.severe( "Attempt to disconnect player from game could not be handled because the Game Event type did not conform to type String." );
             default: return false;
         }
     }
@@ -210,6 +212,12 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * @throws InvalidGameEventException
      */
     private void advanceToInitialization(GameEvent event) throws InvalidGameEventException {
+        for( String s : this.disconnectList ){
+            GameEvent toSend = new GameEvent( GameEventType.REMOVE_PLAYER, s );
+            this.gameState.invoke(toSend);
+            this.getNetworkHandler().send(toSend);
+        }
+        this.disconnectList.clear();
         gameState.invoke(event);
         getNetworkHandler().send(event);
         startTimer();
@@ -277,14 +285,13 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * If the next player is the dealer, `this` will continue to play the
      * dealer's hand.
      *
-     * @param event a GameEvent whose name is "Stay"
      * @throws InvalidGameEventException
      */
-    private void stand(GameEvent event) throws InvalidGameEventException {
+    private void stand() throws InvalidGameEventException {
         GameEvent result = new GameEvent(); // TODO check if i can reuse event
         result.setType(GameEventType.STAND);
         result.setValue(null);
-        gameState.invoke(event);
+        gameState.invoke(result);
         this.getNetworkHandler().send(result); // TODO check if I can just pass the same event on to all other clients.
         // TODO verify that when a player splits, they are dealt a new card.
         if(gameState.getCurrentHand().isSplit() && gameState.getCurrentHand().getCards().size() < 2){
@@ -495,6 +502,24 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
             GameEvent conclude = new GameEvent();
             conclude.setType(GameEventType.ADVANCE_TO_CONCLUDING);
             this.advanceToConclusion();
+        }
+    }
+
+    private boolean handleDisconnectedTurns(GameEvent e) throws InvalidGameEventException {
+
+        // If the player who is up to act has not disconnected, return false
+        if(!this.disconnectList.contains(this.gameState.getCurrentUser()))
+            return false;
+
+        // Otherwise, play the disconnected players turn.
+        switch( this.getPhase() ){
+            case BETTING:
+                pass();
+                return true;
+            case PLAYING:
+                stand();
+                return true;
+            default: return false;
         }
     }
 
@@ -709,4 +734,18 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     int getIntermissionDuration(){
         return this.intermissionListener.getIntermissionDuration();
     }
+
+    public void playerDisconnect(String username){
+
+        // If the player hasn't been added to the game yet, they can be peacefully removed
+        for( String h : this.getWaitingList() ){
+            if( h.equals(username) ){
+                this.removePlayerFromWaitingList(username);
+                return;
+            }
+        }
+
+        this.disconnectList.addLast(username);
+    }
+
 }
