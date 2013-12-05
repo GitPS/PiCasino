@@ -23,6 +23,8 @@
 
 package com.piindustries.picasino.blackjack.client;
 
+import com.piindustries.picasino.blackjack.domain.Phase;
+
 public class GuiData {
     private Player player1;
     private Player player2;
@@ -33,6 +35,7 @@ public class GuiData {
     private Player player7;
     private Player player8;
     private Player dealer;
+    private Phase phase;
 
     public Player getPlayer(int index){
         switch(index){
@@ -62,5 +65,13 @@ public class GuiData {
             case 0: dealer = toSet; break;
             default: throw new IllegalArgumentException("Player not defined at index "+index+ '.');
         }
+    }
+
+    public Phase getPhase(){
+        return this.phase;
+    }
+
+    public void setPhase(Phase phase){
+        this.phase = phase;
     }
 }
