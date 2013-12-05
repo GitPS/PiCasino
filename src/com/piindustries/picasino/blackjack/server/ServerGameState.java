@@ -70,11 +70,11 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     // A global game timer
     private Timer gameTimer;
 
-    // Number of seconds between games
-    private int intermissionTime;
-
     // The Server Network handler of this
     private ServerNetworkHandler networkHandler;
+
+    // The listener object
+    private Listener intermissionListener;
 
 
     /**
@@ -83,7 +83,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * instantiates a deck of cards, and sets the intermission time to 30 seconds.
      */
     public ServerGameState(PiCasino pi){
-        this( pi, 30 );
+        this(pi, 30);
     }
     
     public ServerGameState(PiCasino pi, int intermission){
@@ -97,8 +97,8 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
         this.deck = buildDeck();
         
         // Intermission time must be set before the timer is created.
-        this.intermissionTime = ( intermission > 0 ) ? intermission : 30;
-        this.gameTimer = new Timer(1000, new Listener() );
+        this.intermissionListener = new Listener(intermission);
+        this.gameTimer = new Timer(1000, intermissionListener );
         PiCasino.LOGGER.info("Server Game State Constructed");
     }
 
@@ -397,7 +397,7 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
     /** Starts the intermission game timer */
     public void startTimer(){
         PiCasino.LOGGER.info("Initializing a new game.");
-        PiCasino.LOGGER.info("A new game will begin in " + intermissionTime + " seconds.");
+        PiCasino.LOGGER.info("A new game will begin in " + this.intermissionListener.getIntermissionDuration() + " seconds.");
         PiCasino.LOGGER.info("Available Heap Space = " + Runtime.getRuntime().totalMemory() / 1048576.0 + " megabytes.");
         gameTimer.start();
     }
@@ -648,15 +648,19 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      * A simple listener that responds to gameTimer events.
      */
     private class Listener implements ActionListener {
-        
-        /* If the intermission time has not been set or is invalid, default to 30 seconds */
-        private int counter = ( intermissionTime < 1 ) ? 30 : intermissionTime;
+        private int intermissionDuration;
+        private int counter;
+
+        public Listener(int intermissionDuration){
+            this.intermissionDuration = intermissionDuration < 1 ? 30 : intermissionDuration;
+            this.counter = intermissionDuration + 1;
+        }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             
             if( counter == 0 ){
-                counter = intermissionTime + 1;
+                counter = intermissionDuration + 1;
                 gameTimer.stop();
                 try {
                     addPlayersFromWaitingListToGame();
@@ -674,6 +678,21 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
             }
             counter--;
         }
+
+        /**
+         * Must be greater than 0.
+         *
+         * @param seconds the number of seconds to wait in between
+         *                games.
+         */
+        public void setIntermissionDuration(int seconds){
+            if( seconds > 0 )
+                this.intermissionDuration = seconds;
+        }
+
+        public int getIntermissionDuration(){
+            return this.intermissionDuration;
+        }
     }
 
     /**
@@ -683,10 +702,11 @@ public class ServerGameState implements com.piindustries.picasino.api.GameState 
      *                games.
      */
     void setIntermissionTime(int seconds){
-        if( seconds > 0  )
-            this.intermissionTime = seconds;
-        else
-            throw new IllegalArgumentException("The intermission time must be a positive integer.");
+        if( seconds > 0  ) this.intermissionListener.setIntermissionDuration(seconds);
+        else throw new IllegalArgumentException("The intermission time must be a positive integer.");
     }
 
+    int getIntermissionDuration(){
+        return this.intermissionListener.getIntermissionDuration();
+    }
 }
