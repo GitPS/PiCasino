@@ -98,6 +98,30 @@ public class ServerNetworkHandler implements com.piindustries.picasino.api.Netwo
             /* Connection with a client is lost. */
             public void disconnected(Connection connection) {
                 PiCasino.LOGGER.info("Client disconnected with ID: " + connection.getID());
+                String username = null;
+                /* Determine which username is associated with the disconnected client */
+                for(String s : connectedUsers.keySet()){
+                    if(connectedUsers.get(s) == connection.getID()){
+                        username = s;
+                        /* There should only ever be on instance of the same client ID */
+                        break;
+                    }
+                }
+                /* If we found the user in the connected user list */
+                if(username != null){
+                    /* Remove them from the network handler list */
+                    connectedUsers.remove(username);
+                    /* Create a game event and let the game state know of disconnect */
+                    GameEvent gameEvent = new GameEvent(GameEventType.PLAYER_DISCONNECT);
+                    gameEvent.setValue(username);
+                    try{
+                        pi.getGameState().invoke(gameEvent);
+                    } catch (InvalidGameEventException e) {
+                        PiCasino.LOGGER.severe("Failed to properly handle disconnect by client!");
+                        PiCasino.LOGGER.severe(e.getMessage());
+                    }
+
+                }
             }
         });
 
