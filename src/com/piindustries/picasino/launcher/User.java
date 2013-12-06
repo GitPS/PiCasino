@@ -1,12 +1,12 @@
 package com.piindustries.picasino.launcher;
 
 public class User {
-
     private String username;
     private String password;
     private String firstName;
     private String lastName;
     private String email;
+    private boolean authenticated;
 
     /**
      * Create a basic user with only a username and password.
@@ -78,4 +78,14 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public boolean isAuthenticated(){
+        return authenticated;
+    }
+
+    public void setAuthenticated(boolean b){
+        authenticated = b;
+    }
+
 }
+
