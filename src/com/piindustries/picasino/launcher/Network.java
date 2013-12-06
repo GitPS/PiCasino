@@ -12,5 +12,6 @@ public class Network {
     static public void register(EndPoint endPoint){
         Kryo kryo = endPoint.getKryo();
         kryo.register(User.class);
+        kryo.register(Update.class);
     }
 }
