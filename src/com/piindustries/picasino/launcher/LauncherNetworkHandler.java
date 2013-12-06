@@ -10,9 +10,11 @@ import java.io.IOException;
 
 public class LauncherNetworkHandler {
     private Server server;
+    private BlackjackDatabaseConnector db;
 
     public LauncherNetworkHandler() {
         server = new Server();
+        db = new BlackjackDatabaseConnector();
 
         /* Register any classes that will be sent over the network */
         Network.register(server);
@@ -25,14 +27,18 @@ public class LauncherNetworkHandler {
 
             /* Object received from a launcher. */
             public void received(Connection connection, Object object) {
+                PiCasino.LOGGER.info("Received an Object from client: " + connection.getID());
                 if (object instanceof User) {
+                    PiCasino.LOGGER.info("Starting to process a user object.");
                     User user = (User) object;
                     /* Allow the called method to verify the user is authenticated */
                     user.setAuthenticated(handleUser(user));
                     /* Send the user back to the launcher */
                     send(user, connection.getID());
+                    PiCasino.LOGGER.info("Finished processing a user object.");
                 }
                 else if(object instanceof Update){
+                    PiCasino.LOGGER.info("Starting to process an update object.");
                     Update update = (Update)object;
                     /* Check for update and set version and download URL for PiCasino.jar */
                     update.setUpdateNeeded(update.getClientVersion().equalsIgnoreCase(PiCasino.VERSION));
@@ -40,6 +46,7 @@ public class LauncherNetworkHandler {
                     update.setUpdateURL(PiCasino.UPDATE_URL);
                     /* Send the update information back to the launcher */
                     send(update, connection.getID());
+                    PiCasino.LOGGER.info("Finished processing an update object.");
                 }
             }
 
@@ -68,7 +75,6 @@ public class LauncherNetworkHandler {
     }
 
     private boolean handleUser(User user){
-        BlackjackDatabaseConnector db = new BlackjackDatabaseConnector();
         /* Check if player exists already, if not create that user */
         if(db.checkUserExist(user.getUsername())){
             return db.checkPlayerLogin(user.getUsername(), user.getPassword());
