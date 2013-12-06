@@ -9,6 +9,7 @@ import com.piindustries.picasino.blackjack.domain.GameEvent;
 import com.piindustries.picasino.blackjack.domain.GameEventType;
 import com.piindustries.picasino.blackjack.server.ServerGameState;
 import com.piindustries.picasino.blackjack.server.ServerNetworkHandler;
+import com.piindustries.picasino.launcher.LauncherNetworkHandler;
 
 import java.util.logging.Logger;
 
@@ -18,6 +19,11 @@ public class PiCasino {
 
     private GameState gameState = null;
     private NetworkHandler networkHandler = null;
+    private LauncherNetworkHandler launcherNetworkHandler = null;
+
+    /* Version */
+    public static final String VERSION = "1.0";
+    public static final String UPDATE_URL = "https://www.dropbox.com/s/dlyzzluw3tlh516/PiCasino.jar";
 
     /* Error messages */
     private static final String invalidArgsMsg = "Invalid or missing command line arguments.";
@@ -58,12 +64,19 @@ public class PiCasino {
     }
 
     private void buildServerBlackJack() {
+
+        /* Create network handlers */
+        launcherNetworkHandler = new LauncherNetworkHandler();
         networkHandler = new ServerNetworkHandler(this);
+
+
+        /* Create game state */
         gameState = new ServerGameState(this);
+
+        /* Set network handler in game state */
         GameEvent gameEvent = new GameEvent(GameEventType.SET_NETWORK_HANDLER);
         gameEvent.setValue(networkHandler);
 
-        /* Set NetworkHandler in GameState */
         try{
             gameState.invoke(gameEvent);
         } catch (InvalidGameEventException e) {
@@ -71,10 +84,10 @@ public class PiCasino {
             LOGGER.severe(e.getMessage());
         }
 
+        /* Set intermission time */
         gameEvent = new GameEvent(GameEventType.SET_INTERMISSION_TIME);
         gameEvent.setValue(30);
 
-        /* Set intermission time */
         try{
             gameState.invoke(gameEvent);
         } catch (InvalidGameEventException e) {
