@@ -65,14 +65,18 @@ public class PiCasino {
 
     private void buildServerBlackJack() {
 
+        /* Create network handlers */
         launcherNetworkHandler = new LauncherNetworkHandler();
-
         networkHandler = new ServerNetworkHandler(this);
+
+
+        /* Create game state */
         gameState = new ServerGameState(this);
+
+        /* Set network handler in game state */
         GameEvent gameEvent = new GameEvent(GameEventType.SET_NETWORK_HANDLER);
         gameEvent.setValue(networkHandler);
 
-        /* Set NetworkHandler in GameState */
         try{
             gameState.invoke(gameEvent);
         } catch (InvalidGameEventException e) {
@@ -80,10 +84,10 @@ public class PiCasino {
             LOGGER.severe(e.getMessage());
         }
 
+        /* Set intermission time */
         gameEvent = new GameEvent(GameEventType.SET_INTERMISSION_TIME);
         gameEvent.setValue(30);
 
-        /* Set intermission time */
         try{
             gameState.invoke(gameEvent);
         } catch (InvalidGameEventException e) {
