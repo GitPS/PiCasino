@@ -40,8 +40,13 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
     private Connection conn;                    // Connection object for DriverManager.getConnection
     private StringBuilder sb;                   // StringBuilder used in most methods
     private Statement stmt;                     // Statement used for queries
-    private static final boolean DEBUG = true;  //Set to true for debug messages
 
+    // CHANGE TO FALSE FOR PRODUCTION
+    private static final boolean DEBUG = true;  // Set to true for debug messages
+
+    /**
+     * Constructor
+     */
     public BlackjackDatabaseConnector(){
         try{
             if(DEBUG){
@@ -60,6 +65,17 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }
     }
 
+    /**
+     *
+     * Creates new player in database
+     *
+     * @param username  The username of the player to add
+     * @param password  The desired password of the player
+     * @param firstName The first name of the player
+     * @param lastName  The last name of the player
+     * @param email     The email of the player
+     * @return boolean: true if added, false with error message if failed
+     */
     public boolean createNewPlayer(String username, String password, String firstName, String lastName, String email) {
         sb = new StringBuilder();
         try{
@@ -109,6 +125,13 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }
     }
 
+    /**
+     *
+     * Returns all player data for player username
+     *
+     * @param username  Username to retrieve data for
+     * @return  HashMap\<String, String> with all player data
+     */
     public HashMap<String, String> getAllPlayerData(String username) {
         sb = new StringBuilder();
         HashMap<String,String> userdata = new HashMap<>();
@@ -135,6 +158,15 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         return userdata;
     }
 
+    /**
+     *
+     * Changes the user's password
+     *
+     * @param username      The username of the player to change the password for
+     * @param oldPassword   The players old password
+     * @param newPassword   The desired password
+     * @return  boolean: true if changed, false with error if not.
+     */
     public boolean changeUserPassword(String username, String oldPassword, String newPassword){
         String oldPwd = "", oldPwdEntered = "";
         String oldPwdStmt = "SELECT sha1('"+oldPassword+"') LIMIT 1;";
@@ -181,6 +213,13 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }
     }
 
+    /**
+     *
+     * Updates the login date for player 'username'
+     *
+     * @param username  The username of the player to update
+     * @return  boolean: true if updated, false if not updated
+     */
     public boolean updateLoginDate(String username) {
         sb = new StringBuilder();
         sb.append("UPDATE login SET lastLoggedInDate=DATE_FORMAT( CURDATE(), '%m/%d/%Y') WHERE username='");
@@ -201,6 +240,14 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }
     }
 
+    /**
+     *
+     * Updates the Current chip Count of player username to chipCount
+     *
+     * @param username  The username of the player to update
+     * @param chipCount The chip count to be updated to
+     * @return  boolean: true if updated, false with error message if not updated
+     */
     public boolean updatePlayerCurrentChipCount(String username, int chipCount) {
         // Get current High score from database
         int highCount = 0;
@@ -256,6 +303,14 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }
     }
 
+    /**
+     *
+     * Checks if a player's login is valid
+     *
+     * @param username  The player to test login
+     * @param password  The player's password
+     * @return  boolean: true if login is valid, false with error if note
+     */
     public boolean checkPlayerLogin(String username, String password) {
         sb = new StringBuilder();
         try{
@@ -299,6 +354,13 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         }
     }
 
+    /**
+     *
+     * Checks if the user is already in the database
+     *
+     * @param username  The username to check
+     * @return  boolean: true if username is already used, false if not
+     */
     public boolean checkUserExist(String username){
         sb = new StringBuilder();
         sb.append("SELECT username FROM login WHERE username='");
@@ -315,6 +377,13 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
 
     }
 
+    /**
+     *
+     * Private method to handle printing errors
+     *
+     * @param sql   The SQL Exception that was caught
+     * @param query The query executed when the exception occurred
+     */
     private void printError(SQLException sql, String query){
         PiCasino.LOGGER.warning(sql.toString());
         PiCasino.LOGGER.warning("Query: " + query);
@@ -322,6 +391,13 @@ public class BlackjackDatabaseConnector implements DatabaseConnector{
         PiCasino.LOGGER.warning("SQL Message:\n" + sql.toString());
     }
 
+    /**
+     *  @pre Database with data in it
+     * Cleans the database for testing
+     *
+     *  Returns nothing
+     *  @post   Empty database
+     */
     public void cleanDatabaseForTesting(){
         System.out.println("Cleaning up the Database for testing");
         java.util.ArrayList<String> cleanup = new java.util.ArrayList<>();
