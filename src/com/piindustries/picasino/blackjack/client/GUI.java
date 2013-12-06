@@ -45,6 +45,8 @@ public class GUI extends JFrame implements GuiHandler {
     private JButton stayButton;
     private JLabel stayImage;
     private JLabel stayText;
+    private JButton betButton;
+    private JButton passButton;
     private JLabel info1;               //boxes holding the information(username and chip count)
     private JLabel info2;
     private JLabel info3;
@@ -185,6 +187,8 @@ public class GUI extends JFrame implements GuiHandler {
         stayImage = new JLabel();
         doubleDownImage = new JLabel();
         splitImage = new JLabel();
+        betButton = new JButton();
+        passButton = new JButton();
         JLabel table = new JLabel();
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -613,6 +617,26 @@ public class GUI extends JFrame implements GuiHandler {
             }
         });
 
+        betButton.setBorderPainted(false);
+        betButton.setContentAreaFilled(false);
+        getContentPane().add(betButton);
+        betButton.setVisible( false );
+        betButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bet(evt);
+            }
+        });
+
+        passButton.setBorderPainted(false);
+        passButton.setContentAreaFilled(false);
+        getContentPane().add(passButton);
+        passButton.setVisible( false );
+        passButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pass(evt);
+            }
+        });
+
         stayButton.setBorderPainted(false);
         stayButton.setContentAreaFilled(false);
         getContentPane().add(stayButton);
@@ -761,6 +785,39 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     /**
+     * Hides all buttons and removes functionality
+     */
+    private void setButtonsHidden() {
+
+        hitButton.setVisible( false );
+        hitButton.setEnabled( false );
+        hitText.setVisible( false );
+        hitImage.setVisible( false );
+
+        betButton.setVisible( false );
+        betButton.setEnabled( false );
+
+        stayButton.setVisible( false );
+        stayButton.setEnabled( false );
+        stayText.setVisible( false );
+        stayText.setVisible( false );
+
+        passButton.setVisible( false );
+        passButton.setEnabled( false );
+
+        doubleDownButton.setVisible( false );
+        doubleDownButton.setEnabled( false );
+        doubleDownText.setVisible( false );
+        doubleDownImage.setVisible( false );
+
+        splitButton.setVisible( false );
+        splitButton.setEnabled( false );
+        splitButton.setVisible( false );
+        splitButton.setVisible( false );
+
+    }
+
+    /**
      * Remove stool button functionality
      */
     private void setStoolsHidden() {
@@ -814,6 +871,27 @@ public class GUI extends JFrame implements GuiHandler {
     }
 
     /**
+     * Send bet game event **only used during betting phase**
+     * @param evt When the button is clicked
+     */
+    private void bet(java.awt.event.ActionEvent evt) {
+        GameEvent event = new GameEvent( GameEventType.BET );
+        client.send(event);
+
+        setButtonsHidden();
+    }
+
+    /**
+     * Send pass game event **only used during betting phase**
+     * @param evt When the button is clicked
+     */
+    private void pass(java.awt.event.ActionEvent evt) {
+        GameEvent event = new GameEvent( GameEventType.PASS );
+        client.send(event);
+
+        setButtonsHidden();
+    }
+    /**
      * Send hit game event
      * @param evt When clicked
      */
@@ -821,6 +899,7 @@ public class GUI extends JFrame implements GuiHandler {
         GameEvent event = new GameEvent( GameEventType.HIT );
         client.send(event);
 
+        setButtonsHidden();
     }
 
     /**
@@ -831,6 +910,7 @@ public class GUI extends JFrame implements GuiHandler {
         GameEvent event = new GameEvent( GameEventType.STAND );
         client.send(event);
 
+        setButtonsHidden();
     }
 
     /**
@@ -841,6 +921,7 @@ public class GUI extends JFrame implements GuiHandler {
         GameEvent event = new GameEvent( GameEventType.DOUBLE_DOWN );
         client.send(event);
 
+        setButtonsHidden();
     }
 
     /**
@@ -851,6 +932,7 @@ public class GUI extends JFrame implements GuiHandler {
         GameEvent event = new GameEvent( GameEventType.SPLIT );
         client.send(event);
 
+        setButtonsHidden();
     }
 
     /**
@@ -860,7 +942,7 @@ public class GUI extends JFrame implements GuiHandler {
      * @param possibleActions What actions the current player cna use
      * @param data The current GuiData
      */
-    public void updateGui( java.util.List<GameEventType> possibleActions, GuiData data ) { //TODO Add functionality for split and Double Down
+    public void updateGui( java.util.List<GameEventType> possibleActions, GuiData data ) {
 
 
         setInfoHidden();
@@ -870,12 +952,14 @@ public class GUI extends JFrame implements GuiHandler {
                 case HIT:
                     hitButton.setVisible( true );
                     hitButton.setEnabled( true );
+                    hitText.setText( "HIT" );
                     hitText.setVisible( true );
                     hitImage.setVisible( true );
                     break;
                 case STAND:
                     stayButton.setVisible( true );
                     stayButton.setEnabled( true );
+                    stayText.setText( "STAND" );
                     stayText.setVisible( true );
                     stayImage.setVisible( true );
                     break;
@@ -891,6 +975,20 @@ public class GUI extends JFrame implements GuiHandler {
                     splitText.setVisible( true );
                     splitImage.setVisible( true );
                     break;
+                case BET:
+                    betButton.setVisible( true );
+                    betButton.setEnabled( true );
+                    hitText.setText( "BET" );
+                    hitText.setVisible( true );
+                    hitImage.setVisible( true );
+                    break;
+                case PASS:
+                    passButton.setVisible( true );
+                    passButton.setEnabled( true );
+                    stayText.setText( "PASS" );
+                    stayText.setVisible( true );
+                    stayImage.setVisible( true );
+
             }
         }
         //loop through all players. If they exist, update.
@@ -927,7 +1025,7 @@ public class GUI extends JFrame implements GuiHandler {
      * The below methods: updateDealerInfo - updateP8Info have the same functionality.
      * Each updates the current username and chip count. Then followed by what cards they currently have.
      * This information is then shown across GUIs.
-     * @param toUpdate player toUpdate
+     * @param toUpdate
      */
     private void updateDealerInfo(Player toUpdate) {
 
