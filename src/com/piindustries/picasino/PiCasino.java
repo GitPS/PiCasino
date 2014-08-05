@@ -66,47 +66,19 @@ public class PiCasino {
     private void buildServerBlackJack() {
 
         /* Create network handlers */
-        launcherNetworkHandler = new LauncherNetworkHandler();
+        //launcherNetworkHandler = new LauncherNetworkHandler();
         networkHandler = new ServerNetworkHandler(this);
 
 
         /* Create game state */
         gameState = new ServerGameState(this);
-
-        /* Set network handler in game state */
-        GameEvent gameEvent = new GameEvent(GameEventType.SET_NETWORK_HANDLER);
-        gameEvent.setValue(networkHandler);
-
-        try{
-            gameState.invoke(gameEvent);
-        } catch (InvalidGameEventException e) {
-            LOGGER.severe("Failed to bind NetworkHandler to GameState!");
-            LOGGER.severe(e.getMessage());
-        }
-
-        /* Set intermission time */
-        gameEvent = new GameEvent(GameEventType.SET_INTERMISSION_TIME);
-        gameEvent.setValue(30);
-
-        try{
-            gameState.invoke(gameEvent);
-        } catch (InvalidGameEventException e) {
-            LOGGER.severe("Failed to set intermission timer!");
-            LOGGER.severe(e.getMessage());
-        }
-
-        /* Start timer in GameState */
-        try{
-            gameState.invoke(new GameEvent(GameEventType.START_TIMER));
-        } catch (InvalidGameEventException e) {
-            LOGGER.severe("Failed to start timer!");
-            LOGGER.severe(e.getMessage());
-        }
     }
 
     private void buildClientBlackJack(String host, String userName) {
-        gameState = new ClientGameState(this, userName);
         ClientNetworkHandler clientNetworkHandler = new ClientNetworkHandler(this, host, userName);
+        networkHandler = clientNetworkHandler;
+
+        gameState = new ClientGameState(this, userName);
 
         /* Wait for a connection to be made before proceeding */
         while(!clientNetworkHandler.isConnected()){
@@ -116,9 +88,6 @@ public class PiCasino {
                 LOGGER.severe(e.getMessage());
             }
         }
-
-        networkHandler = clientNetworkHandler;
-        gameState.setNetworkHandler(networkHandler);
     }
 
     public GameState getGameState() {

@@ -59,6 +59,4 @@ public interface GameState extends Serializable {
      * `this` in its current state.
      */
     public void invoke(GameEvent toInvoke) throws InvalidGameEventException;
-
-    public void setNetworkHandler(NetworkHandler nh);
 }
